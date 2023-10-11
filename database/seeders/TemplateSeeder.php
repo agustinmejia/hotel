@@ -24,6 +24,7 @@ class TemplateSeeder extends Seeder
             PermissionRoleTableSeeder::class,
             SettingsTableSeeder::class,
             UsersTableSeeder::class,
+            BranchOfficesTableSeeder::class,
         ]);
     }
 }

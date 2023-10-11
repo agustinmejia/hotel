@@ -34,5 +34,12 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('permissions');
         Permission::generateFor('room_types');
         Permission::generateFor('room_accessories');
+        Permission::generateFor('product_types');
+        Permission::generateFor('products');
+        Permission::generateFor('service_types');
+        Permission::generateFor('branch_offices');
+        Permission::generateFor('people');
+        Permission::generateFor('rooms');
+        Permission::generateFor('suppliers');
     }
 }

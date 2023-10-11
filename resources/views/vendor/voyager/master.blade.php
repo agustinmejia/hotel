@@ -11,6 +11,9 @@
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 
+        {{-- Font Awesome --}}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <!-- Favicon -->
         <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
         @if($admin_favicon == '')
