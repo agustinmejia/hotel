@@ -65,7 +65,7 @@
 @endsection
 
 @section('post_js')
-    <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script>
         var btn = document.querySelector('button[type="submit"]');
         var form = document.forms[0];

@@ -27,7 +27,7 @@
                 <div class="panel panel-bordered">
                     <!-- form start -->
                     <form role="form"
-                            class="form-edit-add"
+                            class="form-edit-add form-submit"
                             action="{{ $edit ? route('voyager.'.$dataType->slug.'.update', $dataTypeContent->getKey()) : route('voyager.'.$dataType->slug.'.store') }}"
                             method="POST" enctype="multipart/form-data">
                         <!-- PUT Method if we are editing -->
@@ -94,7 +94,7 @@
 
                         <div class="panel-footer text-right">
                             @section('submit-buttons')
-                                <button type="submit" class="btn btn-primary save">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
+                                <button type="submit" class="btn btn-primary save btn-submit">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
                             @stop
                             @yield('submit-buttons')
                         </div>

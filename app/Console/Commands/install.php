@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use File;
 use TCG\Voyager\VoyagerServiceProvider;
-use Illuminate\Database\Seeder\VoyagerDatabaseSeeder;
+use Illuminate\Support\Facades\DB;
 
 class install extends Command
 {
@@ -14,14 +14,14 @@ class install extends Command
      *
      * @var string
      */
-    protected $signature = 'template:install';
+    protected $signature = 'hotel:install {--r|reset}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install Laravel template';
+    protected $description = 'Administrador de Hotel';
 
     /**
      * Create a new command instance.
@@ -40,11 +40,21 @@ class install extends Command
      */
     public function handle()
     {
-        $this->call('key:generate');
-        $this->call('migrate:fresh');
-        $this->call('db:seed', ['--class' => 'TemplateSeeder']);
-        $this->call('storage:link');
-        $this->call('vendor:publish', ['--provider' => VoyagerServiceProvider::class, '--tag' => ['config', 'voyager_avatar']]);
-        $this->info('Gracias por instalar LaravelTemplate');
+        $empty_database = false;
+        try {
+            DB::table('users')->first();
+        } catch (\Throwable $th) {
+            $empty_database = true;
+        }
+        if($empty_database  || $this->option('reset')){
+            $this->call('key:generate');
+            $this->call('migrate:fresh');
+            $this->call('db:seed', ['--class' => 'TemplateSeeder']);
+            $this->call('storage:link');
+            $this->call('vendor:publish', ['--provider' => VoyagerServiceProvider::class, '--tag' => ['config', 'voyager_avatar']]);
+            $this->info('Gracias por instalar Administrador de Hotel');
+        }else{
+            $this->error('Ya se encuentra instalado');
+        }
     }
 }
