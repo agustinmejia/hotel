@@ -27,6 +27,7 @@ class TemplateSeeder extends Seeder
             BranchOfficesTableSeeder::class,
             RoomTypesTableSeeder::class,
             RoomAccessoriesTableSeeder::class,
+            ProductTypesTableSeeder::class,
             ProductsTableSeeder::class,
             ServiceTypesTableSeeder::class,
         ]);

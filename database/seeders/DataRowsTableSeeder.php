@@ -1568,7 +1568,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","fuera de servicio":"Fuera de servicio"}}',
+                'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","reservada":"Reservada","fuera de servicio":"Fuera de servicio"}}',
                 'order' => 8,
             ),
             97 => 

@@ -1,9 +1,5 @@
 @extends('voyager::master')
 
-@section('css')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-@stop
-
 @section('page_title', 'Title')
 
 @section('page_header')
@@ -25,6 +21,10 @@
             </div>
         </div>
     </div>
+@stop
+
+@section('css')
+    
 @stop
 
 @section('javascript')
