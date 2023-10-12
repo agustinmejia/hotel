@@ -633,7 +633,7 @@ class DataRowsTableSeeder extends Seeder
                 'data_type_id' => 6,
                 'field' => 'price',
                 'type' => 'number',
-                'display_name' => 'Price',
+                'display_name' => 'Precio',
                 'required' => 0,
                 'browse' => 1,
                 'read' => 1,
@@ -1521,7 +1521,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
-                'order' => 4,
+                'order' => 5,
             ),
             94 => 
             array (
@@ -1552,7 +1552,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
+                'details' => '{"display":{"width":6},"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
                 'order' => 7,
             ),
             96 => 
@@ -1569,7 +1569,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","fuera de servicio":"Fuera de servicio"}}',
-                'order' => 5,
+                'order' => 8,
             ),
             97 => 
             array (
@@ -1585,7 +1585,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 8,
+                'order' => 9,
             ),
             98 => 
             array (
@@ -1601,7 +1601,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 10,
             ),
             99 => 
             array (
@@ -1617,7 +1617,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 10,
+                'order' => 11,
             ),
             100 => 
             array (
@@ -1794,6 +1794,22 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 0,
                 'details' => '{}',
                 'order' => 10,
+            ),
+            111 => 
+            array (
+                'id' => 112,
+                'data_type_id' => 12,
+                'field' => 'floor_number',
+                'type' => 'number',
+                'display_name' => 'Nro de piso',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6},"default":1}',
+                'order' => 4,
             ),
         ));
         

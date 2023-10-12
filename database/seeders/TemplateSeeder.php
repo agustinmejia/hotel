@@ -25,6 +25,10 @@ class TemplateSeeder extends Seeder
             SettingsTableSeeder::class,
             UsersTableSeeder::class,
             BranchOfficesTableSeeder::class,
+            RoomTypesTableSeeder::class,
+            RoomAccessoriesTableSeeder::class,
+            ProductsTableSeeder::class,
+            ServiceTypesTableSeeder::class,
         ]);
     }
 }
