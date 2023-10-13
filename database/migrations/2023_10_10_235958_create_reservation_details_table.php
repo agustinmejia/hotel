@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('reservation_id')->nullable()->constrained('reservations');
             $table->foreignId('room_id')->nullable()->constrained('rooms');
             $table->text('observations')->nullable();
-            $table->string('status')->nullable()->default('ocupado');
+            $table->string('status')->nullable()->default('ocupada');
             $table->timestamps();
             $table->softDeletes();
         });

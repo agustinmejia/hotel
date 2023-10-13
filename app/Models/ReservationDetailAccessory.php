@@ -10,4 +10,7 @@ class ReservationDetailAccessory extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+    protected $fillable = [
+        'reservation_detail_id', 'room_accessory_id', 'price', 'start', 'finish', 'observations'
+    ];
 }

@@ -41,7 +41,23 @@ class PeopleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            Person::create([
+                'full_name' => $request->full_name,
+                'dni' => $request->dni,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'birthday' => $request->birthday,
+                'origin' => $request->origin,
+                'job' => $request->job,
+                'photo' => $request->photo
+            ]);
+
+            return response()->json(['success' => 1]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' => 1]);
+        }
     }
 
     /**

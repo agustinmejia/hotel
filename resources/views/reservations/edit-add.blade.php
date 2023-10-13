@@ -57,7 +57,7 @@
                                                             <input type="checkbox" name="accessory_id[]" class="check-accessory" value="{{ $item->id }}" data-id="{{ $item->id }}" data-price="{{ intval($item->price) == floatval($item->price) ? intval($item->price) : $item->price }}" style="transform: scale(1.5);">
                                                         </td>
                                                         <td>
-                                                            {{ $item->name }} {{ $item->description ? '<br><small>'.$item->description.'</small>' : '' }}
+                                                            {{ $item->name }} (<b><small>Bs.</small> {{ intval($item->price) == floatval($item->price) ? intval($item->price) : $item->price }}</b>) {{ $item->description ? '<br><small>'.$item->description.'</small>' : '' }}
                                                         </td>
                                                         <td style="width: 150px">
                                                             <div class="input-group">
@@ -96,7 +96,7 @@
     </div>
 
     {{-- Create type items modal --}}
-    <form action="#" id="form-person" class="form-submit" method="POST">
+    <form action="{{ route('people.store').'?ajax=1' }}" id="form-person" class="form-submit" method="POST">
         @csrf
         <div class="modal modal-primary fade" tabindex="-1" id="person-modal" role="dialog">
             <div class="modal-dialog">
@@ -107,24 +107,28 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="first_name">Nombre completo</label>
-                            <input type="text" name="first_name" class="form-control" required>
+                            <label for="full_name">Nombre completo</label>
+                            <input type="text" name="full_name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="ci">CI/NIT</label>
-                            <input type="text" name="ci" class="form-control" required>
+                            <label for="dni">CI/NIT</label>
+                            <input type="text" name="dni" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="cell_phone">N&deg; de celular</label>
-                            <input type="text" name="cell_phone" class="form-control" required>
+                            <label for="phone">N&deg; de celular</label>
+                            <input type="text" name="phone" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="birth_date">Fecha de nac.</label>
-                            <input type="date" name="birth_date" class="form-control">
+                            <label for="birthday">Fecha de nac.</label>
+                            <input type="date" name="birthday" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="origin">Procedencia</label>
                             <input type="text" name="origin" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="job">Ocupación</label>
+                            <input type="text" name="job" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="street">Dirección</label>
@@ -166,6 +170,20 @@
                     $(`#tr-${id} input[name="price[]"]`).prop('disabled', true);
                 }
                 getTotal();
+            });
+
+            $('#form-person').submit(function(e){
+                e.preventDefault();
+                $.post($(this).attr('action'), $(this).serialize(), function(res){
+                    if (res.success) {
+                        toastr.success('Huesped registrado', 'Bien hecho');
+                        $('.form-submit .btn-submit').removeAttr('disabled');
+                        $(this).trigger('reset');
+                        $('#person-modal').modal('hide');
+                    } else {
+                        toastr.error('Ocurrió un error', 'Error');
+                    }
+                });
             });
         });
 

@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 // Models
 use App\Models\Room;
+use App\Models\Reservation;
+use App\Models\ReservationDetail;
+use App\Models\ReservationDetailAccessory;
 
 class ReservationsController extends Controller
 {
@@ -39,7 +44,39 @@ class ReservationsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $reservation = Reservation::create([
+                'user_id' => Auth::user()->id,
+                'person_id' => $request->person_id,
+                'start' => $request->start,
+                'finish' => $request->finish,
+                'observation' => $request->observation,
+                'status' => 'en curso'
+            ]);
+            $detail = ReservationDetail::create([
+                'reservation_id' => $reservation->id,
+                'room_id' => $request->room_id,
+            ]);
+            Room::where('id', $request->room_id)->update(['status' => 'ocupada']);
+            if ($request->accessory_id) {
+                for ($i=0; $i < count($request->accessory_id); $i++) { 
+                    ReservationDetailAccessory::create([
+                        'reservation_detail_id' => $detail->id,
+                        'room_accessory_id' => $request->accessory_id[$i],
+                        'price' => $request->price[$i],
+                        'start' => $request->start
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('voyager.dashboard')->with(['message' => 'Hospedaje registrado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
     }
 
     /**

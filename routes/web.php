@@ -31,6 +31,7 @@ Route::group(['prefix' => 'admin'], function () {
     // People
     Route::get('people/list/ajax', [PeopleController::class, 'list'])->name('people.list');
     Route::get('people/search/ajax', [PeopleController::class, 'search'])->name('people.search');
+    Route::post('people/store/ajax', [PeopleController::class, 'store'])->name('people.store');
 
     // Reservaciones
     Route::resource('reservations', ReservationsController::class);

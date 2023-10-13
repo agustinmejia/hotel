@@ -44,6 +44,9 @@ function customSelect(select, url, templateResult, templateSelection, dropdownPa
             noResults: function() {
                 return btnNoResults ? `Resultados no encontrados <button class="btn btn-link" onclick="${btnNoResults}">Crear nuevo</a>` : 'Resultados no encontrados';
             },
+            inputTooShort: function (data) {
+                return `Ingrese ${data.minimum - data.input.length} o más caracteres`;
+            },
         },
         escapeMarkup: function(markup) {
             return markup;
@@ -84,7 +87,7 @@ function formatResultPeople(data) {
                     <h5>
                         ${data.full_name} <br>
                         <p style="font-size: 13px; margin-top: 5px">
-                            CI: ${data.dni ? data.deni : 'No definido'}
+                            CI: ${data.dni ? data.dni : 'No definido'}
                         </p>
                     </h5>
                 </div>
