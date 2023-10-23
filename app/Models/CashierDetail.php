@@ -11,6 +11,6 @@ class CashierDetail extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'cashier_id', 'sale_detail_id', 'service_id', 'reservation_detail_day_id', 'type', 'amount', 'observations'
+        'cashier_id', 'sale_detail_id', 'service_id', 'reservation_detail_day_id', 'type', 'amount', 'cash', 'observations'
     ];
 }

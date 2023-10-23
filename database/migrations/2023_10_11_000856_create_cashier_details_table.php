@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('reservation_detail_day_id')->nullable()->constrained('reservation_detail_days');
             $table->string('type')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
+            $table->string('cash')->nullable()->default(1);
             $table->text('observations')->nullable();
             $table->timestamps();
             $table->softDeletes();

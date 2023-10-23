@@ -37,8 +37,9 @@ Route::group(['prefix' => 'admin'], function () {
 
     // Reservations
     Route::resource('reservations', ReservationsController::class);
-    Route::post('reservations/product/store', [ReservationsController::class, 'product_store'])->name('reservations.product.store');
     Route::post('reservations/payment/store', [ReservationsController::class, 'payment_store'])->name('reservations.payment.store');
+    Route::post('reservations/product/store', [ReservationsController::class, 'product_store'])->name('reservations.product.store');
+    Route::post('reservations/product/payment/store', [ReservationsController::class, 'product_payment_store'])->name('reservations.product.payment.store');
 
     // Products
     Route::get('products/search/ajax', [ProductsController::class, 'search'])->name('products.search');

@@ -208,9 +208,13 @@ class ReservationsController extends Controller
     }
 
     public function payment_store(Request $request){
-        // dd($request->all());
         DB::beginTransaction();
         try {
+
+            if (!$request->reservation_detail_day_id) {
+                return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'No se ha seleccionado ningún día de hospedaje', 'alert-type' => 'error']);
+            }
+
             for ($i=0; $i < count($request->reservation_detail_day_id); $i++) { 
                 $day_reservation = ReservationDetailDay::find($request->reservation_detail_day_id[$i]);
                 $day_reservation->status = 'pagado';
@@ -220,14 +224,38 @@ class ReservationsController extends Controller
                     'cashier_id' => $request->cashier_id,
                     'reservation_detail_day_id' => $day_reservation->id,
                     'type' => 'ingreso',
-                    'amount' => $day_reservation->amount
+                    'amount' => $day_reservation->amount,
+                    'cash' => $request->payment_qr ? 0 : 1
                 ]);
             }
             DB::commit();
             return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'Pago registrado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            //throw $th;
+            return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function product_payment_store(Request $request){
+        DB::beginTransaction();
+        try {
+            for ($i=0; $i < count($request->sale_detail_id); $i++) { 
+                $sale_detail = SaleDetail::find($request->sale_detail_id[$i]);
+                $sale_detail->status = 'pagado';
+                $sale_detail->update();
+
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'sale_detail_id' => $sale_detail->id,
+                    'type' => 'ingreso',
+                    'amount' => $sale_detail->price * $sale_detail->quantity,
+                    'cash' => $request->payment_qr ? 0 : 1
+                ]);
+            }
+            DB::commit();
+            return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'Pago registrado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
             return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }

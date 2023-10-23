@@ -27,7 +27,7 @@
                         <li><a href="#" title="Realizar pago" data-toggle="modal" data-target="#add-payment-modal">Pago</a></li>
                         @endif
                         <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-modal">Venta de producto</a></li>
-                        <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-service-modal">Servicios</a></li>
+                        <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-accessory-modal">Accesorios</a></li>
                     </ul>
                 </div>
                 @endif
@@ -140,79 +140,94 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="7"><h4 class="text-center">Productos</h4></th>
-                                        </tr>
-                                        <tr>
-                                            <th>N&deg;</th>
-                                            <th>Fecha</th>
-                                            <th>Producto</th>
-                                            <th>Precio</th>
-                                            <th>Cantidad</th>
-                                            <th>Subtotal</th>
-                                            <th>Estado</th>
-                                            {{-- <th>Acciones</th> --}}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            $cont = 1;
-                                            $payments = 0;
-                                            $debts = 0;
-                                        @endphp
-                                        @forelse ($reservation_detail->sales as $sale)
-                                            @foreach ($sale->details as $detail)
-                                                <tr>
-                                                    <td>{{ $cont }}</td>
-                                                    <td>{{ date('d/m/Y H:i', strtotime($sale->date)) }}</td>
-                                                    <td>{{ $detail->product->name }}</td>
-                                                    <td class="text-right">{{ floatval($detail->price) == intval($detail->price) ? intval($detail->price):$detail->price }}</td>
-                                                    <td class="text-right">{{ floatval($detail->quantity) == intval($detail->quantity) ? intval($detail->quantity):$detail->quantity }}</td>
-                                                    <td class="text-right">{{ $detail->quantity * $detail->price }}</td>
-                                                    <td><label class="label label-{{ $detail->status == 'pagado' ? 'success':'danger' }}">{{ Str::ucfirst($detail->status) }}</label></td>
-                                                    {{-- <td></td> --}}
-                                                </tr>
-                                                @php
-                                                    $cont++;
-                                                    if ($detail->status == 'pagado') {
-                                                        $payments += $detail->quantity * $detail->price;
-                                                    } else {
-                                                        $debts += $detail->quantity * $detail->price;
-                                                    }
-                                                @endphp
-                                            @endforeach
-                                        @empty
+                                <form action="{{ route('reservations.product.payment.store') }}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+                                    <input type="hidden" name="room_id" value="{{ $room->id }}">
+                                    <table class="table table-hover">
+                                        <thead>
                                             <tr>
-                                                <td colspan="7">No hay registros</td>
+                                                <th colspan="8"><h4 class="text-center">Productos</h4></th>
                                             </tr>
-                                        @endforelse
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5" class="text-right">TOTAL Bs.</td>
-                                            <td class="text-right"><h5>{{ $payments + $debts }}</h5></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="text-right">MONTO PAGADO Bs.</td>
-                                            <td class="text-right"><h5>{{ $payments }}</h5></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="text-right">DEUDA Bs.</td>
-                                            <td class="text-right"><h5>{{ $debts }}</h5></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                            <tr>
+                                                <th>N&deg;</th>
+                                                <th>Fecha</th>
+                                                <th>Producto</th>
+                                                <th>Precio</th>
+                                                <th>Cantidad</th>
+                                                <th>Subtotal</th>
+                                                <th>Estado</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $cont = 1;
+                                                $payments = 0;
+                                                $debts = 0;
+                                            @endphp
+                                            @forelse ($reservation_detail->sales as $sale)
+                                                @foreach ($sale->details as $detail)
+                                                    <tr>
+                                                        <td>{{ $cont }}</td>
+                                                        <td>{{ date('d/m/Y H:i', strtotime($sale->date)) }}</td>
+                                                        <td>{{ $detail->product->name }}</td>
+                                                        <td class="text-right">{{ floatval($detail->price) == intval($detail->price) ? intval($detail->price):$detail->price }}</td>
+                                                        <td class="text-right">{{ floatval($detail->quantity) == intval($detail->quantity) ? intval($detail->quantity):$detail->quantity }}</td>
+                                                        <td class="text-right">{{ $detail->quantity * $detail->price }}</td>
+                                                        <td><label class="label label-{{ $detail->status == 'pagado' ? 'success':'danger' }}">{{ Str::ucfirst($detail->status) }}</label></td>
+                                                        <td class="text-right">
+                                                            @if ($detail->status == 'pendiente')
+                                                                <input type="checkbox" name="sale_detail_id[]" value="{{ $detail->id }}" class="checkbox-sale_detail_id" data-total="{{ $detail->quantity * $detail->price }}" style="transform: scale(1.5);" title="Pagar" />
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                    @php
+                                                        $cont++;
+                                                        if ($detail->status == 'pagado') {
+                                                            $payments += $detail->quantity * $detail->price;
+                                                        } else {
+                                                            $debts += $detail->quantity * $detail->price;
+                                                        }
+                                                    @endphp
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="8">No hay registros</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5" class="text-right">TOTAL Bs.</td>
+                                                <td class="text-right"><h5>{{ $payments + $debts }}</h5></td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="text-right">MONTO PAGADO Bs.</td>
+                                                <td class="text-right"><h5>{{ $payments }}</h5></td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="text-right">DEUDA Bs.</td>
+                                                <td class="text-right"><h5>{{ $debts }}</h5></td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            <tr id="tr-total-payment-products" style="display: none">
+                                                <td colspan="5" class="text-right">MONTO A PAGAR Bs.</td>
+                                                <td class="text-right"><h4 id="label-total-payment-products">0</h4></td>
+                                                <td colspan="2" class="text-right"><button type="submit" class="btn btn-primary" style="margin-top: 0px">Pagar <i class="fa fa-shopping-cart"></i></button></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </form>
+                                    
                             </div>
                             <div class="col-md-6">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th colspan="4"><h4 class="text-center">Servicios</h4></th>
+                                            <th colspan="4"><h4 class="text-center">Accesorios</h4></th>
                                         </tr>
                                         <tr>
                                             <th>N&deg;</th>
@@ -224,7 +239,7 @@
                                     <tbody>
                                         @php
                                             $cont = 1;
-                                            $total_services = 0;
+                                            $total_accessories = 0;
                                         @endphp
                                         @forelse ($reservation_detail->accessories as $item)
                                             <tr>
@@ -235,7 +250,7 @@
                                             </tr>
                                             @php
                                                 $cont++;
-                                                $total_services += $item->price;
+                                                $total_accessories += $item->price;
                                             @endphp
                                         @empty
                                             <tr>
@@ -246,7 +261,7 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="2" class="text-right">TOTAL Bs.</td>
-                                            <td class="text-right"><h5>{{ $total_services }}</h5></td>
+                                            <td class="text-right"><h5>{{ $total_accessories }}</h5></td>
                                             <td></td>
                                         </tr>
                                     </tfoot>
@@ -298,7 +313,7 @@
                                             <td>{{ $days[date('w', strtotime($item->date))] }}, {{ date('d', strtotime($item->date)) }} de {{ $months[intval(date('m', strtotime($item->date)))] }}</td>
                                             <td>{{ $item->amount }}</td>
                                             <td><label class="label label-{{ $item->status == 'pagado' ? 'success' : 'danger' }}" style="color: white !important">{{ Str::ucfirst($item->status) }}</label></td>
-                                            <td><input type="checkbox" name="reservation_detail_day_id[]" value="{{ $item->id }}" style="transform: scale(1.5);" title="{{ $item->status == 'pagado' ? 'Pagado' : 'Pagar' }}" @if($item->status == 'pagado') disabled checked @endif /></td>
+                                            <td class="text-right"><input type="checkbox" name="reservation_detail_day_id[]" value="{{ $item->id }}" data-amount="{{ $item->amount }}" class="checkbox-payment" style="transform: scale(1.5);" title="{{ $item->status == 'pagado' ? 'Pagado' : 'Pagar' }}" @if($item->status == 'pagado') disabled checked @endif /></td>
                                         </tr>
                                         @php
                                             $cont++;
@@ -313,11 +328,19 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">SUBTOTAL</td>
-                                        <td><h4 style="margin: 0px;">{{ $payment + $debt }}</h4></td>
+                                        <td class="text-right"><h4 style="margin: 0px;">{{ $payment + $debt }}</h4></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">DEUDA</td>
-                                        <td><h4 style="margin: 0px;">{{ $debt }}</h4></td>
+                                        <td class="text-right"><h4 style="margin: 0px;">{{ $debt }}</h4></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-right" style="vertical-align: middle;">MONTO PAGADO</td>
+                                        <td class="text-right"><h4 style="margin: 0px;" id="label-total-payment-rooms">0</h4></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-right" style="vertical-align: middle;">PAGO POR QR</td>
+                                        <td class="text-right"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -499,6 +522,31 @@
 
                 setNumber();
                 getSubtotal(product.id);
+            });
+
+            $('.checkbox-payment').click(function(){
+                var payment_total = 0;
+                $('.checkbox-payment').each(function(index) {
+                    if($(this).is(':checked')){
+                        payment_total += parseFloat($(this).data('amount'));
+                    };
+                });
+                $('#label-total-payment-rooms').text(payment_total);
+            });
+
+            $('.checkbox-sale_detail_id').click(function(){
+                var amount = 0;
+                $('.checkbox-sale_detail_id').each(function(index) {
+                    if($(this).is(':checked')){
+                        amount += parseFloat($(this).data('total'));
+                    };
+                });
+                $('#label-total-payment-products').text(amount);
+                if(amount > 0){
+                    $('#tr-total-payment-products').fadeIn();
+                }else{
+                    $('#tr-total-payment-products').fadeOut();
+                }
             });
         });
 
