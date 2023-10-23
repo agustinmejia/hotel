@@ -42,7 +42,7 @@ function customSelect(select, url, templateResult, templateSelection, dropdownPa
         dropdownParent: dropdownParent ? dropdownParent : null,
         language: {
             noResults: function() {
-                return btnNoResults ? `Resultados no encontrados <button class="btn btn-link" onclick="${btnNoResults}">Crear nuevo</a>` : 'Resultados no encontrados';
+                return btnNoResults ? `Resultados no encontrados <button class="btn btn-link" onclick="${btnNoResults}">Crear nuevo <i class="fa fa-plus"></i></a>` : 'Resultados no encontrados';
             },
             inputTooShort: function (data) {
                 return `Ingrese ${data.minimum - data.input.length} o más caracteres`;
@@ -88,6 +88,36 @@ function formatResultPeople(data) {
                         ${data.full_name} <br>
                         <p style="font-size: 13px; margin-top: 5px">
                             CI: ${data.dni ? data.dni : 'No definido'}
+                        </p>
+                    </h5>
+                </div>
+            </div>
+            
+        </div>`
+    );
+
+    return $container;
+}
+
+function formatResultProducts(data) {
+    if (data.loading) {
+        return 'Buscando...';
+    }
+    let image = "/images/default.jpg";
+    if(data.images){
+        image = "/storage/"+data.images.replace('.', '-cropped.');
+    }
+    var $container = $(
+        `<div class="option-select2-custom">
+            <div style="display:flex; flex-direction: row">
+                <div>
+                    <img src="${image}" style="width: 60px; height: 60px; border-radius: 30px; margin-right: 10px" />
+                </div>
+                <div>
+                    <h5>
+                        ${data.name} <br>
+                        <p style="font-size: 13px; margin-top: 5px; font-weight: bold">
+                            ${data.price} Bs. | ${data.type.name}
                         </p>
                     </h5>
                 </div>

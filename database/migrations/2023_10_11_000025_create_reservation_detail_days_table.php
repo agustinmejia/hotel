@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sale_details', function (Blueprint $table) {
+        Schema::create('reservation_detail_days', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->nullable()->constrained('sales');
-            $table->foreignId('product_id')->nullable()->constrained('products');
-            $table->decimal('price', 10, 2)->nullable();
-            $table->decimal('quantity', 10, 2)->nullable();
+            $table->foreignId('reservation_detail_id')->nullable()->constrained('reservation_details');
+            $table->date('date')->nullable();
+            $table->decimal('amount', 10, 2)->nullable();
+            $table->text('observations')->nullable();
             $table->string('status')->nullable()->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sale_details');
+        Schema::dropIfExists('reservation_detail_days');
     }
 };

@@ -10,4 +10,8 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    public function type() {
+        return $this->belongsTo(ProductType::class, 'product_type_id');
+    }
 }

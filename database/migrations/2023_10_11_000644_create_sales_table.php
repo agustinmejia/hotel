@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('reservation_detail_id')->nullable()->constrained('reservation_details');
             $table->foreignId('person_id')->nullable()->constrained('people');
-            $table->date('date')->nullable();
+            $table->timestamp('date')->nullable();
             $table->text('observations')->nullable();
             $table->string('status')->nullable()->default('pendiente');
             $table->timestamps();

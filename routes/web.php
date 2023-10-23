@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 // Controllers
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\PeopleController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\CashiersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +35,16 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('people/search/ajax', [PeopleController::class, 'search'])->name('people.search');
     Route::post('people/store/ajax', [PeopleController::class, 'store'])->name('people.store');
 
-    // Reservaciones
+    // Reservations
     Route::resource('reservations', ReservationsController::class);
+    Route::post('reservations/product/store', [ReservationsController::class, 'product_store'])->name('reservations.product.store');
+    Route::post('reservations/payment/store', [ReservationsController::class, 'payment_store'])->name('reservations.payment.store');
+
+    // Products
+    Route::get('products/search/ajax', [ProductsController::class, 'search'])->name('products.search');
+
+    // Cashier
+    Route::post('cashiers/store', [CashiersController::class, 'store'])->name('cashiers.store');
 });
 
 // Clear cache

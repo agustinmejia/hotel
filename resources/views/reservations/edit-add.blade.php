@@ -20,6 +20,28 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     @isset($room)
+                                        <div class="col-md-12 div-details">
+                                            <table style="width: 100%; margin-top: 20px">
+                                                <tr style="height: 30px">
+                                                    <td><b>N&deg; de habitación : </b></td>
+                                                    <td>{{ $room->code }}</td>
+                                                    <td><b>Tipo : </b></td>
+                                                    <td>{{ $room->type->name }}</td>
+                                                    <td><b>Precio : </b></td>
+                                                    <td>
+                                                        {{ $room->type->price }}
+                                                        <input type="hidden" name="room_price" value="{{ $room->type->price }}">
+                                                    </td>
+                                                </tr>
+                                                <tr style="height: 30px">
+                                                    <td><b>Descripción : </b></td>
+                                                    <td colspan="3">{{ $room->type->description }}</td>
+                                                    <td><b>Estado : </b></td>
+                                                    <td>{{ $room->status }}</td>
+                                                </tr>
+                                            </table>
+                                            <br>
+                                        </div>
                                         <input type="hidden" name="room_id" value="{{ $room->id }}">
                                     @endisset
                                     <div class="form-group col-md-12">
@@ -28,11 +50,11 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label" for="start">Ingreso</label>
-                                        <input type="date" name="start" value="{{ date('Y-m-d') }}" class="form-control" required>
+                                        <input type="date" name="start" id="input-start" value="{{ date('Y-m-d') }}" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label" for="finish">Salida</label>
-                                        <input type="date" name="finish" class="form-control">
+                                        <input type="date" name="finish" id="input-finish" class="form-control">
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label" for="observation">Observaciones</label>
@@ -61,7 +83,7 @@
                                                         </td>
                                                         <td style="width: 150px">
                                                             <div class="input-group">
-                                                                <input type="number" name="price[]" onchange="getTotal()" onkeyup="getTotal()" class="form-control" step="0.1" disabled>
+                                                                <input type="number" name="price[]" onchange="getSubtotal()" onkeyup="getSubtotal()" class="form-control" step="0.1" disabled>
                                                                 <span class="input-group-addon">Bs.</span>
                                                             </div>
                                                         </th>
@@ -73,13 +95,25 @@
                                                 @endforelse
                                             </tbody>
                                             <tfoot>
-                                                <tr>
-                                                    <td colspan="2" class="text-right">TOTAL</td>
+                                                <tr style="height: 50px">
+                                                    <td colspan="2" class="text-right">MONTO DIARIO</td>
                                                     <td>
-                                                        <h3 class="text-right" id="label-total">{{ $room->type->price }}</h3>
-                                                        <input type="hidden" name="total" id="input-total" value="{{ $room->type->price }}">
+                                                        <h3 class="text-right" id="label-subtotal">{{ $room->type->price }}</h3>
+                                                        <input type="hidden" name="subtotal" id="input-subtotal" value="{{ $room->type->price }}">
                                                     </td>
                                                 </tr>
+                                                <tr style="height: 50px">
+                                                    <td colspan="2" class="text-right">TOTAL</td>
+                                                    <td>
+                                                        <h3 class="text-right" id="label-total"></h3>
+                                                    </td>
+                                                </tr>
+                                                {{-- <tr style="height: 50px">
+                                                    <td colspan="2" class="text-right">ADELANTO</td>
+                                                    <td>
+                                                        <input type="text" name="initial_amount" class="form-control" value="0">
+                                                    </td>
+                                                </tr> --}}
                                             </tfoot>
                                         </table>
                                     </div>
@@ -147,14 +181,17 @@
 
 @section('css')
     <style>
-
+        .div-details b {
+            font-weight: bold !important
+        }
     </style>
 @stop
 
 @section('javascript')
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
-        var total = parseFloat("{{ $room->type->price }}");
+        var price = parseFloat("{{ $room->type->price }}");
+        var subtotal = price;
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, null, 'createPerson()');
@@ -169,6 +206,14 @@
                     $(`#tr-${id} input[name="price[]"]`).val('');
                     $(`#tr-${id} input[name="price[]"]`).prop('disabled', true);
                 }
+                getSubtotal();
+            });
+
+            $('#input-start').change(function(){
+                getTotal();
+            });
+
+            $('#input-finish').change(function(){
                 getTotal();
             });
 
@@ -187,13 +232,34 @@
             });
         });
 
-        function getTotal(){
+        function getSubtotal(){
             let totalAccessories = 0;
             $('.tr-accessories input[name="price[]"]').each(function(){
                 totalAccessories += $(this).val() ? parseFloat($(this).val()) : 0;
             });
-            $('#label-total').text(total + parseFloat(totalAccessories));
-            $('#input-total').val(total + parseFloat(totalAccessories));
+            subtotal = price + parseFloat(totalAccessories);
+            $('#label-subtotal').text(subtotal);
+            $('#input-subtotal').val(subtotal);
+            getTotal();
+        }
+
+        function getTotal(){
+            if (!$('#input-start').val() && $('#input-finish').val()) {
+                $('#label-total').text('');
+                return 0;
+            }
+
+            let start = new Date($('#input-start').val()).getTime();
+            let finish    = new Date($('#input-finish').val()).getTime();
+            if (start <= finish) {
+                let diff = finish - start;
+                let days = diff/(1000*60*60*24) +1;
+                console.log(days)
+
+                $('#label-total').text(days * subtotal);
+            } else {
+                $('#label-total').text('');
+            }
         }
 
         function createPerson(){

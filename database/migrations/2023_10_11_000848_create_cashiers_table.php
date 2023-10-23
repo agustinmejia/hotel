@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('branch_office_id')->nullable()->constrained('branch_offices');
-            $table->date('date')->nullable();
             $table->text('observations')->nullable();
             $table->string('status')->nullable()->default('abierta');
             $table->timestamps();
+            $table->timestamp('closed_at')->nullable();
             $table->softDeletes();
         });
     }

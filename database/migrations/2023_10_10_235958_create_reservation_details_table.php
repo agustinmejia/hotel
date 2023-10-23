@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('reservation_id')->nullable()->constrained('reservations');
             $table->foreignId('room_id')->nullable()->constrained('rooms');
+            $table->decimal('price', 10, 2)->nullable();
             $table->text('observations')->nullable();
             $table->string('status')->nullable()->default('ocupada');
             $table->timestamps();

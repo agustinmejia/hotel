@@ -10,4 +10,8 @@ class BranchOffice extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    public function products() {
+        return $this->hasMany(ProductBranchOffice::class, 'branch_office_id');
+    }
 }
