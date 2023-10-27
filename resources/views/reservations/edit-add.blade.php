@@ -121,6 +121,7 @@
                             </div>
                         </div>
                         <div class="panel-footer text-right">
+                            <a href="{{ route('reservations.index') }}" class="btn btn-default">Cancelar</a>
                             <button type="submit" class="btn btn-primary save btn-submit">Guardar <i class="voyager-check"></i> </button>
                         </div>
                     </form>

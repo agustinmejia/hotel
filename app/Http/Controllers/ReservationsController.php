@@ -122,10 +122,9 @@ class ReservationsController extends Controller
     public function show($id)
     {
         $this->custom_authorize('read_reservations');
-        $room = Room::with(['reservation_detail.reservation', 'reservation_detail.accessories.accessory', 'reservation_detail.days', 'reservation_detail.reservation', 'reservation_detail.sales.details.product'])
-                    ->whereHas('reservation_detail', function($q){
+        $room = Room::with(['reservation_detail' => function($q){
                         $q->where('status', 'ocupada');
-                    })
+                    }, 'reservation_detail.reservation', 'reservation_detail.accessories.accessory', 'reservation_detail.days', 'reservation_detail.reservation', 'reservation_detail.sales.details.product'])
                     ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         return view('reservations.read', compact('room', 'cashier'));
@@ -257,6 +256,60 @@ class ReservationsController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function close(Request $request){
+        DB::beginTransaction();
+        try {
+            // Actualizar estado de reserva de habitación
+            $reservation_detail = ReservationDetail::with(['reservation', 'room', 'days', 'sales.details'])->where('id', $request->reservation_detail_id)->first();
+            $reservation_detail->status = 'finalizada';
+            $reservation_detail->room->status = 'limpieza';
+            $reservation_detail->reservation->finish = date('Y-m-d');
+
+            // Pago de ventas pendientes
+            $reservation_detail->sales->each(function ($sale) use($request) {
+                $sale->update(['status' => 'pagada']);
+
+                $sale->details->each(function ($detail) use($request) {
+                    if ($detail->status = 'pendiente') {
+                        $detail->update(['status' => 'pagado']);
+                        CashierDetail::create([
+                            'cashier_id' => $request->cashier_id,
+                            'sale_detail_id' => $detail->id,
+                            'type' => 'ingreso',
+                            'amount' => $detail->price * $detail->quantity,
+                            'cash' => $request->payment_qr ? 0 : 1
+                        ]);
+                    }
+                });
+            });
+
+            // Pago de registros de hospedaje
+            $reservation_detail->days->each(function ($day) use($request) {
+                if ($day->status = 'pendiente') {
+                    $day->update(['status' => 'pagado']);
+                    CashierDetail::create([
+                        'cashier_id' => $request->cashier_id,
+                        'reservation_detail_day_id' => $day->id,
+                        'type' => 'ingreso',
+                        'amount' => $day->amount,
+                        'cash' => $request->payment_qr ? 0 : 1
+                    ]);
+                }
+            });
+
+            $reservation_detail->room->update();
+            $reservation_detail->reservation->update();
+            $reservation_detail->update();
+
+            DB::commit();
+            return redirect()->route('reservations.index')->with(['message' => 'Hospedaje finalizado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            // throw $th;
+            return redirect()->route('reservations.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

@@ -2,12 +2,24 @@
 
 @section('page_title', 'Registrar Hospedaje')
 
-{{-- @section('page_header')
-    <h1 class="page-title">
-        <i class="fa fa-tag"></i>
-        Registrar Hospedaje
-    </h1>
-@stop --}}
+@php
+    $months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    $days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
+    $reservation_detail = $room->reservation_detail->first();
+    $reservation_detail_days = $reservation_detail->days;
+    $total_payments = $reservation_detail_days->where('status', 'pagado')->sum('amount');
+    $total_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+
+    foreach($reservation_detail->sales as $sale){
+        foreach ($sale->details as $detail){
+            if ($detail->status == 'pagado') {
+                $total_payments += $detail->quantity * $detail->price;
+            } else {
+                $total_debts += $detail->quantity * $detail->price;
+            }
+        }
+    }
+@endphp
 
 @section('content')
     <div class="page-content edit-add container-fluid">
@@ -20,14 +32,17 @@
                 @if ($room->status == 'ocupada')
                 <div class="btn-group">
                     <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
-                        Agregar <span class="caret"></span>
+                        Opciones <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" style="left: -90px !important">
                         @if($cashier)
-                        <li><a href="#" title="Realizar pago" data-toggle="modal" data-target="#add-payment-modal">Pago</a></li>
+                        <li><a href="#" title="Realizar pago" data-toggle="modal" data-target="#add-payment-modal">Agregar pago</a></li>
                         @endif
                         <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-modal">Venta de producto</a></li>
-                        <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-accessory-modal">Accesorios</a></li>
+                        <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-accessory-modal">Agregar accesorios</a></li>
+                        <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-peerson-modal">Agregar huesped</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#" style="color: #FA3E19" title="Cerrar hospedaje" data-toggle="modal" data-target="#close-reservation-modal">Cerrar hospedaje</a></li>
                     </ul>
                 </div>
                 @endif
@@ -41,26 +56,6 @@
             <p><a class="btn btn-primary" href="#" data-toggle="modal" data-target="#create-cashier-modal" role="button">Abrir caja <i class="fa fa-money"></i></a></p>
         </div>
         @endif
-
-        @php
-            $months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-            $days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
-            $reservation_detail = $room->reservation_detail->first();
-            $reservation_detail_days = $reservation_detail->days;
-            $total_payments = $reservation_detail_days->where('status', 'pagado')->sum('amount');
-            $total_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
-        
-            foreach($reservation_detail->sales as $sale){
-                foreach ($sale->details as $detail){
-                    if ($detail->status == 'pagado') {
-                        $total_payments += $detail->quantity * $detail->price;
-                    } else {
-                        $total_debts += $detail->quantity * $detail->price;
-                    }
-                    
-                }
-            }
-        @endphp
         <div class="row">
             <div class="col-md-6">
                 <div class="panel panel-bordered">
@@ -348,7 +343,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark btn-submit">Pagar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Pagar <i class="fa fa-money"></i></button>
                     </div>
                 </div>
             </div>
@@ -412,7 +407,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark btn-submit">Guardar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Guardar <i class="fa fa-shopping-basket"></i></button>
                     </div>
                 </div>
             </div>
@@ -452,7 +447,43 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark btn-submit">Aperturar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Aperturar <i class="fa fa-money"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {{-- Close reservation modal --}}
+    <form action="{{ route('reservations.close') }}" id="form-close-reservation" class="form-submit" method="POST">
+        @csrf
+        <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
+        <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+        <div class="modal modal-primary fade" tabindex="-1" id="close-reservation-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-tags"></i> Cierre de hospedaje</h4>
+                    </div>
+                    <div class="modal-body">
+                        @if ($total_debts)
+                        <div class="form-group">
+                            <p>Al cerrar el hospedaje se acepta que se han realizado el pago de toda la deuda, desea continuar?</p>
+                            <h3 class="text-danger text-right"><span style="font-size: 12px">Deuda Bs. </span>{{ number_format($total_debts, 2, ',', '.') }}</h3>
+                        </div>
+                        <div class="form-group text-right">
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;">Pago con Qr</label>
+                        </div>
+                        @else
+                        <div class="form-group">
+                            <p>Está a punto de cerar el hospedaje y desalojar la habitación, desea continuar?</p>
+                        </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Cerrar <i class="fa fa-tags"></i></button>
                     </div>
                 </div>
             </div>

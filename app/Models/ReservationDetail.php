@@ -18,6 +18,10 @@ class ReservationDetail extends Model
         return $this->belongsTo(Reservation::class, 'reservation_id');
     }
 
+    public function room() {
+        return $this->belongsTo(Room::class, 'room_id');
+    }
+
     public function accessories() {
         return $this->hasMany(ReservationDetailAccessory::class, 'reservation_detail_id');
     }
