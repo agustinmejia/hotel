@@ -14,4 +14,8 @@ class Product extends Model
     public function type() {
         return $this->belongsTo(ProductType::class, 'product_type_id');
     }
+
+    public function stock(){
+        return $this->hasMany(ProductBranchOffice::class, 'product_id');
+    }
 }

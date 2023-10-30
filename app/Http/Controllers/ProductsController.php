@@ -18,8 +18,10 @@ class ProductsController extends Controller
         $q = request('q');
         $data = [];
         if ($q) {
-            ### Solo obtener los datos de la sucursal en donde trabaja
-            $data = Product::with(['type'])
+            $data = Product::with(['type', 'stock'])
+                        ->whereHas('stock', function($q){
+                            $q->where('quantity', '>', 0);
+                        })
                         ->whereRaw('(id = '.intval($q).' or name like "%'.$q.'%")')
                         ->orWhere(function($query) use ($q){
                             $query->OrwhereHas('type', function($query) use($q){

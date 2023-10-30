@@ -7,6 +7,7 @@ use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CashiersController;
+use App\Http\Controllers\ProductBranchOfficesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,9 @@ Route::group(['prefix' => 'admin'], function () {
 
     // Products
     Route::get('products/search/ajax', [ProductsController::class, 'search'])->name('products.search');
+
+    Route::resource('product-branch-offices', ProductBranchOfficesController::class);
+    Route::get('product-branch-offices/list/ajax', [ProductBranchOfficesController::class, 'list'])->name('product-branch-offices.list');
 
     // Cashier
     Route::post('cashiers/store', [CashiersController::class, 'store'])->name('cashiers.store');

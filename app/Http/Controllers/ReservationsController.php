@@ -267,6 +267,7 @@ class ReservationsController extends Controller
             $reservation_detail->status = 'finalizada';
             $reservation_detail->room->status = 'limpieza';
             $reservation_detail->reservation->finish = date('Y-m-d');
+            $reservation_detail->reservation->status = 'finalizado';
 
             // Pago de ventas pendientes
             $reservation_detail->sales->each(function ($sale) use($request) {

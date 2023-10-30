@@ -13,4 +13,8 @@ class CashierDetail extends Model
     protected $fillable = [
         'cashier_id', 'sale_detail_id', 'service_id', 'reservation_detail_day_id', 'type', 'amount', 'cash', 'observations'
     ];
+
+    public function cashier(){
+        return $this->belongsTo(Cashier::class, 'cashier_id');
+    }
 }

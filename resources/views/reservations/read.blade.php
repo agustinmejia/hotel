@@ -3,12 +3,16 @@
 @section('page_title', 'Registrar Hospedaje')
 
 @php
-    $months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     $days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
     $reservation_detail = $room->reservation_detail->first();
     $reservation_detail_days = $reservation_detail->days;
+    $day_payments = $reservation_detail_days[0];
     $total_payments = $reservation_detail_days->where('status', 'pagado')->sum('amount');
     $total_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+
+    $reservation_detail_days_payment = $reservation_detail_days->where('status', 'pagado')->sortByDesc('date');
+    $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment[0]->date : null;
 
     foreach($reservation_detail->sales as $sale){
         foreach ($sale->details as $detail){
@@ -93,11 +97,11 @@
                                     </tr>
                                     <tr style="height: 30px">
                                         <td><b>Llegada:</b></td>
-                                        <td>{{ date('d/m/Y', strtotime($reservation_detail->reservation->start)) }}</td>
+                                        <td>{{ date('d', strtotime($reservation_detail->reservation->start)) }}/{{ $months[intval(date('m', strtotime($reservation_detail->reservation->start)))] }}</td>
                                         <td><b>Salida: </b></td>
-                                        <td>{{ $reservation_detail->reservation->finish ? date('d/m/Y', strtotime($reservation_detail->reservation->finish)) : 'No definida' }}</td>
+                                        <td>{{ $reservation_detail->reservation->finish ? date('d', strtotime($reservation_detail->reservation->finish)).'/'.$months[intval(date('m', strtotime($reservation_detail->reservation->finish)))] : 'No definida' }}</td>
                                         <td><b>Pagado hasta:</b></td>
-                                        <td>No hay pagos</td>
+                                        <td>{{ $last_payment_day ? date('d', strtotime($last_payment_day)).'/'.$months[intval(date('m', strtotime($last_payment_day)))] : 'No hay pagos' }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -113,11 +117,13 @@
                                 <b>DETALLES DE PAGOS</b>
                                 <table style="width: 100%; margin-top: 20px;">
                                     <tr style="height: 30px">
-                                        <th class="text-center" style="width: 33%"><b>Monto acumulado</b></th>
-                                        <th class="text-center" style="width: 33%"><b>Monto pagado</b></th>
-                                        <th class="text-center"><b>Deuda</b></th>
+                                        <th class="text-center" style="width: 25%"><b>Pago diario</b></th>
+                                        <th class="text-center" style="width: 25%"><b>Monto acumulado</b></th>
+                                        <th class="text-center" style="width: 25%"><b>Monto pagado</b></th>
+                                        <th class="text-center" style="width: 25%"><b>Deuda</b></th>
                                     </tr>
                                     <tr>
+                                        <td class="text-center"><h4>{{ $day_payments->amount == intval($day_payments->amount) ? intval($day_payments->amount) : $day_payments->amount }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments + $total_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_debts }}</h4></td>
@@ -544,7 +550,7 @@
                             ${product.price}
                             <input type="hidden" name="price[]" id="input-price-${product.id}" value="${product.price}" />
                         </td>
-                        <td style="width: 100px"><input type="number" name="quantity[]" id="input-quantity-${product.id}" class="form-control" onkeyup="getSubtotal(${product.id})" onchange="getSubtotal(${product.id})" value="1" min="1" step="1" max="" required /></td>
+                        <td style="width: 100px"><input type="number" name="quantity[]" id="input-quantity-${product.id}" class="form-control" onkeyup="getSubtotal(${product.id})" onchange="getSubtotal(${product.id})" value="1" min="1" step="1" max="${product.stock[0].quantity}" required /></td>
                         <td class="text-center"><input type="checkbox" name="pay[]" class="checkbox-pay" id="checkbox-pay-${product.id}" value="${product.id}" data-id="${product.id}" style="transform: scale(1.5);" onclick="getPayments()" ${cashier ? '' : 'disabled title="No has aperturado caja"'} /></td>
                         <td class="text-right"><span id="label-subtotal-${product.id}" class="label-subtotal">${product.price}</span></td>
                         <td><button class="btn btn-link" onclick="removeTr(${product.id})"><i class="voyager-trash text-danger"></i></a></td>

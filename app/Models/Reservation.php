@@ -13,4 +13,8 @@ class Reservation extends Model
     protected $fillable = [
         'user_id', 'person_id', 'start', 'finish', 'amount', 'discount', 'observation', 'status'
     ];
+
+    public function details() {
+        return $this->hasMany(ReservationDetail::class, 'reservation_id');
+    }
 }

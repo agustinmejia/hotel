@@ -199,28 +199,28 @@
 
 @section('javascript')
     <script>
-        $('.panel-custom .panel-number').on('mousedown', function() {
-            let id = $(this).data('id');
-            $('#checkbox-select-'+id).trigger('click');
+        // $('.panel-custom .panel-number').on('mousedown', function() {
+        //     let id = $(this).data('id');
+        //     $('#checkbox-select-'+id).trigger('click');
 
-            if($('#checkbox-select-'+id).is(':checked')){
-                $('#label-check-'+id).fadeIn('fast');
-            }else{
-                $('#label-check-'+id).fadeOut('fast');
-            }
+        //     if($('#checkbox-select-'+id).is(':checked')){
+        //         $('#label-check-'+id).fadeIn('fast');
+        //     }else{
+        //         $('#label-check-'+id).fadeOut('fast');
+        //     }
 
-            let checked = false;
-            $('.checkbox-select').each(function(index) {
-                if($(this).is(':checked')){
-                    checked = true;
-                };
-            });
-            if(checked){
-                $('.div-actions').fadeIn('fast');
-            }else{
-                $('.div-actions').fadeOut('fast');
-            }
-        });
+        //     let checked = false;
+        //     $('.checkbox-select').each(function(index) {
+        //         if($(this).is(':checked')){
+        //             checked = true;
+        //         };
+        //     });
+        //     if(checked){
+        //         $('.div-actions').fadeIn('fast');
+        //     }else{
+        //         $('.div-actions').fadeOut('fast');
+        //     }
+        // });
 
         $('#form-reservation').on('reset', function(){
             $('.label-check').fadeOut('fast');
