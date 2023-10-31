@@ -5,8 +5,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Sucursal</th>
-                    <th>Producto</th>
-                    <th>Stock</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -14,11 +14,16 @@
                 @forelse ($data as $item)
                 <tr>
                     <td>{{ $item->id }}</td>
+                    <td>{{ $item->user->name }}</td>
                     <td>{{ $item->branch_office->name }}</td>
-                    <td>{{ $item->product->name }}</td>
-                    <td>{{ intval($item->quantity) == floatval($item->quantity) ? intval($item->quantity) : $item->quantity }}</td>
+                    <td>{{ $item->status }}</td>
                     <td class="no-sort no-click bread-actions text-right">
-                        @if (Auth::user()->hasPermission('delete_product_branch_offices'))
+                        @if (Auth::user()->hasPermission('read_cashiers'))
+                        <a href="{{ route('cashiers.show', $item->id) }}" title="Ver" class="btn btn-sm btn-warning view">
+                            <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
+                        </a>
+                        @endif
+                        @if ($item->details->count() == 0 && Auth::user()->hasPermission('delete_cashiers'))
                             <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal" id="delete-1">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                             </button>

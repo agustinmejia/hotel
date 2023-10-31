@@ -143,8 +143,16 @@
 
         <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
 
+        {{-- Loading --}}
         <link rel="stylesheet" href="{{ asset('vendor/loading/loading.css') }}">
         <script src="{{ asset('vendor/loading/loading.js') }}"></script>
+
+        {{-- moment.js --}}
+        <script src="{{ asset('vendor/momentjs/moment.js') }}"></script>
+        <script src="{{ asset('vendor/momentjs/moment-with-locales.js') }}"></script>
+        <script>
+            moment.locale('es');
+        </script>
 
         <script>
             @if(Session::has('alerts'))

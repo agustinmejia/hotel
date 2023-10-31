@@ -14,7 +14,7 @@
             $rooms = App\Models\Room::get();
             $cashier_details = App\Models\CashierDetail::whereHas('cashier', function($q){
                 $q->where('user_id', Auth::user()->id)->where('status', 'abierta');
-            })->get();
+            })->where('type', 'ingreso')->get();
             $rooms_available = $rooms->where('status', 'disponible')->count();
 
             $reservations = App\Models\Reservation::withCount('details')->get();
@@ -80,21 +80,21 @@
         </div>
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="panel">
                     <div class="panel-body">
                         <canvas id="line-chart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <div class="panel">
                     <div class="panel-body">
                         <canvas id="bar-chart"></canvas>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
+            </div> --}}
+            <div class="col-md-6">
                 <div class="panel">
                     <div class="panel-body">
                         <canvas id="doughnut-chart"></canvas>
@@ -105,17 +105,16 @@
     </div>
 @stop
 
-{{-- @php
-    $sales = App\Models\Sale::where('deleted_at', null)->groupBy('date')
-                ->selectRaw('COUNT(id) as count,SUM(total) as total, SUM(discount) as discount, date')
-                ->whereRaw('(proforma is null or proforma = 0)')->whereDate('date', '>', date('Y-m-d', strtotime(date('Y-m-d').' -7 days')))->orderBy('date', 'ASC')->get();
-    $payments = App\Models\SalesPayment::where('deleted_at', null)->groupByRaw('DATE(created_at)')
-                    ->selectRaw('COUNT(id) as count,SUM(amount) as total, DATE(created_at) as date')
-                    ->whereDate('created_at', '>', date('Y-m-d', strtotime(date('Y-m-d').' -7 days')))->orderBy('date', 'ASC')->get();
-    $products = App\Models\SalesDetail::with('product')->where('deleted_at', null)
-                    ->selectRaw('COUNT(id) as count,SUM(quantity) as total, product_id')
-                    ->groupBy('product_id')->orderBy('total', 'DESC')->limit(5)->get();
-@endphp --}}
+@php
+    $cashiers = App\Models\Cashier::with(['details'])->where('user_id', Auth::user()->id)->groupBy(DB::raw('DATE(created_at)'))
+                ->whereDate('created_at', '>', date('Y-m-d', strtotime(date('Y-m-d').' -7 days')))->orderBy('created_at', 'ASC')->get();
+    // $payments = App\Models\SalesPayment::where('deleted_at', null)->groupByRaw('DATE(created_at)')
+    //                 ->selectRaw('COUNT(id) as count,SUM(amount) as total, DATE(created_at) as date')
+    //                 ->whereDate('created_at', '>', date('Y-m-d', strtotime(date('Y-m-d').' -7 days')))->orderBy('date', 'ASC')->get();
+    // $products = App\Models\SalesDetail::with('product')->where('deleted_at', null)
+    //                 ->selectRaw('COUNT(id) as count,SUM(quantity) as total, product_id')
+    //                 ->groupBy('product_id')->orderBy('total', 'DESC')->limit(5)->get();
+@endphp
 
 @section('css')
     <style>
@@ -128,128 +127,157 @@
 @section('javascript')
     <script src="{{ asset('vendor/chartjs/chart.min.js') }}"></script>
     <script>
-        // $(document).ready(function(){
-        //     let sales = [];
-        //     let labels = [];
-        //     let values = [];
+        $(document).ready(function(){
+            let cashiers = @json($cashiers);
+            let labels = [];
+            let income = [];
+            let expenses = [];
 
-        //     sales.map(sale => {
-        //         labels.push(moment(sale.date).format('dd'));
-        //         values.push(sale.total - sale.discount);
-        //     });
+            cashiers.map(cashier => {
+                labels.push(moment(cashier.created_at).format('dd'));
+                income.push(cashier.details.reduce((acu, obj) => {
+                    if(obj.type == 'ingreso'){
+                        return acu + parseFloat(obj.amount);
+                    }
+                    return acu;
+                }, 0));
+                expenses.push(cashier.details.reduce((acu, obj) => {
+                    if(obj.type == 'egreso'){
+                        return acu + parseFloat(obj.amount);
+                    }
+                    return acu;
+                }, 0));
+            });
 
-        //     var data = {
-        //         labels,
-        //         datasets: [{
-        //             label: 'Ventas del día',
-        //             data: values,
-        //             backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        //             borderColor: 'rgba(54, 162, 235, 1)',
-        //             hoverOffset: 4
-        //         }]
-        //     };
-        //     var config = {
-        //         type: 'line',
-        //         data,
-        //         options: {
-        //             responsive: true,
-        //             plugins: {
-        //                 legend: {
-        //                     position: 'top',
-        //                 }
-        //             }
-        //         },
-        //     };
-        //     var myChart = new Chart(
-        //         document.getElementById('line-chart'),
-        //         config
-        //     );
+            var data = {
+                labels,
+                datasets: [{
+                    label: 'Ingreso semanal',
+                    data: income,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    hoverOffset: 4,
+                    tension: 0.2
+                },
+                {
+                    label: 'Esgreso semanal',
+                    data: expenses,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    hoverOffset: 4,
+                    tension: 0.2
+                }]
+            };
+            var config = {
+                type: 'line',
+                data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                },
+            };
+            var myChart = new Chart(
+                document.getElementById('line-chart'),
+                config
+            );
 
-        //     // ==============================================
-        //     let payments = [];
-        //     labels = [];
-        //     values = [];
+            // ==============================================
+            // let payments = [];
+            // labels = [];
+            // values = [];
 
-        //     payments.map(payment => {
-        //         labels.push(moment(payment.date).format('dd'));
-        //         values.push(payment.total);
-        //     });
+            // payments.map(payment => {
+            //     labels.push(moment(payment.date).format('dd'));
+            //     values.push(payment.total);
+            // });
 
-        //     var data = {
-        //         labels,
-        //         datasets: [{
-        //             label: 'Pagos del día',
-        //             data: values,
-        //             backgroundColor: [
-        //                 'rgba(255, 99, 132, 1)',
-        //                 'rgba(255, 205, 86, 1)',
-        //                 'rgba(54, 162, 235, 1)',
-        //                 'rgba(39, 174, 96, 1)',
-        //                 'rgba(155, 89, 182, 1)',
-        //                 'rgba(235, 152, 78, 1)',
-        //                 'rgba(52, 73, 94, 1)'
-        //             ],
-        //             borderColor: [
-        //                 'rgba(255, 99, 132, 1)',
-        //                 'rgba(255, 205, 86, 1)',
-        //                 'rgba(54, 162, 235, 1)',
-        //                 'rgba(39, 174, 96, 1)',
-        //                 'rgba(155, 89, 182, 1)',
-        //                 'rgba(235, 152, 78, 1)',
-        //                 'rgba(52, 73, 94, 1)'
-        //             ],
-        //         }]
-        //     };
-        //     var config = {
-        //         type: 'bar',
-        //         data,
-        //         options: {
-        //             responsive: true,
-        //             plugins: {
-        //                 legend: {
-        //                     position: 'top',
-        //                 }
-        //             }
-        //         },
-        //     };
-        //     var myChart = new Chart(
-        //         document.getElementById('bar-chart'),
-        //         config
-        //     );
+            // var data = {
+            //     labels,
+            //     datasets: [{
+            //         label: 'Pagos del día',
+            //         data: values,
+            //         backgroundColor: [
+            //             'rgba(255, 99, 132, 1)',
+            //             'rgba(255, 205, 86, 1)',
+            //             'rgba(54, 162, 235, 1)',
+            //             'rgba(39, 174, 96, 1)',
+            //             'rgba(155, 89, 182, 1)',
+            //             'rgba(235, 152, 78, 1)',
+            //             'rgba(52, 73, 94, 1)'
+            //         ],
+            //         borderColor: [
+            //             'rgba(255, 99, 132, 1)',
+            //             'rgba(255, 205, 86, 1)',
+            //             'rgba(54, 162, 235, 1)',
+            //             'rgba(39, 174, 96, 1)',
+            //             'rgba(155, 89, 182, 1)',
+            //             'rgba(235, 152, 78, 1)',
+            //             'rgba(52, 73, 94, 1)'
+            //         ],
+            //     }]
+            // };
+            // var config = {
+            //     type: 'bar',
+            //     data,
+            //     options: {
+            //         responsive: true,
+            //         plugins: {
+            //             legend: {
+            //                 position: 'top',
+            //             }
+            //         }
+            //     },
+            // };
+            // var myChart = new Chart(
+            //     document.getElementById('bar-chart'),
+            //     config
+            // );
 
-        //     // ==============================================
-        //     let products = [];
-        //     labels = [];
-        //     values = [];
+            // ==============================================
+            let cashier_details = @json($cashier_details);
+            labels = ['Efectivo', 'Transferencia/QR'];
+            values = [];
 
-        //     products.map(item => {
-        //         labels.push(item.product.name);
-        //         values.push(parseInt(item.total));
-        //     });
+            values.push(cashier_details.reduce((acu, obj) => {
+                if(obj.cash){
+                    return acu + parseFloat(obj.amount);
+                }
+                return acu;
+            }, 0));
+            values.push(cashier_details.reduce((acu, obj) => {
+                if(!obj.cash){
+                    return acu + parseFloat(obj.amount);
+                }
+                return acu;
+            }, 0));
 
-        //     var data = {
-        //         labels,
-        //         datasets: [{
-        //             label: 'Productos más vendidos',
-        //             data: values,
-        //             backgroundColor: [
-        //                 'rgba(255, 99, 132, 1)',
-        //                 'rgba(39, 174, 96, 1)',
-        //                 'rgba(255, 205, 86, 1)',
-        //                 'rgba(54, 162, 235, 1)',
-        //                 'rgba(235, 152, 78, 1)',
-        //             ],
-        //             hoverOffset: 4
-        //         }]
-        //     };
-        //     var config = {
-        //         type: 'doughnut',
-        //         data
-        //     };
-        //     var myChart = new Chart(
-        //         document.getElementById('doughnut-chart'),
-        //         config
-        //     );
-        // });
+            var data = {
+                labels,
+                datasets: [{
+                    label: 'Productos más vendidos',
+                    data: values,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(39, 174, 96, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(235, 152, 78, 1)',
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+            var config = {
+                type: 'doughnut',
+                data
+            };
+            var myChart = new Chart(
+                document.getElementById('doughnut-chart'),
+                config
+            );
+        });
     </script>
 @stop

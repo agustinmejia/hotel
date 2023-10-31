@@ -43,5 +43,6 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('suppliers');
         Permission::generateFor('reservations');
         Permission::generateFor('product_branch_offices');
+        Permission::generateFor('cashiers');
     }
 }

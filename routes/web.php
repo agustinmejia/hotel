@@ -8,6 +8,7 @@ use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CashiersController;
 use App\Http\Controllers\ProductBranchOfficesController;
+use App\Http\Controllers\RoomsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/product/payment/store', [ReservationsController::class, 'product_payment_store'])->name('reservations.product.payment.store');
     Route::post('reservations/close', [ReservationsController::class, 'close'])->name('reservations.close');
 
+    // Rooms
+    Route::post('rooms/{id}/update/status', [RoomsController::class, 'update_status'])->name('rooms.update.status');
+
     // Products
     Route::get('products/search/ajax', [ProductsController::class, 'search'])->name('products.search');
 
@@ -50,7 +54,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('product-branch-offices/list/ajax', [ProductBranchOfficesController::class, 'list'])->name('product-branch-offices.list');
 
     // Cashier
-    Route::post('cashiers/store', [CashiersController::class, 'store'])->name('cashiers.store');
+    Route::resource('cashiers', CashiersController::class);
+    Route::get('cashiers/list/ajax', [CashiersController::class, 'list'])->name('cashiers.list');
 });
 
 // Clear cache

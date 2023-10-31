@@ -13,4 +13,16 @@ class Cashier extends Model
     protected $fillable = [
         'user_id', 'branch_office_id', 'observations', 'status', 'closed_at'
     ];
+
+    public function details(){
+        return $this->hasMany(CashierDetail::class, 'cashier_id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function branch_office(){
+        return $this->belongsTo(BranchOffice::class, 'branch_office_id');
+    }
 }
