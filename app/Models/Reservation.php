@@ -17,4 +17,12 @@ class Reservation extends Model
     public function details() {
         return $this->hasMany(ReservationDetail::class, 'reservation_id');
     }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function person() {
+        return $this->belongsTo(Person::class, 'person_id');
+    }
 }

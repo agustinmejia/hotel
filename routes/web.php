@@ -37,12 +37,19 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('people/search/ajax', [PeopleController::class, 'search'])->name('people.search');
     Route::post('people/store/ajax', [PeopleController::class, 'store'])->name('people.store');
 
+    // Recepción
+    Route::get('reception', function () {
+        return view('reservations.index');
+    })->name('reception.index');
+
     // Reservations
     Route::resource('reservations', ReservationsController::class);
+    Route::get('reservations/list/ajax', [ReservationsController::class, 'list'])->name('reservations.list');
     Route::post('reservations/payment/store', [ReservationsController::class, 'payment_store'])->name('reservations.payment.store');
     Route::post('reservations/product/store', [ReservationsController::class, 'product_store'])->name('reservations.product.store');
     Route::post('reservations/product/payment/store', [ReservationsController::class, 'product_payment_store'])->name('reservations.product.payment.store');
     Route::post('reservations/close', [ReservationsController::class, 'close'])->name('reservations.close');
+    Route::post('reservations/change', [ReservationsController::class, 'change'])->name('reservations.change');
 
     // Rooms
     Route::post('rooms/{id}/update/status', [RoomsController::class, 'update_status'])->name('rooms.update.status');

@@ -19,7 +19,7 @@
                     <td>{{ intval($item->quantity) == floatval($item->quantity) ? intval($item->quantity) : $item->quantity }}</td>
                     <td class="no-sort no-click bread-actions text-right">
                         @if (Auth::user()->hasPermission('delete_product_branch_offices'))
-                            <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal" id="delete-1">
+                            <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                             </button>
                         @endif

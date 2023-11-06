@@ -42,7 +42,19 @@
                                             </table>
                                             <br>
                                         </div>
-                                        <input type="hidden" name="room_id" value="{{ $room->id }}">
+                                        <input type="hidden" name="room_id[]" value="{{ $room->id }}">
+                                    @else
+                                        @php
+                                            $rooms = App\Models\Room::with(['type'])->where('status', 'disponible')->orderBy('floor_number')->orderBy('code')->get();
+                                        @endphp
+                                        <div class="form-group col-md-12">
+                                            <label class="control-label" for="room_id">Habitaciones</label>
+                                            <select name="room_id[]" class="form-control select2" id="select-room_id" multiple required>
+                                                @foreach ($rooms as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->code }} - {{ $item->type->name }} (Bs. {{ $item->type->price == floatval($item->type->price) ? intval($item->type->price) : $item->type->price }})</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     @endisset
                                     <div class="form-group col-md-12">
                                         <label class="control-label" for="person_id">Cliente/Huesped</label>
@@ -98,8 +110,8 @@
                                                 <tr style="height: 50px">
                                                     <td colspan="2" class="text-right">MONTO DIARIO</td>
                                                     <td>
-                                                        <h3 class="text-right" id="label-subtotal">{{ $room->type->price }}</h3>
-                                                        <input type="hidden" name="subtotal" id="input-subtotal" value="{{ $room->type->price }}">
+                                                        <h3 class="text-right" id="label-subtotal">{{ $room ? $room->type->price : 0 }}</h3>
+                                                        <input type="hidden" name="subtotal" id="input-subtotal" value="{{ $room ? $room->type->price : 0 }}">
                                                     </td>
                                                 </tr>
                                                 <tr style="height: 50px">
@@ -108,20 +120,17 @@
                                                         <h3 class="text-right" id="label-total"></h3>
                                                     </td>
                                                 </tr>
-                                                {{-- <tr style="height: 50px">
-                                                    <td colspan="2" class="text-right">ADELANTO</td>
-                                                    <td>
-                                                        <input type="text" name="initial_amount" class="form-control" value="0">
-                                                    </td>
-                                                </tr> --}}
                                             </tfoot>
                                         </table>
+                                        @if (!$room)
+                                            <small>Si selecciona un accesorio se le asignará a cada habitación</small>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="panel-footer text-right">
-                            <a href="{{ route('reservations.index') }}" class="btn btn-default">Cancelar</a>
+                            <a href="{{ route('reception.index') }}" class="btn btn-default">Cancelar</a>
                             <button type="submit" class="btn btn-primary save btn-submit">Guardar <i class="voyager-check"></i> </button>
                         </div>
                     </form>
@@ -191,7 +200,7 @@
 @section('javascript')
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
-        var price = parseFloat("{{ $room->type->price }}");
+        var price = parseFloat("{{ $room ? $room->type->price : 0 }}");
         var subtotal = price;
         $(document).ready(function(){
 

@@ -1,18 +1,18 @@
 @extends('voyager::master')
 
-@section('page_title', 'Viendo Stock de Productos')
+@section('page_title', 'Viendo Reservaciones')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
                 <h1 class="page-title">
-                    <i class="fa fa-cubes"></i> Stock de Productos
+                    <i class="fa fa-tag"></i> Reservaciones
                 </h1>
             </div>
             <div class="col-md-8 text-right" style="padding-top: 20px">
-                @if (Auth::user()->hasPermission('add_product_branch_offices'))
-                    <a href="{{ route('product-branch-offices.create') }}" class="btn btn-success btn-add-new">
+                @if (Auth::user()->hasPermission('add_reservations'))
+                    <a href="{{ route('reservations.create') }}" class="btn btn-success btn-add-new">
                         <i class="voyager-plus"></i> <span>Crear</span>
                     </a>
                 @endif
@@ -75,7 +75,7 @@
 
         function list(page = 1){
             $('#div-results').loading({message: 'Cargando...'});
-            let url = "{{ route('product-branch-offices.list')}}";
+            let url = "{{ route('reservations.list')}}";
             let search = $('#input-search').val() ? $('#input-search').val() : '';
             $.ajax({
                 url: `${url}?paginate=${countPage}&page=${page}&search=${search}`,
@@ -87,7 +87,7 @@
         }
 
         function deleteItem(id){
-            let url = '{{ url("admin/product-branch-offices") }}/'+id;
+            let url = '{{ url("admin/reservations") }}/'+id;
             $('#delete_custom_form').attr('action', url);
         }
     </script>

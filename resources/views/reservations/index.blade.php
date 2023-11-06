@@ -92,7 +92,7 @@
                                                                                     $modal = '';
                                                                                     break;
                                                                                 case 'ocupada':
-                                                                                    $route = route('reservations.show', $room->id);
+                                                                                    $route = route('reservations.show', $room->reservation_detail[0]->reservation_id).'?room_id='.$room->id;
                                                                                     $modal = '';
                                                                                     break;
                                                                                 default:

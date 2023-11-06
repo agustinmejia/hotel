@@ -86,13 +86,14 @@ class RoomsController extends Controller
     }
 
     public function update_status($id, Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
         try {
             $room = Room::findOrFail($id);
             $room->status = 'disponible';
             $room->update();
-            return redirect()->route('reservations.index')->with(['message' => 'Habitación habilitada', 'alert-type' => 'success']);
+            return redirect()->to($redirect)->with(['message' => 'Habitación habilitada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            return redirect()->route('reservations.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

@@ -24,7 +24,7 @@
                         </a>
                         @endif
                         @if ($item->details->count() == 0 && Auth::user()->hasPermission('delete_cashiers'))
-                            <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal" id="delete-1">
+                            <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                             </button>
                         @endif

@@ -44,5 +44,11 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('reservations');
         Permission::generateFor('product_branch_offices');
         Permission::generateFor('cashiers');
+
+        // Recepción
+        Permission::firstOrCreate([
+            'key'        => 'browse_reception',
+            'table_name' => null,
+        ]);
     }
 }
