@@ -16,7 +16,7 @@
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->user->name }}</td>
                     <td>{{ $item->branch_office->name }}</td>
-                    <td>{{ $item->status }}</td>
+                    <td><label class="label label-{{ $item->status == 'abierta' ? 'success' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
                     <td class="no-sort no-click bread-actions text-right">
                         @if (Auth::user()->hasPermission('read_cashiers'))
                         <a href="{{ route('cashiers.show', $item->id) }}" title="Ver" class="btn btn-sm btn-warning view">

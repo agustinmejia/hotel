@@ -160,7 +160,7 @@
                     tension: 0.2
                 },
                 {
-                    label: 'Esgreso semanal',
+                    label: 'Egreso semanal',
                     data: expenses,
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     borderColor: 'rgba(255, 99, 132, 1)',

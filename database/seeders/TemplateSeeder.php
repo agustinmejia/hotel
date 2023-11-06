@@ -30,6 +30,7 @@ class TemplateSeeder extends Seeder
             ProductTypesTableSeeder::class,
             ProductsTableSeeder::class,
             ServiceTypesTableSeeder::class,
+            PeopleTableSeeder::class,
         ]);
     }
 }

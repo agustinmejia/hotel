@@ -12,108 +12,106 @@
                                 $floors = $rooms->groupBy('floor_number');
                             @endphp
                             @if ($floors->count())
-                                <div class="row">
-                                    <div class="panel">
-                                        <div class="page-content settings container-fluid">
-                                            <ul class="nav nav-tabs">
+                                <div class="panel">
+                                    <div class="page-content settings container-fluid">
+                                        <ul class="nav nav-tabs">
+                                            @php
+                                                $active = 'active';
+                                            @endphp
+                                            @foreach($floors as $floor => $item)
+                                                <li class="{{ $active }}">
+                                                    <a data-toggle="tab" href="#tab-{{ $floor }}">Piso N&deg; {{ $floor }}</a>
+                                                </li>
                                                 @php
-                                                    $active = 'active';
+                                                    $active = '';
                                                 @endphp
-                                                @foreach($floors as $floor => $item)
-                                                    <li class="{{ $active }}">
-                                                        <a data-toggle="tab" href="#tab-{{ $floor }}">Piso N&deg; {{ $floor }}</a>
-                                                    </li>
-                                                    @php
-                                                        $active = '';
-                                                    @endphp
-                                                @endforeach
-                                            </ul>
-                        
-                                            <div class="tab-content">
-                                                @php
-                                                    $active = 'active';
-                                                @endphp
-                                                @foreach($floors as $floor => $rooms)
-                                                    <div id="tab-{{ $floor }}" class="tab-pane fade in {{ $active }}">
-                                                        @foreach ($rooms as $room)
-                                                            @php
-                                                                switch ($room->status) {
-                                                                    case 'disponible':
-                                                                        $type = 'success';
-                                                                        $icon = 'fa fa-key';
-                                                                        break;
-                                                                    case 'ocupada':
-                                                                        $type = 'primary';
-                                                                        $icon = 'fa fa-bed';
-                                                                        break;
-                                                                    case 'reservada':
-                                                                        $type = 'warning';
-                                                                        $icon = 'fa fa-edit';
-                                                                        break;
-                                                                    case 'fuera de servicio':
-                                                                        $type = 'danger';
-                                                                        $icon = 'fa fa-ban';
-                                                                        break;
-                                                                    case 'limpieza':
-                                                                        $type = 'dark';
-                                                                        $icon = 'fa fa-clock-o';
-                                                                        break;
-                                                                    default:
-                                                                        $type = 'default';
-                                                                        $icon = 'voyager-warning';
-                                                                        break;
-                                                                }
-                                                            @endphp
-                                                            <div class="col-md-2 col-sm-4">
-                                                                <div class="panel-custom panel-{{ $type }}">
-                                                                    @if ($room->status == 'disponible')
-                                                                        <div class="panel-checkbox">
-                                                                            <i class="fa fa-check-circle text-white label-check" id="label-check-{{ $room->id }}"></i>
-                                                                            <input type="checkbox" name="room_id[]" class="checkbox-select" id="checkbox-select-{{ $room->id }}" value="{{ $room->id }}" style="transform: scale(1.2);" readonly>
+                                            @endforeach
+                                        </ul>
+                    
+                                        <div class="tab-content">
+                                            @php
+                                                $active = 'active';
+                                            @endphp
+                                            @foreach($floors as $floor => $rooms)
+                                                <div id="tab-{{ $floor }}" class="tab-pane fade in {{ $active }}">
+                                                    @foreach ($rooms as $room)
+                                                        @php
+                                                            switch ($room->status) {
+                                                                case 'disponible':
+                                                                    $type = 'success';
+                                                                    $icon = 'fa fa-key';
+                                                                    break;
+                                                                case 'ocupada':
+                                                                    $type = 'primary';
+                                                                    $icon = 'fa fa-bed';
+                                                                    break;
+                                                                case 'reservada':
+                                                                    $type = 'warning';
+                                                                    $icon = 'fa fa-edit';
+                                                                    break;
+                                                                case 'fuera de servicio':
+                                                                    $type = 'danger';
+                                                                    $icon = 'fa fa-ban';
+                                                                    break;
+                                                                case 'limpieza':
+                                                                    $type = 'dark';
+                                                                    $icon = 'fa fa-clock-o';
+                                                                    break;
+                                                                default:
+                                                                    $type = 'default';
+                                                                    $icon = 'voyager-warning';
+                                                                    break;
+                                                            }
+                                                        @endphp
+                                                        <div class="col-md-2 col-sm-4">
+                                                            <div class="panel-custom panel-{{ $type }}">
+                                                                @if ($room->status == 'disponible')
+                                                                    <div class="panel-checkbox">
+                                                                        <i class="fa fa-check-circle text-white label-check" id="label-check-{{ $room->id }}"></i>
+                                                                        <input type="checkbox" name="room_id[]" class="checkbox-select" id="checkbox-select-{{ $room->id }}" value="{{ $room->id }}" style="transform: scale(1.2);" readonly>
+                                                                    </div>
+                                                                @endif
+                                                                <div class="panel-body">
+                                                                    <div class="panel-number" data-id="{{ $room->id }}">
+                                                                        <div>
+                                                                            N&deg; <br>
+                                                                            <span style="font-size: 35px">{{ $room->code }}</span> <br>
+                                                                            <span>{{ $room->type->name }}</span>
                                                                         </div>
-                                                                    @endif
-                                                                    <div class="panel-body">
-                                                                        <div class="panel-number" data-id="{{ $room->id }}">
-                                                                            <div>
-                                                                                N&deg; <br>
-                                                                                <span style="font-size: 35px">{{ $room->code }}</span> <br>
-                                                                                <span>{{ $room->type->name }}</span>
-                                                                            </div>
-                                                                            <div class="text-right">
-                                                                                <br>
-                                                                                <i class="icon {{ $icon }}"></i>
-                                                                            </div>
+                                                                        <div class="text-right">
+                                                                            <br>
+                                                                            <i class="icon {{ $icon }}"></i>
                                                                         </div>
-                                                                        <hr style="margin: 0px">
-                                                                        <div class="text-center" style="padding-top: 5px">
-                                                                            @php
-                                                                                switch ($room->status) {
-                                                                                    case 'disponible':
-                                                                                        $route = route('reservations.create').'?room_id='.$room->id;
-                                                                                        $modal = '';
-                                                                                        break;
-                                                                                    case 'ocupada':
-                                                                                        $route = route('reservations.show', $room->id);
-                                                                                        $modal = '';
-                                                                                        break;
-                                                                                    default:
-                                                                                        $route = '';
-                                                                                        $modal = '#enable-modal';
-                                                                                        break;
-                                                                                }
-                                                                            @endphp
-                                                                            <a href="{{ $route ? $route : '#' }}" style="padding: 10px 25px" @if(!$route && !$modal) style="cursor: not-allowed;" @endif @if($modal) data-toggle="modal" data-target="{{ $modal }}" data-id="{{ $room->id }}" class="btn-enable" @endif ><b>{{ Str::upper($room->status) }} <i class="fa fa-arrow-circle-right"></i></b></a>
-                                                                        </div>
+                                                                    </div>
+                                                                    <hr style="margin: 0px">
+                                                                    <div class="text-center" style="padding-top: 5px">
+                                                                        @php
+                                                                            switch ($room->status) {
+                                                                                case 'disponible':
+                                                                                    $route = route('reservations.create').'?room_id='.$room->id;
+                                                                                    $modal = '';
+                                                                                    break;
+                                                                                case 'ocupada':
+                                                                                    $route = route('reservations.show', $room->id);
+                                                                                    $modal = '';
+                                                                                    break;
+                                                                                default:
+                                                                                    $route = '';
+                                                                                    $modal = '#enable-modal';
+                                                                                    break;
+                                                                            }
+                                                                        @endphp
+                                                                        <a href="{{ $route ? $route : '#' }}" style="padding: 10px 5px" @if(!$route && !$modal) style="cursor: not-allowed;" @endif @if($modal) data-toggle="modal" data-target="{{ $modal }}" data-id="{{ $room->id }}" class="btn-enable" @endif ><b>{{ Str::upper($room->status) }} <i class="fa fa-arrow-circle-right"></i></b></a>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        @endforeach
-                                                    </div>
-                                                    @php
-                                                        $active = '';
-                                                    @endphp
-                                                @endforeach
-                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                @php
+                                                    $active = '';
+                                                @endphp
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>

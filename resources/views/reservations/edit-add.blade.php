@@ -29,7 +29,7 @@
                                                     <td>{{ $room->type->name }}</td>
                                                     <td><b>Precio : </b></td>
                                                     <td>
-                                                        {{ $room->type->price }}
+                                                        {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}
                                                         <input type="hidden" name="room_price" value="{{ $room->type->price }}">
                                                     </td>
                                                 </tr>

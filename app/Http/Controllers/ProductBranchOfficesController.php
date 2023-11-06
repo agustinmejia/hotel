@@ -77,7 +77,8 @@ class ProductBranchOfficesController extends Controller
             ProductBranchOffice::create([
                 'branch_office_id' => $request->branch_office_id,
                 'product_id' => $request->product_id,
-                'quantity' => $request->quantity
+                'quantity' => $request->quantity,
+                'initial_quantity' => $request->initial_quantity
             ]);
             return redirect()->route('product-branch-offices.index')->with(['message' => 'Stock de producto registrado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
@@ -130,10 +131,12 @@ class ProductBranchOfficesController extends Controller
     {
         try {
             $product_branch_office = ProductBranchOffice::find($id);
+            if($product_branch_office->quantity != $product_branch_office->initial_quantity	){
+                return redirect()->route('product-branch-offices.index')->with(['message' => 'El producto ya se vendió y no tiene el stock inicial', 'alert-type' => 'warning']);
+            }
             $product_branch_office->delete();
-            return redirect()->route('product-branch-offices.index')->with(['message' => 'Stock de producto eliminado', 'alert-type' => 'success']);
+            return redirect()->route('product-branch-offices.index')->with(['message' => 'Registro de stock eliminado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // throw $th;
             return redirect()->route('product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }

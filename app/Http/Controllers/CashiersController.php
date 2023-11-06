@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 // Models
 use App\Models\Cashier;
 use App\Models\CashierDetail;
+use App\Models\CashierDetailAmount;
 use App\Models\User;
 
 class CashiersController extends Controller
@@ -151,6 +153,51 @@ class CashiersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $cashier = Cashier::with(['details'])->where('id', $id)->first();
+            if($cashier->details->count() > 0){
+                return redirect()->route('cashiers.index')->with(['message' => 'Ya se hizo movimientos de caja, debe cerrarla', 'alert-type' => 'success']);
+            }
+            $cashier->delete();
+            return redirect()->route('cashiers.index')->with(['message' => 'Caja eliminada', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            return redirect()->route('cashiers.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function close_index($id){
+        $cashier = Cashier::with(['details', 'user', 'branch_office'])->where('id', $id)->first();
+        return view('cashiers.close', compact('cashier'));
+    }
+
+    public function close_store($id, Request $request){
+        DB::beginTransaction();
+        try {
+            // Update cashier
+            $cashier = Cashier::find($id);
+            $cashier->amount_total = $request->amount_total;
+            $cashier->amount_real = $request->amount_real;
+            $cashier->amount_surplus = $request->amount_surplus;
+            $cashier->amount_missing = $request->amount_missing;
+            $cashier->status = 'cerrada';
+            $cashier->closed_at = Carbon::now();
+            $cashier->update();
+
+            // Registrar los cortes de billete
+            for ($i=0; $i < count($request->cash_value); $i++) { 
+                if ($request->quantity[$i]) {
+                    CashierDetailAmount::create([
+                        'cashier_id' => $id,
+                        'amount' => $request->cash_value[$i],
+                        'quantity' => $request->quantity[$i]
+                    ]);
+                }
+            }
+            DB::commit();
+            return redirect()->route('cashiers.show', $id)->with(['message' => 'Caja cerrada', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('cashiers.show', $id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
     }
 }

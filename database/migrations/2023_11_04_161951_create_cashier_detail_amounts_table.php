@@ -13,18 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cashier_details', function (Blueprint $table) {
+        Schema::create('cashier_detail_amounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cashier_id')->nullable()->constrained('cashiers');
-            $table->foreignId('sale_detail_id')->nullable()->constrained('sale_details');
-            $table->foreignId('service_id')->nullable()->constrained('services');
-            $table->foreignId('reservation_detail_day_id')->nullable()->constrained('reservation_detail_days');
-            $table->string('type')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
-            $table->smallInteger('cash')->nullable()->default(1);
-            $table->text('observations')->nullable();
+            $table->smallInteger('quantity')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -35,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cashier_details');
+        Schema::dropIfExists('cashier_detail_amounts');
     }
 };

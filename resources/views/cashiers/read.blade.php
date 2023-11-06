@@ -4,17 +4,22 @@
 
 @section('page_header')
     <h1 class="page-title">
-        <i class="voyager-folder"></i> Viendo Caja
+        <i class="voyager-logbook"></i> Viendo Caja
         <a href="{{ route('cashiers.index') }}" class="btn btn-warning">
             <span class="glyphicon glyphicon-list"></span>&nbsp;
             Volver a la lista
         </a>
         &nbsp;
         @if ($cashier->status == 'abierta')
-            <button class="btn btn-danger" disabled>
+            <a href="{{ route('cashiers.close.index', $cashier->id) }}" class="btn btn-danger">
                 <span class="voyager-lock"></span>&nbsp;
                 Cerrar
-            </button>
+            </a>
+        @else
+            <a href="#" class="btn btn-default">
+                <span class="fa fa-print"></span>&nbsp;
+                Imprimir
+            </a>
         @endif
     </h1>
 @stop

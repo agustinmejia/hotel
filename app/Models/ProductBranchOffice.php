@@ -11,7 +11,7 @@ class ProductBranchOffice extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'branch_office_id', 'product_id', 'price', 'quantity'
+        'branch_office_id', 'product_id', 'price', 'quantity', 'initial_quantity'
     ];
 
     public function product() {

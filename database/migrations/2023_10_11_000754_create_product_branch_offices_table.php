@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('quantity', 10, 2)->nullable();
+            $table->decimal('initial_quantity', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

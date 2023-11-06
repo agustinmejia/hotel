@@ -11,7 +11,7 @@ class Cashier extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'user_id', 'branch_office_id', 'observations', 'status', 'closed_at'
+        'user_id', 'branch_office_id', 'amount_total', 'amount_real', 'amount_surplus', 'amount_missing', 'observations', 'status', 'closed_at'
     ];
 
     public function details(){

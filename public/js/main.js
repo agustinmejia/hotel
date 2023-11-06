@@ -117,7 +117,7 @@ function formatResultProducts(data) {
                     <h5>
                         ${data.name} <br>
                         <p style="font-size: 13px; margin-top: 5px; font-weight: bold">
-                            ${data.price} Bs. | ${data.type.name}
+                            ${data.price} Bs. | ${data.type.name} (${parseInt(data.stock[0].quantity)} Unids.)
                         </p>
                     </h5>
                 </div>

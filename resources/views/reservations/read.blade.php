@@ -93,7 +93,7 @@
                                         <td><b>Tipo:</b></td>
                                         <td>{{ $room->type->name }}</td>
                                         <td><b>Precio:</b></td>
-                                        <td>{{ $room->type->price }}</td>
+                                        <td>{{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}</td>
                                     </tr>
                                     <tr style="height: 30px">
                                         <td><b>Llegada:</b></td>
@@ -179,7 +179,7 @@
                                                         <td><label class="label label-{{ $detail->status == 'pagado' ? 'success':'danger' }}">{{ Str::ucfirst($detail->status) }}</label></td>
                                                         <td class="text-right">
                                                             @if ($detail->status == 'pendiente')
-                                                                <input type="checkbox" name="sale_detail_id[]" value="{{ $detail->id }}" class="checkbox-sale_detail_id" data-total="{{ $detail->quantity * $detail->price }}" style="transform: scale(1.5);" title="Pagar" />
+                                                                <input type="checkbox" name="sale_detail_id[]" value="{{ $detail->id }}" class="checkbox-sale_detail_id" data-total="{{ $detail->quantity * $detail->price }}" @if(!$cashier) disabled @endif style="transform: scale(1.5);" title="Pagar" />
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -285,7 +285,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><i class="fa fa-money"></i> Registrar pago</h4>
+                        <h4 class="modal-title"><i class="fa fa-money"></i> Registrar pago de hospedaje</h4>
                     </div>
                     <div class="modal-body" style="max-height: 500px; overflow-y: auto">
                         <div class="form-group">
@@ -336,7 +336,7 @@
                                         <td class="text-right"><h4 style="margin: 0px;">{{ $debt }}</h4></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4" class="text-right" style="vertical-align: middle;">MONTO PAGADO</td>
+                                        <td colspan="4" class="text-right" style="vertical-align: middle;">MONTO A PAGAR</td>
                                         <td class="text-right"><h4 style="margin: 0px;" id="label-total-payment-rooms">0</h4></td>
                                     </tr>
                                     <tr>
@@ -564,7 +564,7 @@
             $('.checkbox-payment').click(function(){
                 var payment_total = 0;
                 $('.checkbox-payment').each(function(index) {
-                    if($(this).is(':checked')){
+                    if($(this).is(':checked') && !$(this).attr('disabled')){
                         payment_total += parseFloat($(this).data('amount'));
                     };
                 });

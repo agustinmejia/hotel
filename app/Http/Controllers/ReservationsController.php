@@ -16,6 +16,7 @@ use App\Models\SaleDetail;
 use App\Models\ReservationDetailDay;
 use App\Models\Cashier;
 use App\Models\CashierDetail;
+use App\Models\ProductBranchOffice;
 
 class ReservationsController extends Controller
 {
@@ -195,13 +196,22 @@ class ReservationsController extends Controller
                         'amount' => $request->price[$i] * $request->quantity[$i]
                     ]);
                 }
+
+                // Descontar del stock
+                $cashier = Cashier::find($request->cashier_id);
+                $product = ProductBranchOffice::where('product_id', $request->product_id[$i])
+                            ->where('branch_office_id', $cashier->branch_office_id)
+                            ->where('quantity', '>=', $request->quantity[$i])
+                            ->first();
+                $product->quantity -= $request->quantity[$i];
+                $product->update();
             }
 
             DB::commit();
             return redirect()->route('reservations.show', $reservation_detail->room_id)->with(['message' => 'Venta registrada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            //throw $th;
+            throw $th;
             return redirect()->route('reservations.show', $reservation_detail->room_id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
@@ -238,6 +248,9 @@ class ReservationsController extends Controller
     public function product_payment_store(Request $request){
         DB::beginTransaction();
         try {
+            if (!$request->cashier_id) {
+                return redirect()->route('reservations.show', $request->room_id)->with(['message' => 'No has aperturado caja', 'alert-type' => 'warning']);
+            }
             for ($i=0; $i < count($request->sale_detail_id); $i++) { 
                 $sale_detail = SaleDetail::find($request->sale_detail_id[$i]);
                 $sale_detail->status = 'pagado';
