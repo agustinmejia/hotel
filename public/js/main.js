@@ -128,3 +128,19 @@ function formatResultProducts(data) {
 
     return $container;
 }
+
+$(document).ready(function(){
+    $('#form-person').submit(function(e){
+        e.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize(), function(res){
+            if (res.success) {
+                toastr.success('Huesped registrado', 'Bien hecho');
+                $('.form-submit .btn-submit').removeAttr('disabled');
+                $(this).trigger('reset');
+                $('#person-modal').modal('hide');
+            } else {
+                toastr.error('Ocurrió un error', 'Error');
+            }
+        });
+    });
+});

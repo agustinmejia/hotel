@@ -16,6 +16,7 @@ class RoomTypesTableSeeder extends Seeder
     {
         
 
+        \DB::table('rooms')->delete();
         \DB::table('room_types')->delete();
         
         \DB::table('room_types')->insert(array (

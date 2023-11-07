@@ -19,3 +19,8 @@
     max-height: 400px !important;
     overflow-y: auto;
 }
+
+.modal .select2-container {
+    width: 100% !important;
+    /* padding: 0; */
+}

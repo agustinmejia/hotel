@@ -32,7 +32,30 @@
                         @endif
                     </td>
                     <td>{{ $item->details->count() }}</td>
-                    <td><label class="label label-{{ $item->status == 'en curso' ? 'primary' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
+                    <td>
+                        @php
+                            switch ($item->status) {
+                                case 'en curso':
+                                    $label = 'primary';
+                                    $status = $item->status;
+                                    break;
+                                case 'finalizado':
+                                    $label = 'danger';
+                                    $status = $item->status;
+                                    break;
+                                case 'reservacion':
+                                    $label = 'warning';
+                                    $status = 'reservación';
+                                    break;
+                                
+                                default:
+                                    $label = 'default';
+                                    $status = $item->status ?? 'no definido';
+                                    break;
+                            }
+                        @endphp
+                        <label class="label label-{{ $label }}">{{ ucfirst($status) }}</label>
+                    </td>
                     <td class="no-sort no-click bread-actions text-right">
                         @if (Auth::user()->hasPermission('read_reservations'))
                             <a href="{{ route('reservations.show', $item->id) }}" title="Ver" class="btn btn-sm btn-warning">

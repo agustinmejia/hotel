@@ -78,10 +78,29 @@
                                                         @endif
                                                     </ul>
                                                 </td>
-                                                <td><label class="label label-{{ $detail->status == 'ocupada' ? 'primary' : 'danger' }}">{{ ucfirst($detail->status) }}</label></td>
+                                                <td>
+                                                    @php
+                                                        switch ($detail->status) {
+                                                            case 'ocupada':
+                                                                $label = 'primary';
+                                                                break;
+                                                            case 'finalizada':
+                                                                $label = 'danger';
+                                                                break;
+                                                            case 'reservada':
+                                                                $label = 'warning';
+                                                                break;
+                                                            
+                                                            default:
+                                                                $label = 'default';
+                                                                break;
+                                                        }
+                                                    @endphp
+                                                    <label class="label label-{{ $label }}">{{ ucfirst($detail->status) }}</label>
+                                                </td>
                                                 <td class="text-right">{{ $amount_days + $sales_amoount }}</td>
                                                 <td class="no-sort no-click bread-actions text-right">
-                                                    @if (Auth::user()->hasPermission('read_reservations'))
+                                                    @if (Auth::user()->hasPermission('read_reservations') && $detail->status != 'reservada')
                                                         <a href="{{ route('reservations.show', $reservation->id).'?room_id='.$detail->room_id }}" title="Ver" class="btn btn-sm btn-warning" target="_blank">
                                                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                                                         </a>

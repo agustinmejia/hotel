@@ -5,14 +5,19 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">
-                    <form id="form-reservation" action="#" method="post">
+                    <form id="form-reservation" action="{{ route('reservations.store') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="status" value="reservacion">
                         <div class="panel-body">
                             @php
-                                $rooms = App\Models\Room::with(['type'])->get();
+                                $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                                $rooms = App\Models\Room::with(['type', 'reservation_detail' => function($q){
+                                    $q->whereRaw('(status = "ocupada" or status = "reservada")');
+                                }, 'reservation_detail.days', 'reservation_detail.reservation'])->get();
                                 $floors = $rooms->groupBy('floor_number');
                             @endphp
                             @if ($floors->count())
-                                <div class="panel">
+                                <div class="panel" style="margin: 0px">
                                     <div class="page-content settings container-fluid">
                                         <ul class="nav nav-tabs">
                                             @php
@@ -27,7 +32,6 @@
                                                 @endphp
                                             @endforeach
                                         </ul>
-                    
                                         <div class="tab-content">
                                             @php
                                                 $active = 'active';
@@ -36,6 +40,16 @@
                                                 <div id="tab-{{ $floor }}" class="tab-pane fade in {{ $active }}">
                                                     @foreach ($rooms as $room)
                                                         @php
+                                                            $finish_date = null;
+                                                            $reservation_date = null;
+                                                            if($room->reservation_detail->count()){
+                                                                $last_day = $room->reservation_detail->first()->days;
+                                                                if($last_day->count()){
+                                                                    $finish_date = $last_day->sortByDesc('date')->first()->date;
+                                                                }elseif($room->reservation_detail->first()->reservation->status == 'reservacion'){
+                                                                    $reservation_date = $room->reservation_detail->first()->reservation->start;
+                                                                }
+                                                            }
                                                             switch ($room->status) {
                                                                 case 'disponible':
                                                                     $type = 'success';
@@ -64,13 +78,11 @@
                                                             }
                                                         @endphp
                                                         <div class="col-md-2 col-sm-4">
-                                                            <div class="panel-custom panel-{{ $type }}">
-                                                                @if ($room->status == 'disponible')
-                                                                    <div class="panel-checkbox">
-                                                                        <i class="fa fa-check-circle text-white label-check" id="label-check-{{ $room->id }}"></i>
-                                                                        <input type="checkbox" name="room_id[]" class="checkbox-select" id="checkbox-select-{{ $room->id }}" value="{{ $room->id }}" style="transform: scale(1.2);" readonly>
-                                                                    </div>
-                                                                @endif
+                                                            <div class="panel-custom panel-{{ $type }}" @if ($finish_date || $reservation_date) data-toggle="tooltip" data-placement="bottom" title="@if($finish_date) Sale el {{ date('d', strtotime($finish_date)) }} de {{ $months[intval(date('m', strtotime($finish_date)))] }} @else Reservado para el {{ date('d', strtotime($reservation_date)) }} de {{ $months[intval(date('m', strtotime($reservation_date)))] }} @endif" @endif>
+                                                                <div class="panel-checkbox">
+                                                                    <i class="fa fa-check-circle text-white label-check" id="label-check-{{ $room->id }}"></i>
+                                                                    <input type="checkbox" name="room_id[]" class="checkbox-select" id="checkbox-select-{{ $room->id }}" value="{{ $room->id }}" style="transform: scale(1.2);" readonly>
+                                                                </div>
                                                                 <div class="panel-body">
                                                                     <div class="panel-number" data-id="{{ $room->id }}">
                                                                         <div>
@@ -120,7 +132,40 @@
                             @endif
                             <div class="col-md-12 text-right div-actions" style="display: none">
                                 <button type="reset" class="btn btn-default">Cancelar</button>
-                                <button type="button" class="btn btn-primary">Reservar</button>
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#reservation-modal">Reservar <i class="fa fa-tag"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="modal modal-success fade" tabindex="-1" id="reservation-modal" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title"><i class="fa fa-tag"></i> Registrar reserva</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="control-label" for="person_id">Cliente/Huesped</label>
+                                            <select name="person_id" class="form-control" id="select-person_id" required></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date">Fecha</label>
+                                            <input type="date" name="start" class="form-control" value="{{ date('Y-m-d', strtotime(date('Y-m-d').' +1 days')) }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="quantity_people">Cantidad de personas</label>
+                                            <input type="number" name="quantity_people" class="form-control" value="1" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="observation">Observaciones</label>
+                                            <textarea name="observation" class="form-control" rows="3" placeholder="Escribir observaciones..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-success btn-submit">Sí, reservar</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -147,6 +192,9 @@
             </div>
         </div>
     </form>
+
+    {{-- Create person modal --}}
+    @include('partials.add-person-modal')
 @stop
 
 @section('css')
@@ -218,39 +266,49 @@
 @stop
 
 @section('javascript')
+    <script src="{{ asset('js/main.js') }}"></script>
     <script>
         $(document).ready(function(){
+
+            customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#reservation-modal', 'createPerson()');
+
             $('.btn-enable').click(function(){
                 let id = $(this).data('id');
                 $('#enable-form').attr('action', '{{ url("admin/rooms") }}/'+id+'/update/status');
             });
+
+            $('.panel-custom .panel-number').on('mousedown', function() {
+                let id = $(this).data('id');
+                $('#checkbox-select-'+id).trigger('click');
+
+                if($('#checkbox-select-'+id).is(':checked')){
+                    $('#label-check-'+id).fadeIn('fast');
+                }else{
+                    $('#label-check-'+id).fadeOut('fast');
+                }
+
+                let checked = false;
+                $('.checkbox-select').each(function(index) {
+                    if($(this).is(':checked')){
+                        checked = true;
+                    };
+                });
+                if(checked){
+                    $('.div-actions').fadeIn('fast');
+                }else{
+                    $('.div-actions').fadeOut('fast');
+                }
+            });
+
+            $('#form-reservation').on('reset', function(){
+                $('.label-check').fadeOut('fast');
+                $('.div-actions').fadeOut('fast');
+            });
         });
-        // $('.panel-custom .panel-number').on('mousedown', function() {
-        //     let id = $(this).data('id');
-        //     $('#checkbox-select-'+id).trigger('click');
-
-        //     if($('#checkbox-select-'+id).is(':checked')){
-        //         $('#label-check-'+id).fadeIn('fast');
-        //     }else{
-        //         $('#label-check-'+id).fadeOut('fast');
-        //     }
-
-        //     let checked = false;
-        //     $('.checkbox-select').each(function(index) {
-        //         if($(this).is(':checked')){
-        //             checked = true;
-        //         };
-        //     });
-        //     if(checked){
-        //         $('.div-actions').fadeIn('fast');
-        //     }else{
-        //         $('.div-actions').fadeOut('fast');
-        //     }
-        // });
-
-        $('#form-reservation').on('reset', function(){
-            $('.label-check').fadeOut('fast');
-            $('.div-actions').fadeOut('fast');
-        });
+        function createPerson(){
+            $('#select-person_id').select2('close');
+            $('#reservation-modal').modal('hide');
+            $('#person-modal').modal('show');
+        }
     </script>
 @stop

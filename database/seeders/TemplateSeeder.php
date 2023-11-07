@@ -31,6 +31,7 @@ class TemplateSeeder extends Seeder
             ProductsTableSeeder::class,
             ServiceTypesTableSeeder::class,
             PeopleTableSeeder::class,
+            RoomsTableSeeder::class,
         ]);
     }
 }

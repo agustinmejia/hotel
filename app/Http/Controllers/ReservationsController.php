@@ -84,20 +84,29 @@ class ReservationsController extends Controller
                 'person_id' => $request->person_id,
                 'start' => $request->start,
                 'finish' => $request->finish,
+                'reason'  => $request->reason,
+                'quantity_people' => $request->quantity_people,
                 'observation' => $request->observation,
-                'status' => 'en curso'
+                'status' => $request->status
             ]);
 
             // Lista de habitaciones
             for ($i=0; $i < count($request->room_id); $i++) { 
                 $room = Room::find($request->room_id[$i]);
-                $room->status = 'ocupada';
-                $room->update();
+
+                // No Se cambia el estado de la habitación ni se hace el registro de días de hospedaje
+                // en caso de que sea una reserva
+
+                if ($request->status == 'en curso') {
+                    $room->status = 'ocupada';
+                    $room->update();
+                }
 
                 $detail = ReservationDetail::create([
                     'reservation_id' => $reservation->id,
                     'room_id' => $room->id,
-                    'price' => $room->type->price
+                    'price' => $room->type->price,
+                    'status' => $request->status == 'en curso' ? 'ocupada' : 'reservada'
                 ]);
                 
                 // Lista de accesorios
@@ -113,17 +122,19 @@ class ReservationsController extends Controller
                     }
                 }
     
-                // Calendario de ocupación
-                $start = $request->start;
-                $finish = $request->finish ?? date('Y-m-d');
-    
-                while ($start <= $finish) {
-                    ReservationDetailDay::create([
-                        'reservation_detail_id' => $detail->id,
-                        'date' => $start,
-                        'amount' => $room->type->price + $total_accessories
-                    ]);
-                    $start = date('Y-m-d', strtotime($start.' +1 days'));
+                if ($request->status == 'en curso') {
+                    // Calendario de ocupación
+                    $start = $request->start;
+                    $finish = $request->finish ?? date('Y-m-d');
+        
+                    while ($start <= $finish) {
+                        ReservationDetailDay::create([
+                            'reservation_detail_id' => $detail->id,
+                            'date' => $start,
+                            'amount' => $room->type->price + $total_accessories
+                        ]);
+                        $start = date('Y-m-d', strtotime($start.' +1 days'));
+                    }
                 }
             }
 

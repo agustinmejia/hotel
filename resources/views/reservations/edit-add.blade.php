@@ -16,6 +16,7 @@
                 <div class="panel panel-bordered">
                     <form role="form" class="form-submit" action="{{ route('reservations.store') }}" method="POST">
                         @csrf
+                        <input type="hidden" name="status" value="en curso">
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-6">
@@ -68,12 +69,27 @@
                                         <label class="control-label" for="finish">Salida</label>
                                         <input type="date" name="finish" id="input-finish" class="form-control">
                                     </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="control-label" for="reason">Motivo de viaje</label>
+                                        <select name="reason" class="form-control" id="select-reason">
+                                            <option value="trabajo">trabajo</option>
+                                            <option value="paseo">paseo</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="control-label" for="quantity_people">Cantidad de personas</label>
+                                        <input type="number" name="quantity_people" class="form-control" value="1" required>
+                                    </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label" for="observation">Observaciones</label>
                                         <textarea name="observation" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
+                                    {{-- <div class="alert alert-info">
+                                        <strong>Información</strong>
+                                        <p>Al seleccionar los accesorios que desee el huesped se incrementará el precio diario de la habitación.</p>
+                                    </div> --}}
                                     <div class="form-group">
                                         <label class="control-label">Accesorios</label>
                                         <table class="table table-bordered table-hover">
@@ -139,60 +155,17 @@
         </div>
     </div>
 
-    {{-- Create type items modal --}}
-    <form action="{{ route('people.store').'?ajax=1' }}" id="form-person" class="form-submit" method="POST">
-        @csrf
-        <div class="modal modal-primary fade" tabindex="-1" id="person-modal" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><i class="voyager-tag"></i> Registrar huesped</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="full_name">Nombre completo</label>
-                            <input type="text" name="full_name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="dni">CI/NIT</label>
-                            <input type="text" name="dni" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">N&deg; de celular</label>
-                            <input type="text" name="phone" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="birthday">Fecha de nac.</label>
-                            <input type="date" name="birthday" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="origin">Procedencia</label>
-                            <input type="text" name="origin" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="job">Ocupación</label>
-                            <input type="text" name="job" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="street">Dirección</label>
-                            <textarea name="street" class="form-control" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark btn-submit">Guardar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+    {{-- Create person modal --}}
+    @include('partials.add-person-modal')
 @stop
 
 @section('css')
     <style>
         .div-details b {
             font-weight: bold !important
+        }
+        .select2-selection--single {
+            width: 100% !important
         }
     </style>
 @stop
@@ -205,6 +178,27 @@
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, null, 'createPerson()');
+            $('#select-reason').select2({
+                tags: true,
+                createTag: function (params) {
+                    return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                    }
+                },
+                templateResult: function (data) {
+                    var $result = $("<span></span>");
+                    $result.text(data.text);
+                    if (data.newOption) {
+                        $result.append(" <em>(ENTER para agregar)</em>");
+                    }
+                    return $result;
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                },
+            });
 
             $('.check-accessory').change(function(){
                 let id = $(this).data('id');
@@ -225,20 +219,6 @@
 
             $('#input-finish').change(function(){
                 getTotal();
-            });
-
-            $('#form-person').submit(function(e){
-                e.preventDefault();
-                $.post($(this).attr('action'), $(this).serialize(), function(res){
-                    if (res.success) {
-                        toastr.success('Huesped registrado', 'Bien hecho');
-                        $('.form-submit .btn-submit').removeAttr('disabled');
-                        $(this).trigger('reset');
-                        $('#person-modal').modal('hide');
-                    } else {
-                        toastr.error('Ocurrió un error', 'Error');
-                    }
-                });
             });
         });
 

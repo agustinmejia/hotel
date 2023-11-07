@@ -183,6 +183,9 @@
 
         <script>
             $(document).ready(function(){
+                $('[data-toggle="popover"]').popover();
+                $('[data-toggle="tooltip"]').tooltip();
+                
                 $('.form-submit').submit(function(){
                     $('.form-submit .btn-submit').attr('disabled', 'disabled');
                 });
