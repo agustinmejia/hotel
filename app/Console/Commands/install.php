@@ -49,7 +49,7 @@ class install extends Command
         if($empty_database  || $this->option('reset')){
             $this->call('key:generate');
             $this->call('migrate:fresh');
-            $this->call('db:seed', ['--class' => 'TemplateSeeder']);
+            $this->call('db:seed', ['--class' => 'HotelSeeder']);
             $this->call('storage:link');
             $this->call('vendor:publish', ['--provider' => VoyagerServiceProvider::class, '--tag' => ['config', 'voyager_avatar']]);
             $this->info('Gracias por instalar Administrador de Hotel');

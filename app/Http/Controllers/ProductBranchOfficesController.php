@@ -64,14 +64,13 @@ class ProductBranchOfficesController extends Controller
     public function store(Request $request)
     {
         try {
-
             // Buscar si el producto ya está en stock
             $product_branch_office = ProductBranchOffice::where([
                 'branch_office_id' => $request->branch_office_id,
                 'product_id' => $request->product_id
             ])->first();
             if($product_branch_office){
-                return redirect()->route('product-branch-offices.index')->with(['message' => 'Ya existe un registro de este producto es la sucursal seleccionada', 'alert-type' => 'error']);    
+                return redirect()->route($request->route_redirect ?? 'product-branch-offices.index')->with(['message' => 'Ya existe un registro de este producto es la sucursal seleccionada', 'alert-type' => 'error']);    
             }
 
             ProductBranchOffice::create([
@@ -80,10 +79,10 @@ class ProductBranchOfficesController extends Controller
                 'quantity' => $request->quantity,
                 'initial_quantity' => $request->initial_quantity
             ]);
-            return redirect()->route('product-branch-offices.index')->with(['message' => 'Stock de producto registrado', 'alert-type' => 'success']);
+            return redirect()->route($request->route_redirect ?? 'product-branch-offices.index')->with(['message' => 'Stock de producto registrado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // throw $th;
-            return redirect()->route('product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+            return redirect()->route($request->route_redirect ?? 'product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 

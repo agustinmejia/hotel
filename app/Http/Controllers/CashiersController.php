@@ -68,7 +68,6 @@ class CashiersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
-        // dd($request->all());
         DB::beginTransaction();
         try {
             // Verificar si no tiene una caja abierta
@@ -199,5 +198,10 @@ class CashiersController extends Controller
             DB::rollback();
             return redirect()->route('cashiers.show', $id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
+    }
+
+    public function print($id){
+        $cashier = Cashier::with(['details', 'user', 'branch_office'])->where('id', $id)->first();
+        return view('cashiers.print', compact('cashier'));
     }
 }

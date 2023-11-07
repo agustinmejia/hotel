@@ -7,7 +7,8 @@
                     <th>Huesped</th>
                     <th>Ingreso</th>
                     <th>Salida</th>
-                    <th>N&deg; de hab.</th>
+                    <th>Habitaciones</th>
+                    <th>Personas</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -32,6 +33,7 @@
                         @endif
                     </td>
                     <td>{{ $item->details->count() }}</td>
+                    <td>{{ $item->quantity_people }}</td>
                     <td>
                         @php
                             switch ($item->status) {

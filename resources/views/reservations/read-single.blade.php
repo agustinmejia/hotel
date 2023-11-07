@@ -435,7 +435,7 @@
     <form action="{{ route('cashiers.store') }}" id="form-create-cashier" class="form-submit" method="POST">
         @csrf
         <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-        <input type="hidden" name="redirect" value="admin/reservations/{{ $room->id }}">
+        <input type="hidden" name="redirect" value="admin/reservations/{{ $reservation_detail->reservation_id }}?room_id={{ $room->id }}">
         <div class="modal modal-primary fade" tabindex="-1" id="create-cashier-modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">

@@ -5,14 +5,14 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">
-                    <form id="form-reservation" action="{{ route('reservations.store') }}" method="post">
+                    <form id="form-reservation" class="form-submit" action="{{ route('reservations.store') }}" method="post">
                         @csrf
                         <input type="hidden" name="status" value="reservacion">
                         <div class="panel-body">
                             @php
                                 $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                                 $rooms = App\Models\Room::with(['type', 'reservation_detail' => function($q){
-                                    $q->whereRaw('(status = "ocupada" or status = "reservada")');
+                                    $q->whereRaw('(status = "ocupada" or status = "reservada")')->orderBy('status');
                                 }, 'reservation_detail.days', 'reservation_detail.reservation'])->get();
                                 $floors = $rooms->groupBy('floor_number');
                             @endphp

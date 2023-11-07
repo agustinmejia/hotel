@@ -16,7 +16,7 @@
                 Cerrar
             </a>
         @else
-            <a href="#" class="btn btn-default">
+            <a href="{{ route('cashiers.print', $cashier->id) }}" class="btn btn-default">
                 <span class="fa fa-print"></span>&nbsp;
                 Imprimir
             </a>
@@ -92,7 +92,12 @@
                                             $cont++;
                                             $total += $item->amount;
                                             if(!$item->cash){
-                                                $total_qr += $item->amount;
+                                                if ($item->type == 'ingreso') {
+                                                    $total_qr += $item->amount;
+                                                } else {
+                                                    $total_qr -= $item->amount;
+                                                }
+                                                
                                             }
                                         @endphp
                                     @empty

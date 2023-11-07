@@ -6,6 +6,7 @@
                     <th>ID</th>
                     <th>Sucursal</th>
                     <th>Usuario</th>
+                    <th>Monto</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -14,8 +15,9 @@
                 @forelse ($data as $item)
                 <tr>
                     <td>{{ $item->id }}</td>
-                    <td>{{ $item->user->name }}</td>
                     <td>{{ $item->branch_office->name }}</td>
+                    <td>{{ $item->user->name }}</td>
+                    <td>{{ $item->details->where('cash', 1)->sum('amount') }}</td>
                     <td><label class="label label-{{ $item->status == 'abierta' ? 'success' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
                     <td class="no-sort no-click bread-actions text-right">
                         @if (Auth::user()->hasPermission('read_cashiers'))

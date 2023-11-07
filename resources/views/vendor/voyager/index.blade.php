@@ -19,7 +19,7 @@
 
             $reservations = App\Models\Reservation::withCount('details')->get();
             $rooms_finish = $reservations->where('status', 'en curso')->where('finish', date('Y-m-d', strtotime(date('Y-m-d').' -1 days')));
-            $rooms_reservations = $reservations->where('status', 'reserva')->where('start', date('Y-m-d'));
+            $rooms_reservations = $reservations->where('status', 'reservacion')->where('start', date('Y-m-d'));
             $total_debt = 0;
             $products = 0;
         @endphp

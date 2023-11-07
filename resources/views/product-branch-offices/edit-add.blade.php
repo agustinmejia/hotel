@@ -42,6 +42,10 @@
                                 <label for="quantity">Stock</label>
                                 <input type="number" name="quantity" class="form-control" step="0.1" min="0.1" required>
                             </div>
+                            <div class="form-group col-md-12 text-right">
+                                <br>
+                                <label class="checkbox-inline"><input type="checkbox" name="route_redirect" value="product-branch-offices.create" title="Guardar y volver a registrar">Guardar y volver a registrar</label>
+                            </div>
                         </div>
                         <div class="panel-footer text-right">
                             <button type="submit" class="btn btn-primary save btn-submit">Guardar <i class="voyager-check"></i> </button>

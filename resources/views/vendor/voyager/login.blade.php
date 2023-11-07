@@ -10,14 +10,14 @@
             <div class="form-group form-group-default" id="emailGroup">
                 <label>{{ __('voyager::generic.email') }}</label>
                 <div class="controls">
-                    <input type="text" name="email" id="email" value="{{ env('APP_DEMO', false) ? old('email') : 'admin@admin.com' }}" placeholder="{{ __('voyager::generic.email') }}" class="form-control" required>
+                    <input type="text" name="email" id="email" value="{{ env('APP_DEMO', false) ? old('email') ?? 'admin@admin.com' : '' }}" placeholder="{{ __('voyager::generic.email') }}" class="form-control" required>
                 </div>
             </div>
 
             <div class="form-group form-group-default" id="passwordGroup">
                 <label>{{ __('voyager::generic.password') }}</label>
                 <div class="input-group controls">
-                    <input type="password" id="input-password" name="password" value="{{ env('APP_DEMO', false) ? '' : 'admin@admin.com' }}" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
+                    <input type="password" id="input-password" name="password" value="{{ env('APP_DEMO', false) ? 'password' : '' }}" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
                     <span class="input-group-addon" style="background:#fff;border:0px;font-size:25px;cursor:pointer;padding:0px;position: relative;bottom:10px" id="btn-verpassword">
                         <span class="fa fa-eye"></span>
                     </span>
