@@ -22,12 +22,13 @@ class PeopleTableSeeder extends Seeder
             0 => 
             array (
                 'id' => 1,
+                'user_id' => NULL,
+                'city_id' => NULL,
                 'full_name' => 'Sin nombre',
                 'dni' => '000000',
                 'phone' => '',
                 'address' => NULL,
                 'birthday' => '1991-04-20',
-                'origin' => NULL,
                 'job' => NULL,
                 'photo' => NULL,
                 'created_at' => '2023-11-04 13:29:13',

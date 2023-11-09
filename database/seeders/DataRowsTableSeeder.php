@@ -1137,7 +1137,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
-                'order' => 2,
+                'order' => 5,
             ),
             70 => 
             array (
@@ -1153,7 +1153,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
-                'order' => 3,
+                'order' => 6,
             ),
             71 => 
             array (
@@ -1169,7 +1169,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 4,
+                'order' => 7,
             ),
             72 => 
             array (
@@ -1185,7 +1185,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{}',
-                'order' => 6,
+                'order' => 9,
             ),
             73 => 
             array (
@@ -1201,25 +1201,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 5,
+                'order' => 8,
             ),
             74 => 
-            array (
-                'id' => 75,
-                'data_type_id' => 10,
-                'field' => 'origin',
-                'type' => 'text',
-                'display_name' => 'Procedencia',
-                'required' => 0,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 1,
-                'add' => 1,
-                'delete' => 1,
-                'details' => '{"display":{"width":6}}',
-                'order' => 7,
-            ),
-            75 => 
             array (
                 'id' => 76,
                 'data_type_id' => 10,
@@ -1233,9 +1217,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 8,
+                'order' => 10,
             ),
-            76 => 
+            75 => 
             array (
                 'id' => 77,
                 'data_type_id' => 10,
@@ -1249,9 +1233,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
-                'order' => 9,
+                'order' => 11,
             ),
-            77 => 
+            76 => 
             array (
                 'id' => 78,
                 'data_type_id' => 10,
@@ -1265,9 +1249,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 10,
+                'order' => 12,
             ),
-            78 => 
+            77 => 
             array (
                 'id' => 79,
                 'data_type_id' => 10,
@@ -1281,9 +1265,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 11,
+                'order' => 13,
             ),
-            79 => 
+            78 => 
             array (
                 'id' => 80,
                 'data_type_id' => 10,
@@ -1297,9 +1281,9 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 12,
+                'order' => 14,
             ),
-            80 => 
+            79 => 
             array (
                 'id' => 81,
                 'data_type_id' => 11,
@@ -1315,7 +1299,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 1,
             ),
-            81 => 
+            80 => 
             array (
                 'id' => 82,
                 'data_type_id' => 11,
@@ -1331,7 +1315,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 3,
             ),
-            82 => 
+            81 => 
             array (
                 'id' => 83,
                 'data_type_id' => 11,
@@ -1347,7 +1331,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 4,
             ),
-            83 => 
+            82 => 
             array (
                 'id' => 84,
                 'data_type_id' => 11,
@@ -1363,7 +1347,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 6,
             ),
-            84 => 
+            83 => 
             array (
                 'id' => 85,
                 'data_type_id' => 11,
@@ -1379,7 +1363,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 5,
             ),
-            85 => 
+            84 => 
             array (
                 'id' => 86,
                 'data_type_id' => 11,
@@ -1395,7 +1379,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"display":{"width":6},"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
                 'order' => 7,
             ),
-            86 => 
+            85 => 
             array (
                 'id' => 87,
                 'data_type_id' => 11,
@@ -1411,7 +1395,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"display":{"width":6},"on":"habilitado","off":"deshabilitado","checked":true}',
                 'order' => 8,
             ),
-            87 => 
+            86 => 
             array (
                 'id' => 88,
                 'data_type_id' => 11,
@@ -1427,7 +1411,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 9,
             ),
-            88 => 
+            87 => 
             array (
                 'id' => 89,
                 'data_type_id' => 11,
@@ -1443,7 +1427,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 10,
             ),
-            89 => 
+            88 => 
             array (
                 'id' => 90,
                 'data_type_id' => 11,
@@ -1459,7 +1443,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 11,
             ),
-            90 => 
+            89 => 
             array (
                 'id' => 91,
                 'data_type_id' => 11,
@@ -1475,7 +1459,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"model":"App\\\\Models\\\\ProductType","table":"product_types","type":"belongsTo","column":"product_type_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
                 'order' => 2,
             ),
-            91 => 
+            90 => 
             array (
                 'id' => 92,
                 'data_type_id' => 12,
@@ -1491,7 +1475,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 1,
             ),
-            92 => 
+            91 => 
             array (
                 'id' => 93,
                 'data_type_id' => 12,
@@ -1507,7 +1491,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 2,
             ),
-            93 => 
+            92 => 
             array (
                 'id' => 94,
                 'data_type_id' => 12,
@@ -1523,7 +1507,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 5,
             ),
-            94 => 
+            93 => 
             array (
                 'id' => 95,
                 'data_type_id' => 12,
@@ -1539,7 +1523,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 6,
             ),
-            95 => 
+            94 => 
             array (
                 'id' => 96,
                 'data_type_id' => 12,
@@ -1555,7 +1539,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"display":{"width":6},"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
                 'order' => 7,
             ),
-            96 => 
+            95 => 
             array (
                 'id' => 97,
                 'data_type_id' => 12,
@@ -1571,7 +1555,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","reservada":"Reservada","fuera de servicio":"Fuera de servicio"}}',
                 'order' => 8,
             ),
-            97 => 
+            96 => 
             array (
                 'id' => 98,
                 'data_type_id' => 12,
@@ -1587,7 +1571,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 9,
             ),
-            98 => 
+            97 => 
             array (
                 'id' => 99,
                 'data_type_id' => 12,
@@ -1603,7 +1587,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 10,
             ),
-            99 => 
+            98 => 
             array (
                 'id' => 100,
                 'data_type_id' => 12,
@@ -1619,7 +1603,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 11,
             ),
-            100 => 
+            99 => 
             array (
                 'id' => 101,
                 'data_type_id' => 12,
@@ -1635,7 +1619,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"model":"App\\\\Models\\\\RoomType","table":"room_types","type":"belongsTo","column":"room_type_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
                 'order' => 3,
             ),
-            101 => 
+            100 => 
             array (
                 'id' => 102,
                 'data_type_id' => 13,
@@ -1651,7 +1635,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 1,
             ),
-            102 => 
+            101 => 
             array (
                 'id' => 103,
                 'data_type_id' => 13,
@@ -1667,7 +1651,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 2,
             ),
-            103 => 
+            102 => 
             array (
                 'id' => 104,
                 'data_type_id' => 13,
@@ -1683,7 +1667,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"max:191"},"display":{"width":6}}',
                 'order' => 3,
             ),
-            104 => 
+            103 => 
             array (
                 'id' => 105,
                 'data_type_id' => 13,
@@ -1699,7 +1683,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"max:191"},"display":{"width":6}}',
                 'order' => 4,
             ),
-            105 => 
+            104 => 
             array (
                 'id' => 106,
                 'data_type_id' => 13,
@@ -1715,7 +1699,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 5,
             ),
-            106 => 
+            105 => 
             array (
                 'id' => 107,
                 'data_type_id' => 13,
@@ -1731,7 +1715,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 6,
             ),
-            107 => 
+            106 => 
             array (
                 'id' => 108,
                 'data_type_id' => 13,
@@ -1747,7 +1731,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"on":"habilitado","off":"deshabilitado","checked":true}',
                 'order' => 7,
             ),
-            108 => 
+            107 => 
             array (
                 'id' => 109,
                 'data_type_id' => 13,
@@ -1763,7 +1747,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 8,
             ),
-            109 => 
+            108 => 
             array (
                 'id' => 110,
                 'data_type_id' => 13,
@@ -1779,7 +1763,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 9,
             ),
-            110 => 
+            109 => 
             array (
                 'id' => 111,
                 'data_type_id' => 13,
@@ -1795,7 +1779,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 10,
             ),
-            111 => 
+            110 => 
             array (
                 'id' => 112,
                 'data_type_id' => 12,
@@ -1810,6 +1794,374 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6},"default":1}',
                 'order' => 4,
+            ),
+            111 => 
+            array (
+                'id' => 113,
+                'data_type_id' => 10,
+                'field' => 'person_belongsto_city_relationship',
+                'type' => 'relationship',
+                'display_name' => 'Procedencia',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"model":"App\\\\Models\\\\City","table":"cities","type":"belongsTo","column":"city_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
+                'order' => 3,
+            ),
+            112 => 
+            array (
+                'id' => 114,
+                'data_type_id' => 10,
+                'field' => 'user_id',
+                'type' => 'hidden',
+                'display_name' => 'User Id',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 2,
+            ),
+            113 => 
+            array (
+                'id' => 115,
+                'data_type_id' => 10,
+                'field' => 'city_id',
+                'type' => 'text',
+                'display_name' => 'City Id',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 4,
+            ),
+            114 => 
+            array (
+                'id' => 116,
+                'data_type_id' => 14,
+                'field' => 'id',
+                'type' => 'text',
+                'display_name' => 'Id',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 1,
+            ),
+            115 => 
+            array (
+                'id' => 117,
+                'data_type_id' => 14,
+                'field' => 'name',
+                'type' => 'text',
+                'display_name' => 'Nombre',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"}}',
+                'order' => 2,
+            ),
+            116 => 
+            array (
+                'id' => 118,
+                'data_type_id' => 14,
+                'field' => 'created_at',
+                'type' => 'timestamp',
+                'display_name' => 'Registrado',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 3,
+            ),
+            117 => 
+            array (
+                'id' => 119,
+                'data_type_id' => 14,
+                'field' => 'updated_at',
+                'type' => 'timestamp',
+                'display_name' => 'Updated At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 4,
+            ),
+            118 => 
+            array (
+                'id' => 120,
+                'data_type_id' => 14,
+                'field' => 'deleted_at',
+                'type' => 'timestamp',
+                'display_name' => 'Deleted At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 5,
+            ),
+            119 => 
+            array (
+                'id' => 121,
+                'data_type_id' => 15,
+                'field' => 'id',
+                'type' => 'text',
+                'display_name' => 'Id',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 1,
+            ),
+            120 => 
+            array (
+                'id' => 122,
+                'data_type_id' => 15,
+                'field' => 'country_id',
+                'type' => 'text',
+                'display_name' => 'Country Id',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 2,
+            ),
+            121 => 
+            array (
+                'id' => 123,
+                'data_type_id' => 15,
+                'field' => 'name',
+                'type' => 'text',
+                'display_name' => 'Nombre',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"}}',
+                'order' => 4,
+            ),
+            122 => 
+            array (
+                'id' => 124,
+                'data_type_id' => 15,
+                'field' => 'created_at',
+                'type' => 'timestamp',
+                'display_name' => 'Registrado',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 5,
+            ),
+            123 => 
+            array (
+                'id' => 125,
+                'data_type_id' => 15,
+                'field' => 'updated_at',
+                'type' => 'timestamp',
+                'display_name' => 'Updated At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 6,
+            ),
+            124 => 
+            array (
+                'id' => 126,
+                'data_type_id' => 15,
+                'field' => 'deleted_at',
+                'type' => 'timestamp',
+                'display_name' => 'Deleted At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 7,
+            ),
+            125 => 
+            array (
+                'id' => 127,
+                'data_type_id' => 15,
+                'field' => 'state_belongsto_country_relationship',
+                'type' => 'relationship',
+                'display_name' => 'País',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"model":"App\\\\Models\\\\Country","table":"countries","type":"belongsTo","column":"country_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
+                'order' => 3,
+            ),
+            126 => 
+            array (
+                'id' => 128,
+                'data_type_id' => 16,
+                'field' => 'id',
+                'type' => 'text',
+                'display_name' => 'Id',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 1,
+            ),
+            127 => 
+            array (
+                'id' => 129,
+                'data_type_id' => 16,
+                'field' => 'state_id',
+                'type' => 'text',
+                'display_name' => 'State Id',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 2,
+            ),
+            128 => 
+            array (
+                'id' => 130,
+                'data_type_id' => 16,
+                'field' => 'name',
+                'type' => 'text',
+                'display_name' => 'Nombre',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
+                'order' => 4,
+            ),
+            129 => 
+            array (
+                'id' => 131,
+                'data_type_id' => 16,
+                'field' => 'created_at',
+                'type' => 'timestamp',
+                'display_name' => 'Registrado',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 6,
+            ),
+            130 => 
+            array (
+                'id' => 132,
+                'data_type_id' => 16,
+                'field' => 'updated_at',
+                'type' => 'timestamp',
+                'display_name' => 'Updated At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 7,
+            ),
+            131 => 
+            array (
+                'id' => 133,
+                'data_type_id' => 16,
+                'field' => 'deleted_at',
+                'type' => 'timestamp',
+                'display_name' => 'Deleted At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 8,
+            ),
+            132 => 
+            array (
+                'id' => 134,
+                'data_type_id' => 16,
+                'field' => 'city_belongsto_state_relationship',
+                'type' => 'relationship',
+                'display_name' => 'Estado/Departamento',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"model":"App\\\\Models\\\\State","table":"states","type":"belongsTo","column":"state_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
+                'order' => 3,
+            ),
+            133 => 
+            array (
+                'id' => 135,
+                'data_type_id' => 16,
+                'field' => 'province',
+                'type' => 'select_dropdown',
+                'display_name' => 'Provincia',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"options":{"vaca diez":"Vaca diez","cercado":"Cercado","marb\\u00e1n":"Marb\\u00e1n","itenez":"Itenez","moxos":"Moxos","yacuma":"Yacuma","jos\\u00e9 balliian":"Jos\\u00e9 Balliian","mamor\\u00e9":"Mamor\\u00e9"},"display":{"width":6}}',
+                'order' => 5,
             ),
         ));
         

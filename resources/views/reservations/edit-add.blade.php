@@ -11,40 +11,45 @@
 
 @section('content')
     <div class="page-content edit-add container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-bordered">
-                    <form role="form" class="form-submit" action="{{ route('reservations.store') }}" method="POST">
+        <form role="form" class="form-submit" action="{{ route('reservations.store') }}" method="POST">
+            @if($room)
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12 div-details">
+                            <table style="width: 100%; margin-top: 20px">
+                                <tr style="height: 30px">
+                                    <td><b>N&deg; de habitación : </b></td>
+                                    <td>{{ $room->code }}</td>
+                                    <td><b>Tipo : </b></td>
+                                    <td>{{ $room->type->name }}</td>
+                                    <td><b>Precio : </b></td>
+                                    <td>
+                                        {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}
+                                        <input type="hidden" name="room_price" value="{{ $room->type->price }}">
+                                    </td>
+                                </tr>
+                                <tr style="height: 30px">
+                                    <td><b>Descripción : </b></td>
+                                    <td colspan="3">{{ $room->type->description }}</td>
+                                    <td><b>Estado : </b></td>
+                                    <td>{{ $room->status }}</td>
+                                </tr>
+                            </table>
+                            <br>
+                        </div>
+                        <input type="hidden" name="room_id[]" value="{{ $room->id }}">
+                    </div>
+                </div>
+            @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-bordered">
                         @csrf
                         <input type="hidden" name="status" value="en curso">
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    @isset($room)
-                                        <div class="col-md-12 div-details">
-                                            <table style="width: 100%; margin-top: 20px">
-                                                <tr style="height: 30px">
-                                                    <td><b>N&deg; de habitación : </b></td>
-                                                    <td>{{ $room->code }}</td>
-                                                    <td><b>Tipo : </b></td>
-                                                    <td>{{ $room->type->name }}</td>
-                                                    <td><b>Precio : </b></td>
-                                                    <td>
-                                                        {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}
-                                                        <input type="hidden" name="room_price" value="{{ $room->type->price }}">
-                                                    </td>
-                                                </tr>
-                                                <tr style="height: 30px">
-                                                    <td><b>Descripción : </b></td>
-                                                    <td colspan="3">{{ $room->type->description }}</td>
-                                                    <td><b>Estado : </b></td>
-                                                    <td>{{ $room->status }}</td>
-                                                </tr>
-                                            </table>
-                                            <br>
-                                        </div>
-                                        <input type="hidden" name="room_id[]" value="{{ $room->id }}">
-                                    @else
+                                    @if(!$room)
                                         @php
                                             $rooms = App\Models\Room::with(['type'])->where('status', 'disponible')->orderBy('floor_number')->orderBy('code')->get();
                                         @endphp
@@ -59,7 +64,7 @@
                                     @endisset
                                     <div class="form-group col-md-12">
                                         <label class="control-label" for="person_id">Cliente/Huesped</label>
-                                        <select name="person_id" class="form-control" id="select-person_id" required></select>
+                                        <select name="person_id[]" class="form-control" id="select-person_id" multiple required></select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label" for="start">Ingreso</label>
@@ -86,10 +91,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    {{-- <div class="alert alert-info">
-                                        <strong>Información</strong>
-                                        <p>Al seleccionar los accesorios que desee el huesped se incrementará el precio diario de la habitación.</p>
-                                    </div> --}}
                                     <div class="form-group">
                                         <label class="control-label">Accesorios</label>
                                         <table class="table table-bordered table-hover">
@@ -149,10 +150,10 @@
                             <a href="{{ route('reception.index') }}" class="btn btn-default">Cancelar</a>
                             <button type="submit" class="btn btn-primary save btn-submit">Guardar <i class="voyager-check"></i> </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     {{-- Create person modal --}}

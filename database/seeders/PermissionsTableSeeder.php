@@ -44,6 +44,9 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('reservations');
         Permission::generateFor('product_branch_offices');
         Permission::generateFor('cashiers');
+        Permission::generateFor('countries');
+        Permission::generateFor('states');
+        Permission::generateFor('cities');
 
         // Recepción
         Permission::firstOrCreate([

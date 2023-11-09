@@ -53,7 +53,7 @@ class PeopleController extends Controller
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'birthday' => $request->birthday,
-                'origin' => $request->origin,
+                'city_id' => $request->city_id,
                 'job' => $request->job,
                 'photo' => $request->photo
             ]);

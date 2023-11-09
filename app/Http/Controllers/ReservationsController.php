@@ -17,6 +17,7 @@ use App\Models\ReservationDetailDay;
 use App\Models\Cashier;
 use App\Models\CashierDetail;
 use App\Models\ProductBranchOffice;
+use App\Models\ReservationPerson;
 
 class ReservationsController extends Controller
 {
@@ -81,7 +82,7 @@ class ReservationsController extends Controller
         try {
             $reservation = Reservation::create([
                 'user_id' => Auth::user()->id,
-                'person_id' => $request->person_id,
+                'person_id' => $request->person_id[0],
                 'start' => $request->start,
                 'finish' => $request->finish,
                 'reason'  => $request->reason,
@@ -89,6 +90,16 @@ class ReservationsController extends Controller
                 'observation' => $request->observation,
                 'status' => $request->status
             ]);
+
+            // En caso de que sea más de una persona
+            if (count($request->person_id) > 1) {
+                for ($i=1; $i < count($request->person_id); $i++) { 
+                    ReservationPerson::create([
+                        'reservation_id' => $reservation->id,
+                        'person_id' => $request->person_id[$i]
+                    ]);
+                }
+            }
 
             // Lista de habitaciones
             for ($i=0; $i < count($request->room_id); $i++) { 
