@@ -33,7 +33,7 @@
                         @endif
                     </td>
                     <td>{{ $item->details->count() }}</td>
-                    <td>{{ $item->quantity_people }}</td>
+                    <td>{{ $item->aditional_people->count() +1 }}</td>
                     <td>
                         @php
                             switch ($item->status) {

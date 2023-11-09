@@ -42,7 +42,7 @@ class ReservationsController extends Controller
         $this->custom_authorize('browse_reservations');
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
-        $data = Reservation::with(['details', 'user', 'person'])
+        $data = Reservation::with(['details', 'user', 'person', 'aditional_people'])
                     ->where(function($query) use ($search){
                         if($search){
                             $query->OrwhereHas('user', function($query) use($search){
@@ -86,7 +86,6 @@ class ReservationsController extends Controller
                 'start' => $request->start,
                 'finish' => $request->finish,
                 'reason'  => $request->reason,
-                'quantity_people' => $request->quantity_people,
                 'observation' => $request->observation,
                 'status' => $request->status
             ]);

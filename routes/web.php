@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CashiersController;
 use App\Http\Controllers\ProductBranchOfficesController;
 use App\Http\Controllers\RoomsController;
+use App\Http\Controllers\CitiesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/product/payment/store', [ReservationsController::class, 'product_payment_store'])->name('reservations.product.payment.store');
     Route::post('reservations/close', [ReservationsController::class, 'close'])->name('reservations.close');
     Route::post('reservations/change', [ReservationsController::class, 'change'])->name('reservations.change');
+
+    // City
+    Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');
 
     // Rooms
     Route::post('rooms/{id}/update/status', [RoomsController::class, 'update_status'])->name('rooms.update.status');

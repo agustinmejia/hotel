@@ -24,3 +24,7 @@
     width: 100% !important;
     /* padding: 0; */
 }
+
+.modal-body .row .form-group {
+    margin-bottom: 15px !important;
+}

@@ -153,10 +153,6 @@
                                             <input type="date" name="start" class="form-control" value="{{ date('Y-m-d', strtotime(date('Y-m-d').' +1 days')) }}" required>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label" for="quantity_people">Cantidad de personas</label>
-                                            <input type="number" name="quantity_people" class="form-control" value="1" required>
-                                        </div>
-                                        <div class="form-group">
                                             <label class="control-label" for="observation">Observaciones</label>
                                             <textarea name="observation" class="form-control" rows="3" placeholder="Escribir observaciones..."></textarea>
                                         </div>
@@ -271,6 +267,7 @@
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#reservation-modal', 'createPerson()');
+            customSelect('#select-city_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, "#person-modal", 'createCity()');
 
             $('.btn-enable').click(function(){
                 let id = $(this).data('id');
@@ -309,6 +306,14 @@
             $('#select-person_id').select2('close');
             $('#reservation-modal').modal('hide');
             $('#person-modal').modal('show');
+        }
+
+        function createCity(){
+            $('#select-city_id').select2('destroy');
+            $('#select-city_id').fadeOut('fast', function(){
+                $('#input-city_name').fadeIn('fast');
+                $('#input-city_name').prop('required', true);
+            });
         }
     </script>
 @stop

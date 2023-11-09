@@ -42,7 +42,7 @@ function customSelect(select, url, templateResult, templateSelection, dropdownPa
         dropdownParent: dropdownParent ? dropdownParent : null,
         language: {
             noResults: function() {
-                return btnNoResults ? `Resultados no encontrados <button class="btn btn-link" onclick="${btnNoResults}">Crear nuevo <i class="fa fa-plus"></i></a>` : 'Resultados no encontrados';
+                return btnNoResults ? `Resultados no encontrados <button type="button" class="btn btn-link" onclick="${btnNoResults}">Crear nuevo <i class="fa fa-plus"></i></a>` : 'Resultados no encontrados';
             },
             inputTooShort: function (data) {
                 return `Ingrese ${data.minimum - data.input.length} o más caracteres`;
@@ -88,6 +88,29 @@ function formatResultPeople(data) {
                         ${data.full_name} <br>
                         <p style="font-size: 13px; margin-top: 5px">
                             CI: ${data.dni ? data.dni : 'No definido'}
+                        </p>
+                    </h5>
+                </div>
+            </div>
+            
+        </div>`
+    );
+
+    return $container;
+}
+
+function formatResultCities(data) {
+    if (data.loading) {
+        return 'Buscando...';
+    }
+    var $container = $(
+        `<div class="option-select2-custom">
+            <div style="display:flex; flex-direction: row">
+                <div>
+                    <h5>
+                        ${data.name}<br>
+                        <p style="font-size: 13px; margin-top: 5px">
+                            ${data.state ? data.state.name : 'No definido'} | ${data.state ? data.state.country ?  data.state.country.name : 'No definido' : 'No definido'}
                         </p>
                     </h5>
                 </div>

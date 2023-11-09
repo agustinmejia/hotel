@@ -22,7 +22,6 @@ return new class extends Migration
             $table->decimal('amount', 10, 2)->nullable();
             $table->decimal('discount', 10, 2)->nullable();
             $table->string('reason')->nullable();
-            $table->smallInteger('quantity_people')->nullable();
             $table->text('observation')->nullable();
             $table->string('status')->nullable()->default('pendiente');
             $table->timestamps();

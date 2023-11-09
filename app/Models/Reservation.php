@@ -11,7 +11,7 @@ class Reservation extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'user_id', 'person_id', 'start', 'finish', 'amount', 'discount', 'reason', 'quantity_people', 'observation', 'status'
+        'user_id', 'person_id', 'start', 'finish', 'amount', 'discount', 'reason', 'observation', 'status'
     ];
 
     public function details() {
@@ -24,5 +24,9 @@ class Reservation extends Model
 
     public function person() {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    public function aditional_people(){
+        return $this->hasMany(ReservationPerson::class, 'reservation_id');
     }
 }

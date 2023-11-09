@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 // Models
 use App\Models\Person;
+use App\Models\City;
 
 class PeopleController extends Controller
 {
@@ -47,13 +48,24 @@ class PeopleController extends Controller
     public function store(Request $request)
     {
         try {
+
+            $city_id = 1;
+            if($request->city_id){
+                $city_id = $request->city_id;
+            }elseif($request->city_name){
+                $city_id = City::create([
+                    'state_id' => 1,
+                    'name' => $request->city_name
+                ])->id;
+            }
+
             Person::create([
                 'full_name' => $request->full_name,
                 'dni' => $request->dni,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'birthday' => $request->birthday,
-                'city_id' => $request->city_id,
+                'city_id' => $city_id,
                 'job' => $request->job,
                 'photo' => $request->photo
             ]);
@@ -114,7 +126,7 @@ class PeopleController extends Controller
         $q = request('q');
         $data = [];
         if ($q) {
-            $data = Person::whereRaw('(dni like "%'.$q.'%" or full_name like "%'.$q.'%" or phone like "%'.$q.'%" or origin like "%'.$q.'%")')->get();
+            $data = Person::whereRaw('(dni like "%'.$q.'%" or full_name like "%'.$q.'%" or phone like "%'.$q.'%")')->get();
         }
         return response()->json($data);
     }

@@ -10,4 +10,11 @@ class City extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+    protected $fillable = [
+        'state_id', 'name', 'province'
+    ];
+
+    public function state(){
+        return $this->belongsTo(State::class, 'state_id');
+    }
 }

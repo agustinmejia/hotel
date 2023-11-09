@@ -74,16 +74,12 @@
                                         <label class="control-label" for="finish">Salida</label>
                                         <input type="date" name="finish" id="input-finish" class="form-control">
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-12">
                                         <label class="control-label" for="reason">Motivo de viaje</label>
                                         <select name="reason" class="form-control" id="select-reason">
                                             <option value="trabajo">trabajo</option>
                                             <option value="paseo">paseo</option>
                                         </select>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="control-label" for="quantity_people">Cantidad de personas</label>
-                                        <input type="number" name="quantity_people" class="form-control" value="1" required>
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label" for="observation">Observaciones</label>
@@ -179,6 +175,8 @@
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, null, 'createPerson()');
+            customSelect('#select-city_id', '{{ route("cities.search") }}', formatResultCities, data => data.name, "#person-modal", 'createCity()');
+
             $('#select-reason').select2({
                 tags: true,
                 createTag: function (params) {
@@ -256,6 +254,14 @@
         function createPerson(){
             $('#select-person_id').select2('close');
             $('#person-modal').modal('show');
+        }
+
+        function createCity(){
+            $('#select-city_id').select2('destroy');
+            $('#select-city_id').fadeOut('fast', function(){
+                $('#input-city_name').fadeIn('fast');
+                $('#input-city_name').prop('required', true);
+            });
         }
     </script>
 @stop
