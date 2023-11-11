@@ -257,6 +257,7 @@ class ReservationsController extends Controller
             return redirect()->to($redirect)->with(['message' => 'Venta registrada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
+            dd($th);
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }

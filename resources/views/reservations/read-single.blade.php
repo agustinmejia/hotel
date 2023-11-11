@@ -50,12 +50,16 @@
                         @if($cashier)
                         <li><a href="#" title="Realizar pago de hospedaje" data-toggle="modal" data-target="#add-payment-modal">Pagar hospedaje</a></li>
                         @endif
+                        @if (Auth::user()->branch_office_id)
                         <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-modal">Venta de producto</a></li>
+                        @endif
                         <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-accessory-modal">Agregar accesorios</a></li>
                         <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-person-modal">Agregar huesped</a></li>
                         <li class="divider"></li>
                         <li><a href="#" title="Cambiar de habitación" data-toggle="modal" data-target="#change-room-modal">Cambiar de habitación</a></li>
+                        @if($cashier)
                         <li><a href="#" style="color: #FA3E19" title="Cerrar hospedaje" data-toggle="modal" data-target="#close-reservation-modal">Cerrar hospedaje</a></li>
+                        @endif
                     </ul>
                 </div>
                 @endif

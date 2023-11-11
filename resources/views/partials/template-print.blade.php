@@ -27,13 +27,13 @@
                 padding: 30px;
                 max-width: 720px;
                 min-width: 720px;
-                min-height: 100vh;
+                /* min-height: 100vh; */
                 background-color: white
             }
             .content {
                 text-align: justify;
                 padding: 0px 34px;
-                font-size: 13px;
+                font-size: 12px;
                 min-height: 100vh;
             }
             #logo{

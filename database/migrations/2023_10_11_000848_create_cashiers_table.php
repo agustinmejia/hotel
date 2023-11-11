@@ -23,6 +23,9 @@ return new class extends Migration
             $table->decimal('amount_surplus', 10, 2)->nullable();
             $table->decimal('amount_missing', 10, 2)->nullable();
             $table->string('status')->nullable()->default('abierta');
+            $table->smallInteger('rooms_available')->nullable();
+            $table->smallInteger('rooms_occupied')->nullable();
+            $table->smallInteger('rooms_dirty')->nullable();
             $table->timestamps();
             $table->timestamp('closed_at')->nullable();
             $table->softDeletes();

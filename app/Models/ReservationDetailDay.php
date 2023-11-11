@@ -13,4 +13,13 @@ class ReservationDetailDay extends Model
     protected $fillable = [
         'reservation_detail_id', 'date', 'amount', 'observations', 'status'
     ];
+
+    /**
+     * Get the user that owns the ReservationDetailDay
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function reservation_detail(){
+        return $this->belongsTo(ReservationDetail::class, 'reservation_detail_id');
+    }
 }

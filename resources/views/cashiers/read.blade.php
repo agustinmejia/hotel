@@ -16,7 +16,7 @@
                 Cerrar
             </a>
         @else
-            <a href="{{ route('cashiers.print', $cashier->id) }}" class="btn btn-default">
+            <a href="{{ route('cashiers.print', $cashier->id) }}" class="btn btn-default" target="_blank">
                 <span class="fa fa-print"></span>&nbsp;
                 Imprimir
             </a>
@@ -70,7 +70,8 @@
                                 <tbody>
                                     @php
                                         $cont = 1;
-                                        $total = 0;
+                                        $total_revenue = 0;
+                                        $total_expenses = 0;
                                         $total_qr = 0;
                                     @endphp
                                     @forelse ($cashier->details as $item)
@@ -78,7 +79,14 @@
                                             <td>{{ $cont }}</td>
                                             <td>{{ $item->type }}</td>
                                             <td>
-                                                {{ $item->observations }}
+                                                @if ($item->sale_detail)
+                                                    Venta de <b>{{ $item->sale_detail->quantity == floatVal($item->sale_detail->quantity) ? intval($item->sale_detail->quantity) : $item->sale_detail->quantity }} {{ $item->sale_detail->product->name }}</b>
+                                                @elseif ($item->service)
+                                                    Uso de <b>{{ $item->service->name }}</b>
+                                                @elseif ($item->reservation_detail_day)
+                                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b>
+                                                @endif
+                                                {!! $item->observations ? '<br>'.$item->observations : '' !!}
                                             </td>
                                             <td class="text-right">
                                                 @if (!$item->cash)
@@ -90,14 +98,13 @@
                                         </tr>
                                         @php
                                             $cont++;
-                                            $total += $item->amount;
+                                            if ($item->type == 'ingreso') {
+                                                $total_revenue += $item->amount;
+                                            } else {
+                                                $total_expenses += $item->amount;
+                                            }
                                             if(!$item->cash){
-                                                if ($item->type == 'ingreso') {
-                                                    $total_qr += $item->amount;
-                                                } else {
-                                                    $total_qr -= $item->amount;
-                                                }
-                                                
+                                                $total_qr += $item->amount;
                                             }
                                         @endphp
                                     @empty
@@ -108,8 +115,13 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" class="text-right"><b>TOTAL</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total }}</h4></td>
+                                        <td colspan="3" class="text-right"><b>INGRESO TOTAL</b></td>
+                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_revenue }}</h4></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><b>EGRESO TOTAL</b></td>
+                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_expenses }}</h4></td>
                                         <td></td>
                                     </tr>
                                     <tr>
@@ -119,7 +131,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>TOTAL EN CAJA</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total - $total_qr }}</h4></td>
+                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
                                         <td></td>
                                     </tr>
                                 </tfoot>

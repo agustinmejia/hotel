@@ -63,7 +63,7 @@
                                         </div>
                                     @endisset
                                     <div class="form-group col-md-12">
-                                        <label class="control-label" for="person_id">Cliente/Huesped</label>
+                                        <label class="control-label" for="select-person_id">Cliente/Huesped</label>
                                         <select name="person_id[]" class="form-control" id="select-person_id" multiple required></select>
                                     </div>
                                     <div class="form-group col-md-6">

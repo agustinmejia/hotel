@@ -17,4 +17,16 @@ class CashierDetail extends Model
     public function cashier(){
         return $this->belongsTo(Cashier::class, 'cashier_id');
     }
+
+    public function sale_detail(){
+        return $this->belongsTo(SaleDetail::class, 'sale_detail_id');
+    }
+
+    public function service(){
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+
+    public function reservation_detail_day(){
+        return $this->belongsTo(ReservationDetailDay::class, 'reservation_detail_day_id');
+    }
 }

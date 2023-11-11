@@ -88,7 +88,7 @@
                                                                         <div>
                                                                             N&deg; <br>
                                                                             <span style="font-size: 35px">{{ $room->code }}</span> <br>
-                                                                            <span>{{ $room->type->name }}</span>
+                                                                            <b>{{ $room->type->name }} {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} <small>Bs.</small></b>
                                                                         </div>
                                                                         <div class="text-right">
                                                                             <br>
@@ -145,8 +145,8 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label class="control-label" for="person_id">Cliente/Huesped</label>
-                                            <select name="person_id" class="form-control" id="select-person_id" required></select>
+                                            <label class="control-label" for="select-person_id">Cliente/Huesped</label>
+                                            <select name="person_id[]" class="form-control" id="select-person_id" required></select>
                                         </div>
                                         <div class="form-group">
                                             <label for="date">Fecha</label>
@@ -235,7 +235,7 @@
             flex-direction: row;
             justify-content: space-between;
             padding: 5px 10px;
-            cursor: pointer;
+            /* cursor: pointer; */
         }
         .panel-number .icon {
             font-size: 40px
@@ -264,6 +264,7 @@
 @section('javascript')
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
+        var EnableClick = false;
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#reservation-modal', 'createPerson()');
@@ -274,26 +275,16 @@
                 $('#enable-form').attr('action', '{{ url("admin/rooms") }}/'+id+'/update/status');
             });
 
-            $('.panel-custom .panel-number').on('mousedown', function() {
+            $('.panel-custom .panel-number').on('dblclick', function() {
                 let id = $(this).data('id');
-                $('#checkbox-select-'+id).trigger('click');
+                EnableClick = true;
+                changeDivActions(id);
+            });
 
-                if($('#checkbox-select-'+id).is(':checked')){
-                    $('#label-check-'+id).fadeIn('fast');
-                }else{
-                    $('#label-check-'+id).fadeOut('fast');
-                }
-
-                let checked = false;
-                $('.checkbox-select').each(function(index) {
-                    if($(this).is(':checked')){
-                        checked = true;
-                    };
-                });
-                if(checked){
-                    $('.div-actions').fadeIn('fast');
-                }else{
-                    $('.div-actions').fadeOut('fast');
+            $('.panel-custom .panel-number').on('click', function() {
+                let id = $(this).data('id');
+                if (EnableClick) {
+                    changeDivActions(id);   
                 }
             });
 
@@ -302,6 +293,31 @@
                 $('.div-actions').fadeOut('fast');
             });
         });
+
+        function changeDivActions(id){
+            $('#checkbox-select-'+id).trigger('click');
+
+            if($('#checkbox-select-'+id).is(':checked')){
+                $('#label-check-'+id).fadeIn('fast');
+            }else{
+                $('#label-check-'+id).fadeOut('fast');
+            }
+            let checked = false;
+            $('.checkbox-select').each(function(index) {
+                if($(this).is(':checked')){
+                    checked = true;
+                };
+            });
+
+            if(checked){
+                $('.div-actions').fadeIn('fast');
+                EnableClick = true;
+            }else{
+                $('.div-actions').fadeOut('fast');
+                EnableClick = false;
+            }
+        }
+
         function createPerson(){
             $('#select-person_id').select2('close');
             $('#reservation-modal').modal('hide');

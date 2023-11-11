@@ -12,6 +12,7 @@ use App\Models\Cashier;
 use App\Models\CashierDetail;
 use App\Models\CashierDetailAmount;
 use App\Models\User;
+use App\Models\Room;
 
 class CashiersController extends Controller
 {
@@ -103,7 +104,6 @@ class CashiersController extends Controller
             return redirect()->to($request->redirect ?? 'admin/cashiers')->with(['message' => 'Caja aperturada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            //throw $th;
             return redirect()->to($request->redirect ?? 'admin/cashiers')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
@@ -117,7 +117,7 @@ class CashiersController extends Controller
     public function show($id)
     {
         $this->custom_authorize('read_cashiers');
-        $cashier = Cashier::with(['details', 'user', 'branch_office'])->where('id', $id)->first();
+        $cashier = Cashier::with(['details.sale_detail.product', 'details.service', 'details.reservation_detail_day.reservation_detail.room', 'user', 'branch_office'])->where('id', $id)->first();
         return view('cashiers.read', compact('cashier'));
     }
 
@@ -179,6 +179,9 @@ class CashiersController extends Controller
             $cashier->amount_surplus = $request->amount_surplus;
             $cashier->amount_missing = $request->amount_missing;
             $cashier->status = 'cerrada';
+            $cashier->rooms_available = Room::where('status', 'disponible')->count();
+            $cashier->rooms_occupied = Room::where('status', 'ocupada')->count();
+            $cashier->rooms_dirty = Room::where('status', 'limpieza')->count();
             $cashier->closed_at = Carbon::now();
             $cashier->update();
 

@@ -48,10 +48,16 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('states');
         Permission::generateFor('cities');
 
-        // Recepción
+        // Import
         Permission::firstOrCreate([
-            'key'        => 'browse_reception',
-            'table_name' => null,
+            'key'        => 'browse_import',
+            'table_name' => 'import',
+        ]);
+
+        // Report
+        Permission::firstOrCreate([
+            'key'        => 'browse_report-general',
+            'table_name' => 'reports',
         ]);
     }
 }

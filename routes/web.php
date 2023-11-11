@@ -10,6 +10,8 @@ use App\Http\Controllers\CashiersController;
 use App\Http\Controllers\ProductBranchOfficesController;
 use App\Http\Controllers\RoomsController;
 use App\Http\Controllers\CitiesController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +72,13 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('cashiers/{id}/close', [CashiersController::class, 'close_index'])->name('cashiers.close.index');
     Route::post('cashiers/{id}/close/store', [CashiersController::class, 'close_store'])->name('cashiers.close.store');
     Route::get('cashiers/{id}/print', [CashiersController::class, 'print'])->name('cashiers.print');
+
+    // Reports
+    Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');
+
+    // Import
+    Route::get('import', [ImportController::class, 'index'])->name('import.index');
+    Route::post('import/store', [ImportController::class, 'store'])->name('import.store');
 });
 
 // Clear cache
