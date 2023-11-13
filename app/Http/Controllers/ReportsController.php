@@ -14,6 +14,14 @@ class ReportsController extends Controller
 
     public function general_index(Request $requets){
         $this->custom_authorize('browse_report-general');
-        return view('reports.general-browse');
+        $type = request('type') ?? null;
+        switch ($type) {
+            case 'print':
+                return view('reports.general-print');
+                break;
+            default:
+                return view('reports.general-browse');
+                break;
+        }
     }
 }

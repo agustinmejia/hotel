@@ -13,4 +13,8 @@ class ReservationPerson extends Model
     protected $fillable = [
         'reservation_id', 'person_id'
     ];
+
+    public function person() {
+        return $this->belongsTo(Person::class, 'person_id');
+    }
 }

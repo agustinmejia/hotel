@@ -14,6 +14,10 @@ class Sale extends Model
         'user_id', 'reservation_detail_id', 'person_id', 'date', 'observations', 'status'
     ];
 
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function details() {
         return $this->hasMany(SaleDetail::class, 'sale_id');
     }

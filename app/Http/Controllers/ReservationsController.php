@@ -166,7 +166,7 @@ class ReservationsController extends Controller
     {
         $this->custom_authorize('read_reservations');
         $room_id = request('room_id');
-        $reservation = Reservation::with(['details.accessories.accessory', 'details.days', 'details.sales.details.product', 'details.room.type'])
+        $reservation = Reservation::with(['details.accessories.accessory', 'details.days', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
                         ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {

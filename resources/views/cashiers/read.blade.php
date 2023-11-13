@@ -80,13 +80,13 @@
                                             <td>{{ $item->type }}</td>
                                             <td>
                                                 @if ($item->sale_detail)
-                                                    Venta de <b>{{ $item->sale_detail->quantity == floatVal($item->sale_detail->quantity) ? intval($item->sale_detail->quantity) : $item->sale_detail->quantity }} {{ $item->sale_detail->product->name }}</b>
+                                                    Venta de <b>{{ $item->sale_detail->quantity == floatVal($item->sale_detail->quantity) ? intval($item->sale_detail->quantity) : $item->sale_detail->quantity }} {{ $item->sale_detail->product->name }}</b> <br>
                                                 @elseif ($item->service)
-                                                    Uso de <b>{{ $item->service->name }}</b>
+                                                    Uso de <b>{{ $item->service->name }}</b> <br>
                                                 @elseif ($item->reservation_detail_day)
-                                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b>
+                                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> <br>
                                                 @endif
-                                                {!! $item->observations ? '<br>'.$item->observations : '' !!}
+                                                {!! $item->observations ? $item->observations : '' !!}
                                             </td>
                                             <td class="text-right">
                                                 @if (!$item->cash)

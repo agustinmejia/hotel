@@ -2,7 +2,7 @@
 
 @php
     $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    $days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
+    $days = ['', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
 @endphp
 
 @section('header')
@@ -59,7 +59,14 @@
                             <td>{{ $cont }}</td>
                             <td>{{ $item->type }}</td>
                             <td>
-                                {{ $item->observations }}
+                                @if ($item->sale_detail)
+                                    Venta de <b>{{ $item->sale_detail->quantity == floatVal($item->sale_detail->quantity) ? intval($item->sale_detail->quantity) : $item->sale_detail->quantity }} {{ $item->sale_detail->product->name }}</b> <br>
+                                @elseif ($item->service)
+                                    Uso de <b>{{ $item->service->name }}</b> <br>
+                                @elseif ($item->reservation_detail_day)
+                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> <br>
+                                @endif
+                                {!! $item->observations ? $item->observations : '' !!}
                             </td>
                             <td class="text-right">
                                 @if (!$item->cash)

@@ -10,11 +10,11 @@
                     <i class="icon voyager-file-text"></i> Reporte General
                 </h1>
             </div>
-            {{-- <div class="col-md-8 text-right" style="padding-top: 20px">
-                <a href="#" class="btn btn-success btn-add-new">
-                    <i class="voyager-plus"></i> <span>Crear</span>
+            <div class="col-md-8 text-right" style="padding-top: 20px">
+                <a href="{{ route('report-general.index') }}?type=print" class="btn btn-danger" target="_blank">
+                    <i class="fa fa-print"></i> <span>Imprimir</span>
                 </a>
-            </div> --}}
+            </div>
         </div>
     </div>
 @stop
@@ -61,9 +61,11 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th colspan="4"><h4 class="text-center">Ventas</h4></th>
+                                        <th colspan="6"><h4 class="text-center">Ventas</h4></th>
                                     </tr>
                                     <tr>
+                                        <th>N&deg;</th>
+                                        <th>Usuario</th>
                                         <th>Cliente</th>
                                         <th>Detalle</th>
                                         <th>Estado</th>
@@ -72,10 +74,16 @@
                                 </thead>
                                 <tbody>
                                     @php
+                                        $cont = 1;
                                         $total = 0;
                                     @endphp
-                                    @forelse (App\Models\Sale::with(['person', 'reservation_detail.reservation.person', 'details.product'])->whereDate('date', date('Y-m-d'))->get() as $item)
+                                    @forelse (App\Models\Sale::with(['person', 'reservation_detail.reservation.person', 'details.product', 'user'])->whereDate('date', date('Y-m-d'))->get() as $item)
                                         <tr>
+                                            <td>{{ $cont }}</td>
+                                            <td>
+                                                {{ $item->user->name }} <br>
+                                                <small>{{ date('H:i', strtotime($item->created_at)) }}</small>
+                                            </td>
                                             <td>
                                                 @if ($item->person)
                                                     {{ $item->person->full_name }}
@@ -100,17 +108,18 @@
                                             <td class="text-right">{{ $subtotal }}</td>
                                         </tr>
                                         @php
+                                            $cont++;
                                             $total += $subtotal;
                                         @endphp
                                     @empty
                                         <tr>
-                                            <td colspan="4">No hay datos registrados</td>
+                                            <td colspan="6">No hay datos registrados</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" class="text-right"><b>TOTAL</b></td>
+                                        <td colspan="5" class="text-right"><b>TOTAL</b></td>
                                         <td class="text-right"><h4><small>Bs.</small> {{ $total }}</h4></td>
                                     </tr>
                                 </tfoot>
@@ -139,7 +148,10 @@
                                     @forelse (App\Models\CashierDetail::with(['cashier.user', 'sale_detail.product', 'service', 'reservation_detail_day.reservation_detail.room'])->whereDate('created_at', date('Y-m-d'))->get() as $item)
                                         <tr>
                                             <td>{{ $cont }}</td>
-                                            <td>{{ $item->cashier->user->name }}</td>
+                                            <td>
+                                                {{ $item->cashier->user->name }} <br>
+                                                <small>{{ date('H:i', strtotime($item->created_at)) }}</small>
+                                            </td>
                                             <td>{{ $item->type }}</td>
                                             <td>
                                                 @if ($item->sale_detail)
@@ -203,7 +215,11 @@
 @stop
 
 @section('css')
-
+    <style>
+        tfoot {
+            background-color: #f7f7f7
+        }
+    </style>
 @stop
 
 @section('javascript')

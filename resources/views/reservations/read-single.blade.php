@@ -101,6 +101,24 @@
                                 <b>DETALLES DE HABITACIÓN</b> &nbsp; <label class="label label-{{ $type }}">{{ Str::ucfirst($room->status) }}</label>
                                 <table style="width: 100%; margin-top: 20px">
                                     <tr style="height: 30px">
+                                        <td><b>Huesped(es):</b></td>
+                                        <td colspan="5">
+                                            {{ $reservation->person->full_name }}
+                                            @if ($reservation->aditional_people->count() > 0)
+                                                @php
+                                                    $cont = 1;
+                                                @endphp
+                                                @foreach ($reservation->aditional_people as $item)
+                                                    {{ $reservation->aditional_people->count() == $cont ? ' y ' : ', ' }} {{ $item->person->full_name }}
+                                                    @php
+                                                        $cont++;
+                                                    @endphp
+                                                @endforeach
+                                            @endif
+
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 30px">
                                         <td><b>N&deg; de habitación:</b></td>
                                         <td>{{ $room->code }}</td>
                                         <td><b>Tipo:</b></td>
@@ -135,7 +153,7 @@
                                         <th class="text-center" style="width: 25%"><b>Monto pagado</b></th>
                                         <th class="text-center" style="width: 25%"><b>Deuda</b></th>
                                     </tr>
-                                    <tr>
+                                    <tr style="height: 60px">
                                         <td class="text-center"><h4>{{ $day_payments->amount == intval($day_payments->amount) ? intval($day_payments->amount) : $day_payments->amount }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments + $total_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments }}</h4></td>

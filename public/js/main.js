@@ -159,8 +159,9 @@ $(document).ready(function(){
             if (res.success) {
                 toastr.success('Huesped registrado', 'Bien hecho');
                 $('.form-submit .btn-submit').removeAttr('disabled');
-                $(this).trigger('reset');
+                $('#form-person').trigger('reset');
                 $('#person-modal').modal('hide');
+                $('#select-city_id').val(null).trigger('change');
             } else {
                 toastr.error('Ocurrió un error', 'Error');
             }
