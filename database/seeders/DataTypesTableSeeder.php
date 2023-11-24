@@ -197,7 +197,7 @@ class DataTypesTableSeeder extends Seeder
                 'server_side' => 0,
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2023-10-11 15:27:50',
-                'updated_at' => '2023-11-09 02:17:20',
+                'updated_at' => '2023-11-24 00:01:26',
             ),
             10 => 
             array (
@@ -306,6 +306,24 @@ class DataTypesTableSeeder extends Seeder
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2023-11-09 02:24:58',
                 'updated_at' => '2023-11-09 02:44:37',
+            ),
+            16 => 
+            array (
+                'id' => 17,
+                'name' => 'penalty_types',
+                'slug' => 'penalty-types',
+                'display_name_singular' => 'Tipo de multa',
+                'display_name_plural' => 'Tipo de multas',
+                'icon' => 'voyager-warning',
+                'model_name' => 'App\\Models\\PenaltyType',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'created_at' => '2023-11-19 22:58:32',
+                'updated_at' => '2023-11-19 22:58:32',
             ),
         ));
         

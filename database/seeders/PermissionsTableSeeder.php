@@ -47,6 +47,14 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('countries');
         Permission::generateFor('states');
         Permission::generateFor('cities');
+        Permission::generateFor('sales');
+        Permission::generateFor('penalty_types');
+
+        // Sale
+        Permission::firstOrCreate([
+            'key'        => 'browse_sell',
+            'table_name' => 'sales',
+        ]);
 
         // Import
         Permission::firstOrCreate([

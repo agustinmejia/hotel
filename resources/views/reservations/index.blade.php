@@ -88,12 +88,14 @@
                                                                         <div>
                                                                             N&deg; <br>
                                                                             <span style="font-size: 35px">{{ $room->code }}</span> <br>
-                                                                            <b>{{ $room->type->name }} {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} <small>Bs.</small></b>
                                                                         </div>
                                                                         <div class="text-right">
                                                                             <br>
                                                                             <i class="icon {{ $icon }}"></i>
                                                                         </div>
+                                                                    </div>
+                                                                    <div style="margin: 5px">
+                                                                        <b>{{ $room->type->name }} {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} <small>Bs.</small></b>
                                                                     </div>
                                                                     <hr style="margin: 0px">
                                                                     <div class="text-center" style="padding-top: 5px">
@@ -234,8 +236,7 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            padding: 5px 10px;
-            /* cursor: pointer; */
+            padding: 5px;
         }
         .panel-number .icon {
             font-size: 40px

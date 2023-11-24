@@ -35,6 +35,9 @@ class ProductBranchOfficesController extends Controller
                             $query->OrwhereHas('product', function($query) use($search){
                                 $query->whereRaw("name like '%$search%'");
                             })
+                            ->OrwhereHas('product.type', function($query) use($search){
+                                $query->whereRaw("name like '%$search%'");
+                            })
                             ->OrwhereHas('branch_office', function($query) use($search){
                                 $query->whereRaw("name like '%$search%'");
                             });

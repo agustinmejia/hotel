@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('room_accessory_id')->nullable()->constrained('room_accessories');
             $table->decimal('price', 10, 2)->nullable();
             $table->text('observations')->nullable();
-            $table->smallInteger('status')->nullable()->default(0);
+            $table->smallInteger('status')->nullable()->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

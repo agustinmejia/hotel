@@ -11,7 +11,7 @@ class ReservationPerson extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'reservation_id', 'person_id'
+        'reservation_id', 'person_id', 'room_id'
     ];
 
     public function person() {

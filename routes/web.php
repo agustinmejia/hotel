@@ -12,6 +12,7 @@ use App\Http\Controllers\RoomsController;
 use App\Http\Controllers\CitiesController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SalesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     // Recepción
     Route::get('reception', function () {
+        update_hosting();
         return view('reservations.index');
     })->name('reception.index');
 
@@ -51,8 +53,11 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/payment/store', [ReservationsController::class, 'payment_store'])->name('reservations.payment.store');
     Route::post('reservations/product/store', [ReservationsController::class, 'product_store'])->name('reservations.product.store');
     Route::post('reservations/product/payment/store', [ReservationsController::class, 'product_payment_store'])->name('reservations.product.payment.store');
+    Route::post('reservations/penalties/payment/store', [ReservationsController::class, 'penalties_payment_store'])->name('reservations.penalties.payment.store');
     Route::post('reservations/close', [ReservationsController::class, 'close'])->name('reservations.close');
-    Route::post('reservations/change', [ReservationsController::class, 'change'])->name('reservations.change');
+    Route::post('reservations/change-room', [ReservationsController::class, 'change_room'])->name('reservations.change.room');
+    Route::post('reservations/add-people', [ReservationsController::class, 'add_people'])->name('reservations.add.people');
+    Route::post('reservations/add-penalty', [ReservationsController::class, 'add_penalty'])->name('reservations.add.penalty');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');
@@ -72,6 +77,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('cashiers/{id}/close', [CashiersController::class, 'close_index'])->name('cashiers.close.index');
     Route::post('cashiers/{id}/close/store', [CashiersController::class, 'close_store'])->name('cashiers.close.store');
     Route::get('cashiers/{id}/print', [CashiersController::class, 'print'])->name('cashiers.print');
+
+    // Sales
+    Route::resource('sales', SalesController::class);
+    Route::get('sell', [SalesController::class, 'create']);
 
     // Reports
     Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');

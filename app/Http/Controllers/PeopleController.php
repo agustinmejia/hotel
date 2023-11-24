@@ -67,6 +67,7 @@ class PeopleController extends Controller
                 'birthday' => $request->birthday,
                 'city_id' => $city_id,
                 'job' => $request->job,
+                'gender' => $request->gender,
                 'photo' => $request->photo
             ]);
 

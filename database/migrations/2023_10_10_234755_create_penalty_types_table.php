@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reservation_people', function (Blueprint $table) {
+        Schema::create('penalty_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reservation_id')->nullable()->constrained('reservations');
-            $table->foreignId('person_id')->nullable()->constrained('people');
-            $table->foreignId('room_id')->nullable()->constrained('rooms');
+            $table->string('name')->nullable();
+            $table->decimal('amount', 10, 2)->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reservation_people');
+        Schema::dropIfExists('penalty_types');
     }
 };

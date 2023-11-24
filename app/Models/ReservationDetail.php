@@ -26,6 +26,10 @@ class ReservationDetail extends Model
         return $this->hasMany(ReservationDetailAccessory::class, 'reservation_detail_id');
     }
 
+    public function penalties() {
+        return $this->hasMany(ReservationDetailPenalty::class, 'reservation_detail_id');
+    }
+
     public function days() {
         return $this->hasMany(ReservationDetailDay::class, 'reservation_detail_id');
     }

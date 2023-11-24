@@ -140,6 +140,17 @@ class SettingsTableSeeder extends Seeder
                 'order' => 6,
                 'group' => 'System',
             ),
+            11 => 
+            array (
+                'id' => 12,
+                'key' => 'system.update_hosting',
+                'display_name' => 'Actualización de hospedajes',
+                'value' => '12:00',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 7,
+                'group' => 'System',
+            ),
         ));
         
         

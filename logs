@@ -1,7 +1,8 @@
+composer dump-autoload
+Eliminar tabla reservation_people, cashier_details y ejecutar migraciones
+
 ** Mejoras **
-- Agregar pago de monto adicional en caso de que tenga que pagar alguna multa
-- Actualizar los días de hospedaje a todas las habitaciones que sigan ocupadas luego del medio días
-- pagos extras
 - pago a taxistas
 - No permitir que se pague un día si se tiene una deuda previa
 - Eliminar reservación
+- En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es que es menor o mayor

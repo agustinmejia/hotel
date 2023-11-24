@@ -1185,7 +1185,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 11,
             ),
             73 => 
             array (
@@ -1217,7 +1217,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 10,
+                'order' => 9,
             ),
             75 => 
             array (
@@ -1233,7 +1233,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
-                'order' => 11,
+                'order' => 12,
             ),
             76 => 
             array (
@@ -1249,7 +1249,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 12,
+                'order' => 13,
             ),
             77 => 
             array (
@@ -1265,7 +1265,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 13,
+                'order' => 14,
             ),
             78 => 
             array (
@@ -1281,7 +1281,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 14,
+                'order' => 15,
             ),
             79 => 
             array (
@@ -2162,6 +2162,134 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 1,
                 'details' => '{"options":{"vaca diez":"Vaca diez","cercado":"Cercado","marb\\u00e1n":"Marb\\u00e1n","itenez":"Itenez","moxos":"Moxos","yacuma":"Yacuma","jos\\u00e9 balliian":"Jos\\u00e9 Balliian","mamor\\u00e9":"Mamor\\u00e9"},"display":{"width":6}}',
                 'order' => 5,
+            ),
+            134 => 
+            array (
+                'id' => 136,
+                'data_type_id' => 17,
+                'field' => 'id',
+                'type' => 'text',
+                'display_name' => 'Id',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 1,
+            ),
+            135 => 
+            array (
+                'id' => 137,
+                'data_type_id' => 17,
+                'field' => 'name',
+                'type' => 'text',
+                'display_name' => 'Nombre',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
+                'order' => 2,
+            ),
+            136 => 
+            array (
+                'id' => 138,
+                'data_type_id' => 17,
+                'field' => 'amount',
+                'type' => 'number',
+                'display_name' => 'Monto',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
+                'order' => 3,
+            ),
+            137 => 
+            array (
+                'id' => 139,
+                'data_type_id' => 17,
+                'field' => 'description',
+                'type' => 'text_area',
+                'display_name' => 'Descripción',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 4,
+            ),
+            138 => 
+            array (
+                'id' => 140,
+                'data_type_id' => 17,
+                'field' => 'created_at',
+                'type' => 'timestamp',
+                'display_name' => 'Registrado',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 5,
+            ),
+            139 => 
+            array (
+                'id' => 141,
+                'data_type_id' => 17,
+                'field' => 'updated_at',
+                'type' => 'timestamp',
+                'display_name' => 'Updated At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 6,
+            ),
+            140 => 
+            array (
+                'id' => 142,
+                'data_type_id' => 17,
+                'field' => 'deleted_at',
+                'type' => 'timestamp',
+                'display_name' => 'Deleted At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 7,
+            ),
+            141 => 
+            array (
+                'id' => 143,
+                'data_type_id' => 10,
+                'field' => 'gender',
+                'type' => 'select_dropdown',
+                'display_name' => 'Género',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":6},"options":{"masculino":"masculino","femenino":"femenino"}}',
+                'order' => 10,
             ),
         ));
         

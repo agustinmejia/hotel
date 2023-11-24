@@ -13,18 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('people', function (Blueprint $table) {
+        Schema::create('reservation_detail_penalties', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('reservation_detail_id')->nullable()->constrained('reservation_details');
+            $table->foreignId('penalty_type_id')->nullable()->constrained('penalty_types');
             $table->foreignId('user_id')->nullable()->constrained('users');
-            $table->foreignId('city_id')->nullable()->constrained('cities');
-            $table->string('full_name')->nullable();
-            $table->string('dni')->nullable();
-            $table->string('phone')->nullable();
-            $table->text('address')->nullable();
-            $table->date('birthday')->nullable();
-            $table->string('job')->nullable();
-            $table->string('gender')->nullable();
-            $table->string('photo')->nullable();
+            $table->decimal('amount', 10, 2)->nullable();
+            $table->string('observations')->nullable();
+            $table->string('status')->nullable()->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -37,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('people');
+        Schema::dropIfExists('reservation_detail_penalties');
     }
 };

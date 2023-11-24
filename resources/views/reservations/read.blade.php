@@ -21,13 +21,43 @@
             </div>
         </div>
 
-        @if(!$cashier)
-        <div class="jumbotron" style="padding: 10px 30px">
-            <h1>Advertencia</h1>
-            <p>No ha realizado apertura de caja, por lo que no podrá registrar pagos ni ventas.</p>
-            <p><a class="btn btn-primary" href="#" data-toggle="modal" data-target="#create-cashier-modal" role="button">Abrir caja <i class="fa fa-money"></i></a></p>
+        @include('partials.check-cashier', ['cashier' => $cashier])
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-bordered">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12 div-details">
+                                <b>DETALLES DE HOSPEDAJE</b>
+                                <table style="width: 100%; margin-top: 20px">
+                                    <tr>
+                                        <td><b>Huesped(es):</b></td>
+                                        <td>
+                                            {{ $reservation->person->full_name }}
+                                            @if ($reservation->aditional_people->count() > 0)
+                                                @php
+                                                    $cont = 1;
+                                                @endphp
+                                                @foreach ($reservation->aditional_people as $item)
+                                                    {{ $reservation->aditional_people->count() == $cont ? ' y ' : ', ' }} {{ $item->person->full_name }}
+                                                    @php
+                                                        $cont++;
+                                                    @endphp
+                                                @endforeach
+                                            @endif
+                                        </td>
+                                        <td><b>Fecha de registro:</b></td>
+                                        <td>{{ $days[date('w', strtotime($reservation->start))] }}, {{ date('d', strtotime($reservation->start)) }} de {{ $months[intval(date('m', strtotime($reservation->start)))] }} de {{ date('Y', strtotime($reservation->start)) }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        @endif
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">
@@ -61,20 +91,24 @@
                                                     <ul>
                                                         @php
                                                             $amount_days = $detail->days->where('status', 'pendiente')->sum('amount');
+                                                            $amount_penalties = $detail->penalties->where('status', 'pendiente')->sum('amount');
                                                         @endphp
                                                         <li>{{ $detail->days->where('status', 'pendiente')->count() }} {{ $detail->days->where('status', 'pendiente')->count() > 1 ? 'días adeudados' : 'día adeudado' }} | <b>{{ $amount_days }} <small>Bs.</small></b></li>
                                                         @php
-                                                            $sales_amoount = 0;
+                                                            $sales_amount = 0;
                                                             foreach($detail->sales as $sale){
                                                                 foreach($sale->details as $sale_detail){
                                                                     if($sale_detail->status == 'pendiente'){
-                                                                        $sales_amoount += $sale_detail->price * $sale_detail->quantity;
+                                                                        $sales_amount += $sale_detail->price * $sale_detail->quantity;
                                                                     }
                                                                 }
                                                             }
                                                         @endphp
-                                                        @if ($sales_amoount > 0)
-                                                            <li>Productos consumidos por un valor de <b>{{ $sales_amoount }} <small>Bs.</small></b></li>
+                                                        @if ($sales_amount > 0)
+                                                            <li>Deuda de productos consumidos por un valor de <b>{{ $sales_amount }} <small>Bs.</small></b></li>
+                                                        @endif
+                                                        @if ($amount_penalties > 0)
+                                                            <li>Multas por un valor de <b>{{ $amount_penalties }} <small>Bs.</small></b></li>
                                                         @endif
                                                     </ul>
                                                 </td>
@@ -98,10 +132,10 @@
                                                     @endphp
                                                     <label class="label label-{{ $label }}">{{ ucfirst($detail->status) }}</label>
                                                 </td>
-                                                <td class="text-right">{{ $amount_days + $sales_amoount }}</td>
+                                                <td class="text-right">{{ $amount_days + $sales_amount + $amount_penalties }}</td>
                                                 <td class="no-sort no-click bread-actions text-right">
                                                     @if (Auth::user()->hasPermission('read_reservations') && $detail->status != 'reservada')
-                                                        <a href="{{ route('reservations.show', $reservation->id).'?room_id='.$detail->room_id }}" title="Ver" class="btn btn-sm btn-warning" target="_blank">
+                                                        <a href="{{ route('reservations.show', $reservation->id).'?room_id='.$detail->room_id }}&disable_close=true" title="Ver" class="btn btn-sm btn-warning" target="_blank">
                                                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                                                         </a>
                                                     @endif
@@ -109,7 +143,7 @@
                                             </tr>
                                             @php
                                                 $cont++;
-                                                $total += $amount_days + $sales_amoount;
+                                                $total += $amount_days + $sales_amount + $amount_penalties;
                                             @endphp
                                         @endforeach
                                     </tbody>

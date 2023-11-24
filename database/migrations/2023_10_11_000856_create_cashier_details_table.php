@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('sale_detail_id')->nullable()->constrained('sale_details');
             $table->foreignId('service_id')->nullable()->constrained('services');
             $table->foreignId('reservation_detail_day_id')->nullable()->constrained('reservation_detail_days');
+            $table->foreignId('reservation_detail_penalty_id')->nullable()->constrained('reservation_detail_penalties');
             $table->string('type')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->smallInteger('cash')->nullable()->default(1);

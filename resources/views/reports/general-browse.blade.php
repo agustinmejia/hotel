@@ -145,7 +145,7 @@
                                         $total_expenses = 0;
                                         $total_qr = 0;
                                     @endphp
-                                    @forelse (App\Models\CashierDetail::with(['cashier.user', 'sale_detail.product', 'service', 'reservation_detail_day.reservation_detail.room'])->whereDate('created_at', date('Y-m-d'))->get() as $item)
+                                    @forelse (App\Models\CashierDetail::with(['cashier.user', 'sale_detail.product', 'service', 'reservation_detail_day.reservation_detail.room', 'penalty.type'])->whereDate('created_at', date('Y-m-d'))->get() as $item)
                                         <tr>
                                             <td>{{ $cont }}</td>
                                             <td>
@@ -160,6 +160,11 @@
                                                     Uso de <b>{{ $item->service->name }}</b>
                                                 @elseif ($item->reservation_detail_day)
                                                     Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b>
+                                                @elseif ($item->penalty)
+                                                    Pago de multa por <b>{{ $item->penalty->type->name }}</b>
+                                                    @if ($item->penalty->observations)
+                                                        <br> <small>{{ $item->penalty->observations }}</small>
+                                                    @endif
                                                 @endif
                                                 {!! $item->observations ? '<br>'.$item->observations : '' !!}
                                             </td>

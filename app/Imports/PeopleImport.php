@@ -20,9 +20,9 @@ class PeopleImport implements ToModel
     public function model(array $row)
     {
         if (strtolower($row[0]) != 'nombre completo') {
-            $country_id = $row[8] ? Country::firstOrCreate(['name' => ucfirst(strtolower($row[8]))])->id : 1;
-            $state_id = $row[7] ? State::firstOrCreate(['country_id' => $country_id, 'name' => ucfirst(strtolower($row[7]))])->id : 1;
-            $city_id = $row[6] ? City::firstOrCreate(['state_id' => $state_id, 'name' => ucfirst(strtolower($row[6]))])->id : 1;
+            $country_id = $row[9] ? Country::firstOrCreate(['name' => ucfirst(strtolower($row[9]))])->id : 1;
+            $state_id = $row[8] ? State::firstOrCreate(['country_id' => $country_id, 'name' => ucfirst(strtolower($row[8]))])->id : 1;
+            $city_id = $row[7] ? City::firstOrCreate(['state_id' => $state_id, 'name' => ucfirst(strtolower($row[7]))])->id : 1;
 
             return new Person([
                 'full_name' => $row[0],
@@ -31,7 +31,8 @@ class PeopleImport implements ToModel
                 'address' => $row[4],
                 'birthday' => $row[2],
                 'city_id' => $city_id,
-                'job' => $row[5]
+                'job' => ucfirst(strtolower($row[5])),
+                'gender' => $row[6]
             ]);
         }
     }

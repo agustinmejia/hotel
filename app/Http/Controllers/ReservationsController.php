@@ -18,6 +18,8 @@ use App\Models\Cashier;
 use App\Models\CashierDetail;
 use App\Models\ProductBranchOffice;
 use App\Models\ReservationPerson;
+use App\Models\PenaltyType;
+use App\Models\ReservationDetailPenalty;
 
 class ReservationsController extends Controller
 {
@@ -166,7 +168,7 @@ class ReservationsController extends Controller
     {
         $this->custom_authorize('read_reservations');
         $room_id = request('room_id');
-        $reservation = Reservation::with(['details.accessories.accessory', 'details.days', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
+        $reservation = Reservation::with(['details.accessories.accessory', 'details.days', 'details.penalties', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
                         ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {
@@ -257,7 +259,6 @@ class ReservationsController extends Controller
             return redirect()->to($redirect)->with(['message' => 'Venta registrada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th);
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
@@ -320,10 +321,37 @@ class ReservationsController extends Controller
         }
     }
 
-    public function change(Request $request){
+    public function penalties_payment_store(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
         DB::beginTransaction();
         try {
-            $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+            if (!$request->cashier_id) {
+                return redirect()->to($redirect)->with(['message' => 'No has aperturado caja', 'alert-type' => 'warning']);
+            }
+            for ($i=0; $i < count($request->reservation_detail_penalty_id); $i++) { 
+                $reservation_detail_penalty = ReservationDetailPenalty::find($request->reservation_detail_penalty_id[$i]);
+                $reservation_detail_penalty->status = 'pagada';
+                $reservation_detail_penalty->update();
+
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'reservation_detail_penalty_id' => $reservation_detail_penalty->id,
+                    'type' => 'ingreso',
+                    'amount' => $reservation_detail_penalty->amount,
+                    'cash' => $request->payment_qr ? 0 : 1
+                ]);
+            }
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Pago registrado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function change_room(Request $request){
+        DB::beginTransaction();
+        try {
             $room = Room::find($request->room_id);
             $reservation_detail_old = ReservationDetail::find($request->reservation_detail_id);
 
@@ -341,7 +369,7 @@ class ReservationsController extends Controller
                     ReservationDetailDay::create([
                         'reservation_detail_id' => $reservation_detail->id,
                         'date' => $item->date,
-                        'amount' => $item->amount,
+                        'amount' => $room->type->price,
                         'status' => $item->status
                     ]);
                     ReservationDetailDay::where('id', $item->id)->delete();
@@ -354,12 +382,61 @@ class ReservationsController extends Controller
             $reservation_detail_old->update();
 
             DB::commit();
-            return redirect()->to($redirect)->with(['message' => 'Cambio de habitación registrado', 'alert-type' => 'success']);
+
+            // Redireccionar a la nueva habitación
+            $route = route('reservations.show', $reservation_detail_old->reservation_id).'?room_id='.$room->id;
+            return redirect()->to($route)->with(['message' => 'Cambio de habitación registrado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($_SERVER['HTTP_REFERER'])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function add_people(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+            $reservation_detail = ReservationDetail::find($request->reservation_detail_id);
+            foreach ($request->person_id as $person_id) {
+                // Verificar que la persona no sea la que tiene asignada la reserva
+                if ($reservation_detail->reservation->person_id != $person_id) {
+                    if($reservation_detail->reservation->aditional_people->whereIn('person_id', [$person_id])->count() == 0){
+                        ReservationPerson::create([
+                            'reservation_id' => $reservation_detail->reservation_id,
+                            'person_id' => $person_id,
+                            'room_id' => $reservation_detail->room_id
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Huesped(es) agregados', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
+
+    public function add_penalty(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+            ReservationDetailPenalty::create([
+                'reservation_detail_id' => $request->reservation_detail_id,
+                'penalty_type_id' => is_numeric($request->penalty_type_id) ? $request->penalty_type_id : PenaltyType::firstOrCreate(['name' => ucfirst(strtolower($request->penalty_type_id)), 'amount' => $request->amount])->id,
+                'user_id' => Auth::user()->id,
+                'amount' => $request->amount,
+                'observations' => $request->observations
+            ]);
+
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Multa agregada', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
 
     public function close(Request $request){
         $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
@@ -408,6 +485,20 @@ class ReservationsController extends Controller
                             'reservation_detail_day_id' => $day->id,
                             'type' => 'ingreso',
                             'amount' => $day->amount,
+                            'cash' => $request->payment_qr ? 0 : 1
+                        ]);
+                    }
+                });
+
+                // Pago de multas
+                $reservation_detail->penalties->each(function ($penalty) use($request) {
+                    if ($penalty->status = 'pendiente') {
+                        $penalty->update(['status' => 'pagada']);
+                        CashierDetail::create([
+                            'cashier_id' => $request->cashier_id,
+                            'reservation_detail_penalty_id' => $penalty->id,
+                            'type' => 'ingreso',
+                            'amount' => $penalty->amount,
                             'cash' => $request->payment_qr ? 0 : 1
                         ]);
                     }

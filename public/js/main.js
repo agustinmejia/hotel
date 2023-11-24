@@ -42,7 +42,7 @@ function customSelect(select, url, templateResult, templateSelection, dropdownPa
         dropdownParent: dropdownParent ? dropdownParent : null,
         language: {
             noResults: function() {
-                return btnNoResults ? `Resultados no encontrados <button type="button" class="btn btn-link" onclick="${btnNoResults}">Crear nuevo <i class="fa fa-plus"></i></a>` : 'Resultados no encontrados';
+                return btnNoResults ? `Resultados no encontrados <button type="button" class="btn btn-link" onclick="${btnNoResults}">Crear nuevo <i class="fa fa-plus"></i></button>` : 'Resultados no encontrados';
             },
             inputTooShort: function (data) {
                 return `Ingrese ${data.minimum - data.input.length} o más caracteres`;

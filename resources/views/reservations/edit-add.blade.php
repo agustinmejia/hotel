@@ -251,17 +251,17 @@
             }
         }
 
-        function createPerson(){
-            $('#select-person_id').select2('close');
-            $('#person-modal').modal('show');
-        }
+            function createPerson(){
+                $('#select-person_id').select2('close');
+                $('#person-modal').modal('show');
+            }
 
-        function createCity(){
-            $('#select-city_id').select2('destroy');
-            $('#select-city_id').fadeOut('fast', function(){
-                $('#input-city_name').fadeIn('fast');
-                $('#input-city_name').prop('required', true);
-            });
-        }
+            function createCity(){
+                $('#select-city_id').select2('destroy');
+                $('#select-city_id').fadeOut('fast', function(){
+                    $('#input-city_name').fadeIn('fast');
+                    $('#input-city_name').prop('required', true);
+                });
+            }
     </script>
 @stop

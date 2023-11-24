@@ -26,13 +26,20 @@
                             <input type="date" name="birthday" class="form-control">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="job">Ocupación</label>
-                            <input type="text" name="job" class="form-control">
+                            <label for="gender">Género</label>
+                            <select name="gender" class="form-control" required>
+                                <option value="masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
                         </div>
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-6">
                             <label for="city_id">Procedencia</label>
                             <select name="city_id" class="form-control" id="select-city_id"></select>
                             <input type="text" name="city_name" id="input-city_name" class="form-control" placeholder="Nombre de la ciudad" style="display: none">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="job">Ocupación</label>
+                            <input type="text" name="job" class="form-control">
                         </div>
                         <div class="form-group col-md-12">
                             <label for="street">Dirección</label>
