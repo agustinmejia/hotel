@@ -58,6 +58,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/change-room', [ReservationsController::class, 'change_room'])->name('reservations.change.room');
     Route::post('reservations/add-people', [ReservationsController::class, 'add_people'])->name('reservations.add.people');
     Route::post('reservations/add-penalty', [ReservationsController::class, 'add_penalty'])->name('reservations.add.penalty');
+    Route::post('reservations/add-payment', [ReservationsController::class, 'add_payment'])->name('reservations.add.payment');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');
@@ -68,6 +69,7 @@ Route::group(['prefix' => 'admin'], function () {
     // Products
     Route::get('products/search/ajax', [ProductsController::class, 'search'])->name('products.search');
 
+    // Branch office
     Route::resource('product-branch-offices', ProductBranchOfficesController::class);
     Route::get('product-branch-offices/list/ajax', [ProductBranchOfficesController::class, 'list'])->name('product-branch-offices.list');
 

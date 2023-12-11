@@ -20,6 +20,7 @@ use App\Models\ProductBranchOffice;
 use App\Models\ReservationPerson;
 use App\Models\PenaltyType;
 use App\Models\ReservationDetailPenalty;
+use App\Models\ReservationDetailDayPay;
 
 class ReservationsController extends Controller
 {
@@ -168,7 +169,7 @@ class ReservationsController extends Controller
     {
         $this->custom_authorize('read_reservations');
         $room_id = request('room_id');
-        $reservation = Reservation::with(['details.accessories.accessory', 'details.days', 'details.penalties', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
+        $reservation = Reservation::with(['details.accessories.accessory', 'details.days.payments', 'details.penalties', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
                         ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {
@@ -281,7 +282,7 @@ class ReservationsController extends Controller
                     'cashier_id' => $request->cashier_id,
                     'reservation_detail_day_id' => $day_reservation->id,
                     'type' => 'ingreso',
-                    'amount' => $day_reservation->amount,
+                    'amount' => $day_reservation->amount - $day_reservation->payments->sum('amount'),
                     'cash' => $request->payment_qr ? 0 : 1
                 ]);
             }
@@ -437,6 +438,62 @@ class ReservationsController extends Controller
         }
     }
 
+    public function add_payment(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+            $details_days = ReservationDetailDay::where('reservation_detail_id', $request->reservation_detail_id)->where('status', 'pendiente')->get();
+            $amount_pay = $request->amount;
+            $reservation_detail_day_id = null;
+            // Recorrer la lista de días pendientes para cambiar el estado
+            foreach ($details_days as $item) {
+                $amount_day = $item->amount - $item->payments->sum('amount');
+                // Si el monto es mayor a la deuda cambiamos el estado y disminuimos el monto, sino termina el ciclo
+                if($amount_pay >= $amount_day){
+                    $item->status = 'pagado';
+                    $item->update();
+                    $amount_pay -= $amount_day;
+
+                    // Guardar detalle de caja
+                    CashierDetail::create([
+                        'cashier_id' => $request->cashier_id,
+                        'reservation_detail_day_id' => $item->id,
+                        'type' => 'ingreso',
+                        'amount' => $amount_day,
+                        'cash' => $request->payment_qr ? 0 : 1
+                    ]);
+                }else{
+                    $reservation_detail_day_id = $item->id;
+                    break;
+                }
+            }
+
+            // Si existe un excedente lo ponemos a cuenta del siguiente día
+            if($reservation_detail_day_id && $amount_pay > 0){
+                ReservationDetailDayPay::create([
+                    'user_id' => Auth::user()->id,
+                    'reservation_detail_day_id' => $reservation_detail_day_id,
+                    'amount' => $amount_pay
+                ]);
+
+                // Guardar detalle de caja
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'reservation_detail_day_id' => $reservation_detail_day_id,
+                    'type' => 'ingreso',
+                    'amount' => $amount_pay,
+                    'cash' => $request->payment_qr ? 0 : 1,
+                    'observations' => 'Pago parcial de hospedaje'
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Hospedaje finalizado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
 
     public function close(Request $request){
         $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
@@ -445,7 +502,7 @@ class ReservationsController extends Controller
             $reservation_details = $request->reservation_detail_id;
             for ($i=0; $i < count($reservation_details); $i++) { 
                 // Actualizar estado de reserva de habitación
-                $reservation_detail = ReservationDetail::with(['reservation', 'room', 'days', 'sales.details'])->where('id', $reservation_details[$i])->first();
+                $reservation_detail = ReservationDetail::with(['reservation', 'room', 'days.payments', 'sales.details'])->where('id', $reservation_details[$i])->first();
                 $reservation_detail->status = 'finalizada';
 
                 // Cambiar datos de habitación
@@ -484,7 +541,7 @@ class ReservationsController extends Controller
                             'cashier_id' => $request->cashier_id,
                             'reservation_detail_day_id' => $day->id,
                             'type' => 'ingreso',
-                            'amount' => $day->amount,
+                            'amount' => $day->amount - $day->payments->sum('amount'),
                             'cash' => $request->payment_qr ? 0 : 1
                         ]);
                     }

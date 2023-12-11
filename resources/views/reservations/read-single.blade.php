@@ -33,12 +33,6 @@
             }
         }
     }
-
-    // Verificar si tiene deudas de otras habitaciones
-    $count_pending_hosting = 0;
-    foreach($reservation->details as $detail){
-        $count_pending_hosting += $detail->days->where('status', 'pendiente')->count();
-    }
 @endphp
 
 @section('content')
@@ -56,19 +50,23 @@
                         </button>
                         <ul class="dropdown-menu" role="menu" style="left: -90px !important">
                             @if($cashier)
-                                <li><a href="#" title="Realizar pago de hospedaje" data-toggle="modal" data-target="#add-payment-modal">Pagar hospedaje</a></li>
+                                <li><a href="#" title="Realizar pago de hospedaje" data-toggle="modal" data-target="#add-payment-host-modal">Pagar hospedaje</a></li>
                             @endif
                             @if ($reservation_detail->status == 'ocupada')
                                 @if (Auth::user()->branch_office_id)
-                                <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-modal">Venta de producto</a></li>
+                                <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-sale-modal">Venta de producto</a></li>
                                 @endif
                                 <li><a href="#" title="Agregar accesorio" data-toggle="modal" data-target="#add-accessory-modal">Agregar accesorios</a></li>
                                 <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-people-modal">Agregar huesped</a></li>
                                 <li><a href="#" title="Agregar multa" data-toggle="modal" data-target="#add-penalty-modal">Agregar multa</a></li>
-                                <li class="divider"></li>
+                                <li class="divider" style="margin: 5px 0px"></li>
+                                @if($cashier)
+                                <li><a href="#" title="Pago parcial" data-toggle="modal" data-target="#add-partial-payment-modal">Pago parcial</a></li>
+                                @endif
+                                <li class="divider" style="margin: 5px 0px"></li>
                                 <li><a href="#" title="Cambiar de habitación" data-toggle="modal" data-target="#change-room-modal">Cambiar de habitación</a></li>
                                 @if($cashier && !request('disable_close'))
-                                    @if ($count_pending_hosting > 1)
+                                    @if ($reservation->details->count() > 1)
                                         <li><a href="{{ route('reservations.show', $reservation->id) }}" style="color: #FA3E19" title="Cerrar hospedaje">Cerrar hospedaje</a></li>
                                     @else
                                     <li><a href="#" style="color: #FA3E19" title="Cerrar hospedaje" data-toggle="modal" data-target="#close-reservation-modal">Cerrar hospedaje</a></li>
@@ -440,10 +438,10 @@
     </div>
 
     {{-- Add payment modal --}}
-    <form action="{{ route('reservations.payment.store') }}" id="form-add-payment" class="form-submit" method="POST">
+    <form action="{{ route('reservations.payment.store') }}" class="form-submit" method="POST">
         @csrf
         <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
-        <div class="modal modal-primary fade" tabindex="-1" id="add-payment-modal" role="dialog">
+        <div class="modal modal-primary fade" tabindex="-1" id="add-payment-host-modal" role="dialog">
             <div class="modal-dialog modal-l">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -475,18 +473,27 @@
                                         <tr>
                                             <td>{{ $cont }}</td>
                                             <td>{{ $days[date('w', strtotime($item->date))] }}, {{ date('d', strtotime($item->date)) }} de {{ $months[intval(date('m', strtotime($item->date)))] }}</td>
-                                            <td>{{ $item->amount }}</td>
-                                            <td><label class="label label-{{ $item->status == 'pagado' ? 'success' : 'danger' }}" style="color: white !important">{{ Str::ucfirst($item->status) }}</label></td>
+                                            <td class="text-right" @if($item->payments->sum('amount') > 0 && $item->status == 'pendiente') title="Adelanto de {{ $item->payments->sum('amount') }}" style="cursor: pointer" @endif>
+                                                @php
+                                                    if($item->status == 'pendiente'){
+                                                        $amount = $item->amount - $item->payments->sum('amount');
+                                                    }else{
+                                                        $amount = $item->amount;
+                                                    }
+                                                @endphp
+                                                {{ floatval($amount) == intval($amount) ? intval($amount) : $amount }}
+                                            </td>
+                                            <td class="text-center"><label class="label label-{{ $item->status == 'pagado' ? 'success' : 'danger' }}" style="color: white !important">{{ Str::ucfirst($item->status) }}</label></td>
                                             <td class="text-right">
-                                                <input type="checkbox" name="reservation_detail_day_id[]" value="{{ $item->id }}" data-amount="{{ $item->amount }}" class="checkbox-payment" style="transform: scale(1.5);" title="{{ $item->status == 'pagado' ? 'Pagado' : 'Pagar' }}" @if($item->status == 'pagado') disabled checked @endif /> &nbsp;&nbsp;
+                                                <input type="checkbox" name="reservation_detail_day_id[]" value="{{ $item->id }}" data-amount="{{ $amount }}" class="checkbox-payment" style="transform: scale(1.5);" title="{{ $item->status == 'pagado' ? 'Pagado' : 'Pagar' }}" @if($item->status == 'pagado') disabled checked @endif /> &nbsp;&nbsp;
                                             </td>
                                         </tr>
                                         @php
                                             $cont++;
                                             if($item->status == 'pagado') {
-                                                $payment  += $item->amount;
+                                                $payment  += $amount;
                                             } else {
-                                                $debt += $item->amount;
+                                                $debt += $amount;
                                             }
                                         @endphp
                                     @endforeach
@@ -522,16 +529,16 @@
     </form>
 
     {{-- Add product modal --}}
-    <form action="{{ route('reservations.product.store') }}" id="form-add-product" class="form-submit" method="POST">
+    <form action="{{ route('reservations.product.store') }}" class="form-submit" method="POST">
         @csrf
         <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
         <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
-        <div class="modal modal-primary fade" tabindex="-1" id="add-product-modal" role="dialog">
+        <div class="modal modal-primary fade" tabindex="-1" id="add-product-sale-modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><i class="fa fa-shopping-basket"></i> Registrar compra</h4>
+                        <h4 class="modal-title"><i class="fa fa-shopping-basket"></i> Registrar venta</h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -727,6 +734,46 @@
         </div>
     </form>
 
+    {{-- Add partial payment modal --}}
+    <form action="{{ route('reservations.add.payment') }}" class="form-submit" method="POST">
+        @csrf
+        <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
+        <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+        <div class="modal modal-primary fade" tabindex="-1" id="add-partial-payment-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-money"></i> Agregar pago parcial</h4>
+                    </div>
+                    <div class="modal-body">
+                        @php
+                            $total_amount = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+                        @endphp
+                        <div class="form-group">
+                            <div class="panel panel-bordered" style="border-left: 5px solid #62A8EA">
+                                <div class="panel-body" style="padding: 15px 20px">
+                                    <p>La deuda total asciende a un monto de Bs. <b>{{ $total_amount }}</b> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Monto</label>
+                            <input type="number" name="amount" class="form-control" step="0.5" min="0.5" max="{{ $total_amount }}" required>
+                        </div>
+                        <div class="form-group text-right">
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;">Pago con Qr</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Pagar <i class="fa fa-money"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
     {{-- Create person modal --}}
     @include('partials.add-person-modal')
 @stop
@@ -759,7 +806,7 @@
         var user = @json(Auth::user());
         var cashier = @json($cashier);
         $(document).ready(function(){
-            customSelect('#select-product', '{{ route("products.search") }}', formatResultProducts, data => { productSelected = data; return data.name}, '#add-product-modal', null);
+            customSelect('#select-product', '{{ route("products.search") }}', formatResultProducts, data => { productSelected = data; return data.name}, '#add-product-sale-modal', null);
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#add-people-modal', 'createPerson()');
             customSelect('#select-city_id', '{{ route("cities.search") }}', formatResultCities, data => data.name, "#person-modal", 'createCity()');
             $('#select-branch_office_id').select2({dropdownParent: '#create-cashier-modal'});
@@ -801,7 +848,7 @@
                 $('#select-branch_office_id').val(user.branch_office_id).trigger('change');
             }
 
-            $('#add-product-modal').on('shown.bs.modal', function () {
+            $('#add-product-sale-modal').on('shown.bs.modal', function () {
                 $('#products-details .tr-item').remove();
                 setNumber();
                 $('#label-total').text('0.00');

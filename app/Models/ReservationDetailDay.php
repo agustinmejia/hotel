@@ -22,4 +22,8 @@ class ReservationDetailDay extends Model
     public function reservation_detail(){
         return $this->belongsTo(ReservationDetail::class, 'reservation_detail_id');
     }
+
+    public function payments(){
+        return $this->hasMany(ReservationDetailDayPay::class, 'reservation_detail_day_id');
+    }
 }
