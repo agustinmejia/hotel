@@ -93,7 +93,7 @@
                                                             $amount_days = $detail->days->where('status', 'pendiente')->sum('amount');
                                                             $amount_penalties = $detail->penalties->where('status', 'pendiente')->sum('amount');
                                                         @endphp
-                                                        <li>{{ $detail->days->where('status', 'pendiente')->count() }} {{ $detail->days->where('status', 'pendiente')->count() > 1 ? 'días adeudados' : 'día adeudado' }} | <b>{{ $amount_days }} <small>Bs.</small></b></li>
+                                                        <li>{{ $detail->days->where('status', 'pendiente')->count() }} {{ $detail->days->where('status', 'pendiente')->count() != 1 ? 'días adeudados' : 'día adeudado' }} | <b>{{ $amount_days }} <small>Bs.</small></b></li>
                                                         @php
                                                             $sales_amount = 0;
                                                             foreach($detail->sales as $sale){
@@ -102,6 +102,9 @@
                                                                         $sales_amount += $sale_detail->price * $sale_detail->quantity;
                                                                     }
                                                                 }
+                                                            }
+                                                            foreach ($detail->days->where('status', 'pendiente') as $item) {
+                                                                $amount_days -= $item->payments->sum('amount');
                                                             }
                                                         @endphp
                                                         @if ($sales_amount > 0)

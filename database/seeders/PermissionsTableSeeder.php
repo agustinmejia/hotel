@@ -49,6 +49,8 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('cities');
         Permission::generateFor('sales');
         Permission::generateFor('penalty_types');
+        Permission::generateFor('jobs');
+        Permission::generateFor('employes');
 
         // Sale
         Permission::firstOrCreate([

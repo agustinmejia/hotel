@@ -182,6 +182,17 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title"><i class="voyager-check"></i> Desea habilitar la siguiente habitación?</h4>
                     </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="employe_id">Limpieza realizada por</label>
+                            <select name="employe_id" id="select-employe_id" class="form-control">
+                                <option value="">--Seleccionar empleado(a)--</option>
+                                @foreach (App\Models\Employe::where('status', 1)->get() as $item)
+                                    <option value="{{ $item->id }}">{{ $item->full_name }} - {{ $item->job->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                         <input type="submit" class="btn btn-success" value="Sí, habilitar">
@@ -270,6 +281,10 @@
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#reservation-modal', 'createPerson()');
             customSelect('#select-city_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, "#person-modal", 'createCity()');
+
+            $('#select-employe_id').select2({
+                dropdownParent: $('#enable-modal')
+            });
 
             $('.btn-enable').click(function(){
                 let id = $(this).data('id');

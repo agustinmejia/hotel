@@ -520,7 +520,7 @@ class ReservationsController extends Controller
                     $sale->update(['status' => 'pagada']);
 
                     $sale->details->each(function ($detail) use($request) {
-                        if ($detail->status = 'pendiente') {
+                        if ($detail->status == 'pendiente') {
                             $detail->update(['status' => 'pagado']);
                             CashierDetail::create([
                                 'cashier_id' => $request->cashier_id,
@@ -535,7 +535,7 @@ class ReservationsController extends Controller
 
                 // Pago de registros de hospedaje
                 $reservation_detail->days->each(function ($day) use($request) {
-                    if ($day->status = 'pendiente') {
+                    if ($day->status == 'pendiente') {
                         $day->update(['status' => 'pagado']);
                         CashierDetail::create([
                             'cashier_id' => $request->cashier_id,
@@ -549,7 +549,7 @@ class ReservationsController extends Controller
 
                 // Pago de multas
                 $reservation_detail->penalties->each(function ($penalty) use($request) {
-                    if ($penalty->status = 'pendiente') {
+                    if ($penalty->status == 'pendiente') {
                         $penalty->update(['status' => 'pagada']);
                         CashierDetail::create([
                             'cashier_id' => $request->cashier_id,

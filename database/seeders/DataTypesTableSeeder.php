@@ -325,6 +325,42 @@ class DataTypesTableSeeder extends Seeder
                 'created_at' => '2023-11-19 22:58:32',
                 'updated_at' => '2023-11-19 22:58:32',
             ),
+            17 => 
+            array (
+                'id' => 18,
+                'name' => 'jobs',
+                'slug' => 'jobs',
+                'display_name_singular' => 'Cargo',
+                'display_name_plural' => 'Cargos',
+                'icon' => 'voyager-list',
+                'model_name' => 'App\\Models\\Job',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'created_at' => '2023-12-12 01:44:53',
+                'updated_at' => '2023-12-12 01:44:53',
+            ),
+            18 => 
+            array (
+                'id' => 19,
+                'name' => 'employes',
+                'slug' => 'employes',
+                'display_name_singular' => 'Empleado',
+                'display_name_plural' => 'Empleados',
+                'icon' => 'voyager-person',
+                'model_name' => 'App\\Models\\Employe',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
+                'created_at' => '2023-12-12 01:56:12',
+                'updated_at' => '2023-12-12 01:58:51',
+            ),
         ));
         
         

@@ -33,6 +33,11 @@
             }
         }
     }
+    
+    foreach ($reservation_detail_days->where('status', 'pendiente') as $item) {
+        $total_debts -= $item->payments->sum('amount');
+    }
+
 @endphp
 
 @section('content')
@@ -43,7 +48,7 @@
                 <a href="{{ route('reception.index') }}" class="btn btn-warning"><i class="fa fa-arrow-circle-left"></i> Volver</a>
             </div>
             <div class="col-md-6 text-right" style="padding-right: 15px">
-                @if ($cashier || $reservation_detail->status == 'ocupada')
+                @if ($cashier && $reservation_detail->status == 'ocupada')
                     <div class="btn-group">
                         <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
                             Opciones <span class="caret"></span>
@@ -59,11 +64,11 @@
                                 <li><a href="#" title="Agregar accesorio" data-toggle="modal" data-target="#add-accessory-modal">Agregar accesorios</a></li>
                                 <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-people-modal">Agregar huesped</a></li>
                                 <li><a href="#" title="Agregar multa" data-toggle="modal" data-target="#add-penalty-modal">Agregar multa</a></li>
-                                <li class="divider" style="margin: 5px 0px"></li>
+                                <li class="divider" style="margin: 10px 0px"></li>
                                 @if($cashier)
                                 <li><a href="#" title="Pago parcial" data-toggle="modal" data-target="#add-partial-payment-modal">Pago parcial</a></li>
                                 @endif
-                                <li class="divider" style="margin: 5px 0px"></li>
+                                <li class="divider" style="margin: 10px 0px"></li>
                                 <li><a href="#" title="Cambiar de habitación" data-toggle="modal" data-target="#change-room-modal">Cambiar de habitación</a></li>
                                 @if($cashier && !request('disable_close'))
                                     @if ($reservation->details->count() > 1)
@@ -216,7 +221,7 @@
                                                         <td class="text-right">{{ floatval($detail->price) == intval($detail->price) ? intval($detail->price):$detail->price }}</td>
                                                         <td class="text-right">{{ floatval($detail->quantity) == intval($detail->quantity) ? intval($detail->quantity):$detail->quantity }}</td>
                                                         <td class="text-right">{{ $detail->quantity * $detail->price }}</td>
-                                                        <td><label class="label label-{{ $detail->status == 'pagado' ? 'success':'danger' }}">{{ Str::ucfirst($detail->status) }}</label></td>
+                                                        <td class="text-center"><label class="label label-{{ $detail->status == 'pagado' ? 'success':'danger' }}">{{ Str::ucfirst($detail->status) }}</label></td>
                                                         <td class="text-right">
                                                             @if ($detail->status == 'pendiente')
                                                                 <input type="checkbox" name="sale_detail_id[]" value="{{ $detail->id }}" class="checkbox-sale_detail_id" data-total="{{ $detail->quantity * $detail->price }}" @if(!$cashier) disabled @endif style="transform: scale(1.5);" title="Pagar" />
@@ -717,7 +722,7 @@
                             <h3 class="text-danger text-right"><span style="font-size: 12px">Deuda Bs. </span>{{ number_format($total_debts + $total_penalties, 2, ',', '.') }}</h3>
                         </div>
                         <div class="form-group text-right">
-                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;">Pago con Qr</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
                         </div>
                         @else
                         <div class="form-group">
@@ -749,11 +754,14 @@
                     <div class="modal-body">
                         @php
                             $total_amount = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+                            foreach ($reservation_detail_days->where('status', 'pendiente') as $item) {
+                                $total_amount -= $item->payments->sum('amount');
+                            }
                         @endphp
                         <div class="form-group">
                             <div class="panel panel-bordered" style="border-left: 5px solid #62A8EA">
                                 <div class="panel-body" style="padding: 15px 20px">
-                                    <p>La deuda total asciende a un monto de Bs. <b>{{ $total_amount }}</b> </p>
+                                    <p>La deuda total asciende a un monto de <b>{{ $total_amount }} <small>Bs.</small></b> </p>
                                 </div>
                             </div>
                         </div>
@@ -762,7 +770,7 @@
                             <input type="number" name="amount" class="form-control" step="0.5" min="0.5" max="{{ $total_amount }}" required>
                         </div>
                         <div class="form-group text-right">
-                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;">Pago con Qr</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
                         </div>
                     </div>
                     <div class="modal-footer">
