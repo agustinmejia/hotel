@@ -95,7 +95,15 @@
                                                                         </div>
                                                                     </div>
                                                                     <div style="margin: 5px">
-                                                                        <b>{{ $room->type->name }} {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} <small>Bs.</small></b>
+                                                                        @php
+                                                                            $room_price = $room->type->price;
+                                                                            if($room->status == 'ocupada'){
+                                                                                if($room->reservation_detail->count()){
+                                                                                    $room_price = $room->reservation_detail[0]->price;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <b>{{ $room->type->name }} {{ $room_price == intval($room_price) ? intval($room_price) : $room_price }} <small>Bs.</small></b>
                                                                     </div>
                                                                     <hr style="margin: 0px">
                                                                     <div class="text-center" style="padding-top: 5px">
@@ -172,7 +180,7 @@
         </div>
     </div>
     {{-- enable modal --}}
-    <form action="#" id="enable-form" method="POST">
+    <form action="#" id="enable-form" class="form-submit" method="POST">
         @csrf
         <input type="hidden" name="id">
         <div class="modal fade" tabindex="-1" id="enable-modal" role="dialog">
@@ -195,7 +203,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <input type="submit" class="btn btn-success" value="Sí, habilitar">
+                        <input type="submit" class="btn btn-success btn-submit" value="Sí, habilitar">
                     </div>
                 </div>
             </div>

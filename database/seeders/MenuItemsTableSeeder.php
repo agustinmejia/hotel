@@ -627,6 +627,22 @@ class MenuItemsTableSeeder extends Seeder
                 'route' => 'voyager.employes.index',
                 'parameters' => NULL,
             ),
+            38 => 
+            array (
+                'id' => 39,
+                'menu_id' => 1,
+                'title' => 'Adelantos',
+                'url' => '',
+                'target' => '_self',
+                'icon_class' => 'voyager-dollar',
+                'color' => '#000000',
+                'parent_id' => 33,
+                'order' => 2,
+                'created_at' => '2023-12-12 16:02:40',
+                'updated_at' => '2023-12-12 16:02:50',
+                'route' => 'report-employes-payments.index',
+                'parameters' => NULL,
+            ),
         ));
         
         

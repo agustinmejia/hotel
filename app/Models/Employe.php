@@ -14,4 +14,12 @@ class Employe extends Model
     public function job(){
         return $this->belongsTo(Job::class, 'job_id');
     }
+
+    public function activities(){
+        return $this->hasMany(EmployeActivity::class);
+    }
+
+    public function payments(){
+        return $this->hasMany(EmployePayment::class);
+    }
 }

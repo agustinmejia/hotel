@@ -65,9 +65,16 @@ class PermissionsTableSeeder extends Seeder
         ]);
 
         // Report
-        Permission::firstOrCreate([
-            'key'        => 'browse_report-general',
-            'table_name' => 'reports',
-        ]);
+        $keys = [
+            'browse_report-general',
+            'browse_report-employes-payments',
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => 'reports',
+            ]);
+        }
     }
 }

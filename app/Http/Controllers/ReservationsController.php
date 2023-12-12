@@ -115,10 +115,11 @@ class ReservationsController extends Controller
                     $room->update();
                 }
 
+                $room_price = $request->room_price ?? $room->type->price;
                 $detail = ReservationDetail::create([
                     'reservation_id' => $reservation->id,
                     'room_id' => $room->id,
-                    'price' => $room->type->price,
+                    'price' => $room_price,
                     'status' => $request->status == 'en curso' ? 'ocupada' : 'reservada'
                 ]);
                 
@@ -144,7 +145,7 @@ class ReservationsController extends Controller
                         ReservationDetailDay::create([
                             'reservation_detail_id' => $detail->id,
                             'date' => $start,
-                            'amount' => $room->type->price + $total_accessories
+                            'amount' => $room_price + $total_accessories
                         ]);
                         $start = date('Y-m-d', strtotime($start.' +1 days'));
                     }

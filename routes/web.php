@@ -13,6 +13,7 @@ use App\Http\Controllers\CitiesController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\EmployesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,8 +85,14 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('sales', SalesController::class);
     Route::get('sell', [SalesController::class, 'create']);
 
+    // Employes
+    Route::get('employes/{id}/payments', [EmployesController::class, 'payments_index'])->name('employes.payments');
+    Route::post('employes/{id}/payments/store', [EmployesController::class, 'payments_store'])->name('employes.payments.store');
+
     // Reports
     Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');
+    Route::get('report-employes-payments', [ReportsController::class, 'employes_payments_index'])->name('report-employes-payments.index');
+    Route::post('report-employes-payments/list', [ReportsController::class, 'employes_payments_list'])->name('report-employes-payments.list');
 
     // Import
     Route::get('import', [ImportController::class, 'index'])->name('import.index');

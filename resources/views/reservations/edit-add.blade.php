@@ -18,14 +18,14 @@
                         <div class="col-md-12 div-details">
                             <table style="width: 100%; margin-top: 20px">
                                 <tr style="height: 30px">
-                                    <td><b>N&deg; de habitación : </b></td>
-                                    <td>{{ $room->code }}</td>
-                                    <td><b>Tipo : </b></td>
-                                    <td>{{ $room->type->name }}</td>
-                                    <td><b>Precio : </b></td>
-                                    <td>
-                                        {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}
-                                        <input type="hidden" name="room_price" value="{{ $room->type->price }}">
+                                    <td style="width: 16%"><b>N&deg; de habitación : </b></td>
+                                    <td style="width: 16%">{{ $room->code }}</td>
+                                    <td style="width: 16%"><b>Tipo : </b></td>
+                                    <td style="width: 16%">{{ $room->type->name }}</td>
+                                    <td style="width: 16%"><b>Precio : </b></td>
+                                    <td style="width: 16%">
+                                        <span id="label-room-price">{{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} &nbsp; <i class="voyager-edit" id="btn-edit-price" style="cursor: pointer" title="Editar precio"></i></span>
+                                        <input type="hidden" name="room_price" class="form-control" id="input-price" onchange="getSubtotal()" onkeyup="getSubtotal()" value="{{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}" step="1" required>
                                     </td>
                                 </tr>
                                 <tr style="height: 30px">
@@ -123,8 +123,11 @@
                                                 <tr style="height: 50px">
                                                     <td colspan="2" class="text-right">MONTO DIARIO</td>
                                                     <td>
-                                                        <h3 class="text-right" id="label-subtotal">{{ $room ? $room->type->price : 0 }}</h3>
-                                                        <input type="hidden" name="subtotal" id="input-subtotal" value="{{ $room ? $room->type->price : 0 }}">
+                                                        @php
+                                                            $room_price = $room ? $room->type->price : 0;
+                                                        @endphp
+                                                        <h3 class="text-right" id="label-subtotal">{{ $room_price == intval($room_price) ? intval($room_price) : $room_price }}</h3>
+                                                        <input type="hidden" name="subtotal" id="input-subtotal" value="{{ $room_price == intval($room_price) ? intval($room_price) : $room_price }}">
                                                     </td>
                                                 </tr>
                                                 <tr style="height: 50px">
@@ -170,8 +173,7 @@
 @section('javascript')
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
-        var price = parseFloat("{{ $room ? $room->type->price : 0 }}");
-        var subtotal = price;
+        var subtotal = $('#input-price').val();
         $(document).ready(function(){
 
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, null, 'createPerson()');
@@ -197,6 +199,12 @@
                 escapeMarkup: function(markup) {
                     return markup;
                 },
+            });
+
+            $('#btn-edit-price').click(function(){
+                $('#label-room-price').fadeOut('fast', function(){
+                    $('#input-price').prop('type', 'number');
+                });
             });
 
             $('.check-accessory').change(function(){
@@ -226,6 +234,7 @@
             $('.tr-accessories input[name="price[]"]').each(function(){
                 totalAccessories += $(this).val() ? parseFloat($(this).val()) : 0;
             });
+            let price = $('#input-price').val() ? parseFloat($('#input-price').val()) : 0;
             subtotal = price + parseFloat(totalAccessories);
             $('#label-subtotal').text(subtotal);
             $('#input-subtotal').val(subtotal);

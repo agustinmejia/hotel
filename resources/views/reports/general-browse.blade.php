@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-4">
                 <h1 class="page-title">
-                    <i class="icon voyager-file-text"></i> Reporte General
+                    <i class="voyager-file-text"></i> Reporte General
                 </h1>
             </div>
             <div class="col-md-8 text-right" style="padding-top: 20px">
