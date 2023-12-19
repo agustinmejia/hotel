@@ -60,6 +60,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/add-people', [ReservationsController::class, 'add_people'])->name('reservations.add.people');
     Route::post('reservations/add-penalty', [ReservationsController::class, 'add_penalty'])->name('reservations.add.penalty');
     Route::post('reservations/add-payment', [ReservationsController::class, 'add_payment'])->name('reservations.add.payment');
+    Route::post('reservations/total-payment', [ReservationsController::class, 'total_payment'])->name('reservations.total.payment');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');

@@ -13,7 +13,7 @@
                                 $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                                 $rooms = App\Models\Room::with(['type', 'reservation_detail' => function($q){
                                     $q->whereRaw('(status = "ocupada" or status = "reservada")')->orderBy('status');
-                                }, 'reservation_detail.days', 'reservation_detail.reservation'])->get();
+                                }, 'reservation_detail.days', 'reservation_detail.reservation.aditional_people'])->get();
                                 $floors = $rooms->groupBy('floor_number');
                             @endphp
                             @if ($floors->count())
@@ -42,12 +42,21 @@
                                                         @php
                                                             $finish_date = null;
                                                             $reservation_date = null;
+                                                            $person_quantity = 0;
                                                             if($room->reservation_detail->count()){
-                                                                $last_day = $room->reservation_detail->first()->days;
-                                                                if($last_day->count()){
-                                                                    $finish_date = $last_day->sortByDesc('date')->first()->date;
-                                                                }elseif($room->reservation_detail->first()->reservation->status == 'reservacion'){
-                                                                    $reservation_date = $room->reservation_detail->first()->reservation->start;
+                                                                $reservation = $room->reservation_detail->first()->reservation;
+                                                                // Si está ocupada se obtiene el número de personas
+                                                                if($room->status == 'ocupada'){
+                                                                    $person_quantity = $reservation->aditional_people->count() +1;
+                                                                }
+                                                                // Calcular la fecha de salida
+                                                                if(date('Y-m-d') < $reservation->finish){
+                                                                    if($room->status == 'ocupada'){
+                                                                        $finish_date = $reservation->finish;
+                                                                        $person_quantity = $reservation->aditional_people->count() +1;
+                                                                    }elseif($room->status == 'reservada'){
+                                                                        $reservation_date = $reservation->start;
+                                                                    }
                                                                 }
                                                             }
                                                             switch ($room->status) {
@@ -78,7 +87,7 @@
                                                             }
                                                         @endphp
                                                         <div class="col-md-2 col-sm-4">
-                                                            <div class="panel-custom panel-{{ $type }}" @if ($finish_date || $reservation_date) data-toggle="tooltip" data-placement="bottom" title="@if($finish_date) Sale el {{ date('d', strtotime($finish_date)) }} de {{ $months[intval(date('m', strtotime($finish_date)))] }} @else Reservado para el {{ date('d', strtotime($reservation_date)) }} de {{ $months[intval(date('m', strtotime($reservation_date)))] }} @endif" @endif>
+                                                            <div class="panel-custom panel-{{ $type }}" @if ($finish_date || $reservation_date || $person_quantity) data-toggle="tooltip" data-placement="bottom" title="@if($finish_date) Sale el {{ date('d', strtotime($finish_date)) }} de {{ $months[intval(date('m', strtotime($finish_date)))] }} | @elseif($reservation_date) Reservado para el {{ date('d', strtotime($reservation_date)) }} de {{ $months[intval(date('m', strtotime($reservation_date)))] }} | @endif {{ $person_quantity }} {{ $person_quantity > 1 ? 'personas' : 'persona' }}" @endif>
                                                                 <div class="panel-checkbox">
                                                                     <i class="fa fa-check-circle text-white label-check" id="label-check-{{ $room->id }}"></i>
                                                                     <input type="checkbox" name="room_id[]" class="checkbox-select" id="checkbox-select-{{ $room->id }}" value="{{ $room->id }}" style="transform: scale(1.2);" readonly>

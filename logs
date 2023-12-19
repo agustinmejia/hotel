@@ -5,3 +5,6 @@ Ejecutar migraciones
 - No permitir que se pague un día si se tiene una deuda previa
 - Eliminar reservación
 - En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es que es menor o mayor
+- Kardex de clientes (si el cliente esta hopedado que salga una etiqueta en la lista)
+- Agregar gestion de refrigerio
+- Check para agregar desayuno al en la vista de hospedaje

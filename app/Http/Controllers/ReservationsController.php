@@ -496,6 +496,83 @@ class ReservationsController extends Controller
         }
     }
 
+    public function total_payment(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+
+            if(!$request->type_payment){
+                return redirect()->to($redirect)->with(['message' => 'Debe seleccionar el pago', 'alert-type' => 'error']);
+            }
+
+            $reservation_detail = ReservationDetail::with(['days.payments', 'days' => function($q){
+                $q->where('status', 'pendiente');
+            }, 'sales.details' => function($q){
+                $q->where('status', 'pendiente');
+            }, 'penalties' => function($q){
+                $q->where('status', 'pendiente');
+            }])
+            ->where('id', $request->reservation_detail_id)->first();
+            foreach ($request->type_payment as $value) {
+                switch ($value) {
+                    case 'hosting':
+                        foreach ($reservation_detail->days as $day) {
+                            $reservation_detail_day = ReservationDetailDay::find($day->id);
+                            $reservation_detail_day->status = 'pagado';
+                            $reservation_detail_day->update();
+                            
+                            CashierDetail::create([
+                                'cashier_id' => $request->cashier_id,
+                                'reservation_detail_day_id' => $day->id,
+                                'type' => 'ingreso',
+                                'amount' => $day->amount - $day->payments->sum('amount'),
+                                'cash' => $request->payment_qr ? 0 : 1
+                            ]);
+                        }
+                        break;
+                    case 'sales':
+                        foreach ($reservation_detail->sales as $sale) {
+                            foreach ($sale->details as $detail) {
+                                $sale_detail = SaleDetail::find($detail->id);
+                                $sale_detail->status = 'pagado';
+                                $sale_detail->update();
+
+                                CashierDetail::create([
+                                    'cashier_id' => $request->cashier_id,
+                                    'sale_detail_id' => $sale_detail->id,
+                                    'type' => 'ingreso',
+                                    'amount' => $sale_detail->price * $sale_detail->quantity,
+                                    'cash' => $request->payment_qr ? 0 : 1
+                                ]);
+                            }
+                        }
+                        break;
+                    case 'penalties':
+                        foreach ($reservation_detail->penalties as $penalty) {
+                            $reservation_detail_penalty = ReservationDetailPenalty::find($penalty->id);
+                            $reservation_detail_penalty->status = 'pagada';
+                            $reservation_detail_penalty->update();
+
+                            CashierDetail::create([
+                                'cashier_id' => $request->cashier_id,
+                                'reservation_detail_penalty_id' => $reservation_detail_penalty->id,
+                                'type' => 'ingreso',
+                                'amount' => $reservation_detail_penalty->amount,
+                                'cash' => $request->payment_qr ? 0 : 1
+                            ]);
+                        }
+                        break;
+                }
+            }
+
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Pagos realizados', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
     public function close(Request $request){
         $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
         DB::beginTransaction();

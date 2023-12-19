@@ -41,19 +41,60 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{ App\Models\Room::where('status', 'disponible')->count() }}</td>
-                                        <td>{{ App\Models\Room::where('status', 'ocupada')->count() }}</td>
                                         <td>
                                             @php
-                                                $reservation = App\Models\Reservation::with('details')->where('status', 'reservacion')->get();
+                                                $room_available = App\Models\Room::where('status', 'disponible')->get();
+                                            @endphp
+                                            <b>{{ $room_available->count() }}</b>
+                                            <hr style="margin: 5px 0px">
+                                            <small>
+                                                @foreach ($room_available as $item)
+                                                    {{ $item->code }} &nbsp;
+                                                @endforeach
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $room_occupied = App\Models\Room::where('status', 'ocupada')->get();
+                                            @endphp
+                                            <b>{{ $room_occupied->count() }}</b>
+                                            <hr style="margin: 5px 0px">
+                                            <small>
+                                                @foreach ($room_occupied as $item)
+                                                    {{ $item->code }} &nbsp;
+                                                @endforeach
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $reservation = App\Models\Reservation::with('details.room')->where('status', 'reservacion')->whereDate('start', date('Y-m-d'))->get();
                                                 $reservations = 0;
                                                 foreach ($reservation as $item) {
                                                     $reservations += $item->details->count();
                                                 }
                                             @endphp
-                                            {{ $reservations }}
+                                            <b>{{ $reservations }}</b>
+                                            <hr style="margin: 5px 0px">
+                                            <small>
+                                                @foreach ($reservation as $item)
+                                                    @foreach ($item->details as $detail)
+                                                        {{ $detail->room->code }} &nbsp;
+                                                    @endforeach
+                                                @endforeach
+                                            </small>
                                         </td>
-                                        <td>{{ App\Models\Room::where('status', 'limpieza')->count() }}</td>
+                                        <td>
+                                            @php
+                                               $room_dirty = App\Models\Room::where('status', 'limpieza')->get(); 
+                                            @endphp
+                                            <b>{{ $room_dirty->count() }}</b>
+                                            <hr style="margin: 5px 0px">
+                                            <small>
+                                                @foreach ($room_dirty as $item)
+                                                    {{ $item->code }} &nbsp;
+                                                @endforeach
+                                            </small>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

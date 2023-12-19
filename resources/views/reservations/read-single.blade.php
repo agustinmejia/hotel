@@ -14,25 +14,32 @@
         }
     }
 
+    $total_debts = 0;
+
     $reservation_detail_days = $reservation_detail->days->sortByDesc('date');
     $day_payments_amount = $reservation_detail_days->count() ? $reservation_detail_days[0]->amount : 0;
     $total_payments = $reservation_detail_days->where('status', 'pagado')->sum('amount');
-    $total_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
-    $total_penalties = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
+    $total_days_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+    $total_penalties_debts = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
 
     $reservation_detail_days_payment = $reservation_detail_days->where('status', 'pagado')->sortByDesc('date');
     $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment[0]->date : null;
 
+    $total_debts += $total_days_debts;
+
     // Verificar deudas de venta de productos
+    $total_sales_debts = 0;
     foreach($reservation_detail->sales as $sale){
         foreach ($sale->details as $detail){
             if ($detail->status == 'pagado') {
                 $total_payments += $detail->quantity * $detail->price;
             } else {
-                $total_debts += $detail->quantity * $detail->price;
+                $total_sales_debts += $detail->quantity * $detail->price;
             }
         }
     }
+
+    $total_debts += $total_sales_debts;
     
     foreach ($reservation_detail_days->where('status', 'pendiente') as $item) {
         $total_debts -= $item->payments->sum('amount');
@@ -67,6 +74,7 @@
                                 <li class="divider" style="margin: 10px 0px"></li>
                                 @if($cashier)
                                 <li><a href="#" title="Pago parcial" data-toggle="modal" data-target="#add-partial-payment-modal">Pago parcial</a></li>
+                                <li><a href="#" title="Pago total" data-toggle="modal" data-target="#add-total-payment-modal">Pago total</a></li>
                                 @endif
                                 <li class="divider" style="margin: 10px 0px"></li>
                                 <li><a href="#" title="Cambiar de habitación" data-toggle="modal" data-target="#change-room-modal">Cambiar de habitación</a></li>
@@ -117,10 +125,10 @@
                                         <td><b>Huesped(es):</b></td>
                                         <td colspan="5">
                                             {{ $reservation->person->full_name }}
+                                            @php
+                                                $cont = 1;
+                                            @endphp
                                             @if ($reservation->aditional_people->count() > 0)
-                                                @php
-                                                    $cont = 1;
-                                                @endphp
                                                 @foreach ($reservation->aditional_people as $item)
                                                     {{ $reservation->aditional_people->count() == $cont ? ' y ' : ', ' }} {{ $item->person->full_name }}
                                                     @php
@@ -128,7 +136,7 @@
                                                     @endphp
                                                 @endforeach
                                             @endif
-
+                                             <i class="voyager-info-circled" data-toggle="tooltip" data-placement="top" title="{{ $cont }} personas"></i>
                                         </td>
                                     </tr>
                                     <tr style="height: 30px">
@@ -169,10 +177,10 @@
                                     </tr>
                                     <tr style="height: 60px">
                                         <td class="text-center"><h4>{{ $day_payments_amount == intval($day_payments_amount) ? intval($day_payments_amount) : $day_payments_amount }}</h4></td>
-                                        <td class="text-center"><h4>{{ $total_penalties == intval($total_penalties) ? intval($total_penalties) : $total_penalties }}</h4></td>
-                                        <td class="text-center"><h4>{{ $total_payments + $total_debts + $total_penalties }}</h4></td>
+                                        <td class="text-center"><h4>{{ $total_penalties_debts == intval($total_penalties_debts) ? intval($total_penalties_debts) : $total_penalties_debts }}</h4></td>
+                                        <td class="text-center"><h4>{{ $total_payments + $total_debts + $total_penalties_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments }}</h4></td>
-                                        <td class="text-center"><h4>{{ $total_debts + $total_penalties }}</h4></td>
+                                        <td class="text-center"><h4>{{ $total_debts + $total_penalties_debts }}</h4></td>
                                     </tr>
                                 </table>
                             </div>
@@ -716,12 +724,12 @@
                         <h4 class="modal-title"><i class="fa fa-tags"></i> Cierre de hospedaje</h4>
                     </div>
                     <div class="modal-body">
-                        @if ($total_debts + $total_penalties > 0)
+                        @if ($total_debts + $total_penalties_debts > 0)
                         <div class="form-group">
                             <p>Al cerrar el hospedaje se acepta que se han realizado el pago de toda la deuda, desea continuar?</p>
-                            <h3 class="text-danger text-right"><span style="font-size: 12px">Deuda Bs. </span>{{ number_format($total_debts + $total_penalties, 2, ',', '.') }}</h3>
+                            <h3 class="text-danger text-right"><span style="font-size: 12px">Deuda Bs. </span>{{ number_format($total_debts + $total_penalties_debts, 2, ',', '.') }}</h3>
                         </div>
-                        <div class="form-group text-right">
+                        <div class="form-group">
                             <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
                         </div>
                         @else
@@ -769,7 +777,78 @@
                             <label for="amount">Monto</label>
                             <input type="number" name="amount" class="form-control" step="0.5" min="0.5" max="{{ $total_amount }}" required>
                         </div>
-                        <div class="form-group text-right">
+                        <div class="form-group">
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Pagar <i class="fa fa-money"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {{-- Total payment modal --}}
+    <form action="{{ route('reservations.total.payment') }}" class="form-submit" method="POST">
+        @csrf
+        <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
+        <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+        <div class="modal modal-primary fade" tabindex="-1" id="add-total-payment-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-money"></i> Agregar pago parcial</h4>
+                    </div>
+                    <div class="modal-body">
+                        <br>
+                        <div class="form-group">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Deudas</th>
+                                        <th class="text-right">Monto</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Gastos de hospedaje</td>
+                                        <td class="text-right">
+                                            {{ $total_days_debts }}
+                                            <input type="hidden" name="hosting_debts" value="{{ $total_days_debts }}">
+                                        </td>
+                                        <td class="text-right"><input type="checkbox" name="type_payment[]" class="checkbox-type_payment" value="hosting" data-amount="{{ $total_days_debts }}" style="transform: scale(1.5);" @if($total_days_debts <= 0) disabled @endif></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gastos de consumo</td>
+                                        <td class="text-right">
+                                            {{ $total_sales_debts }}
+                                            <input type="hidden" name="sales_debts" value="{{ $total_sales_debts }}">
+                                        </td>
+                                        <td class="text-right"><input type="checkbox" name="type_payment[]" class="checkbox-type_payment" value="sales" data-amount="{{ $total_sales_debts }}" style="transform: scale(1.5);" @if($total_sales_debts <= 0) disabled @endif></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Multas</td>
+                                        <td class="text-right">
+                                            {{ $total_penalties_debts }}
+                                            <input type="hidden" name="penalties_debts" value="{{ $total_penalties_debts }}">
+                                        </td>
+                                        <td class="text-right"><input type="checkbox" name="type_payment[]" class="checkbox-type_payment" value="penalties" data-amount="{{ $total_penalties_debts }}" style="transform: scale(1.5);" @if($total_penalties_debts <= 0) disabled @endif></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><b>TOTAL</b></td>
+                                        <td class="text-right"><b id="label-total-payment">0</b></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="form-group">
                             <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
                         </div>
                     </div>
@@ -813,6 +892,9 @@
         var productSelected = null;
         var user = @json(Auth::user());
         var cashier = @json($cashier);
+
+        // Variable para pago total
+        var totalPayment = 0;
         $(document).ready(function(){
             customSelect('#select-product', '{{ route("products.search") }}', formatResultProducts, data => { productSelected = data; return data.name}, '#add-product-sale-modal', null);
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#add-people-modal', 'createPerson()');
@@ -926,6 +1008,16 @@
                 }else{
                     $('#tr-total-payment-penalties').fadeOut();
                 }
+            });
+
+            $('.checkbox-type_payment').click(function(){
+                if($(this).is(':checked')){
+                    totalPayment += parseFloat($(this).data('amount'));
+                }else{
+                    totalPayment -= parseFloat($(this).data('amount'));
+                }
+
+                $('#label-total-payment').text(totalPayment);
             });
         });
 
