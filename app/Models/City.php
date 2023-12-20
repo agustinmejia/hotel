@@ -13,8 +13,14 @@ class City extends Model
     protected $fillable = [
         'state_id', 'name', 'province'
     ];
+    public $additional_attributes = ['full_name'];
 
     public function state(){
         return $this->belongsTo(State::class, 'state_id');
+    }
+
+    public function getFullNameAttribute(){
+        $state = State::find($this->state_id);
+        return "{$this->name} - ".($state ? $state->name : '');
     }
 }

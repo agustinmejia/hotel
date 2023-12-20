@@ -52,9 +52,9 @@ class ReportsController extends Controller
         $info_type = $request->info_type;
         $rooms = Room::with(['reservation_detail' => function($q){
                         $q->where('status', 'ocupada');
-                    },'reservation_detail.accessories.accessory' => function($q) use($request){
+                    },'reservation_detail.accessories' => function($q) use($request){
                     if($request->info_type == 'accessory'){
-                        $q->where('id', $request->service_id);
+                        $q->where('room_accessory_id', $request->service_id);
                     }
                 }, 'reservation_detail.food.type' => function($q) use($request){
                     if($request->info_type == 'food_type'){

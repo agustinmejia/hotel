@@ -1808,7 +1808,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"model":"App\\\\Models\\\\City","table":"cities","type":"belongsTo","column":"city_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
+                'details' => '{"model":"App\\\\Models\\\\City","table":"cities","type":"belongsTo","column":"city_id","key":"id","label":"full_name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
                 'order' => 3,
             ),
             112 => 

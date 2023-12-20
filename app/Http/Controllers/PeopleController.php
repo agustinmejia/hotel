@@ -25,8 +25,29 @@ class PeopleController extends Controller
         //
     }
 
-    public function list() {
-        //
+    public function list(){
+        $this->custom_authorize('browse_people');
+        $paginate = request('paginate') ?? 10;
+        $search = request('search') ?? null;
+        $data = Person::with(['reservations' => function($q){
+                        $q->where('status', 'en curso');
+                    }, 'city.state.country'])
+                    ->where(function($query) use ($search){
+                        if($search){
+                            $query->OrwhereHas('city', function($q) use($search){
+                                $q->whereRaw("name like '%$search%'");
+                            })
+                            ->OrwhereHas('city.state', function($q) use($search){
+                                $q->whereRaw("name like '%$search%'");
+                            })
+                            ->OrwhereHas('city.state.country', function($q) use($search){
+                                $q->whereRaw("name like '%$search%'");
+                            })
+                            ->whereRaw("(full_name like '%$search%' or dni like '%$search%' or phone like '%$search%')");
+                        }
+                    })
+                    ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
+        return view('vendor.voyager.people.list', compact('data'));
     }
 
     /**
