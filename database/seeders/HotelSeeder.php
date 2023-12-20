@@ -35,6 +35,7 @@ class HotelSeeder extends Seeder
             ServiceTypesTableSeeder::class,
             PeopleTableSeeder::class,
             RoomsTableSeeder::class,
+            FoodTypesTableSeeder::class,
         ]);
     }
 }

@@ -51,6 +51,7 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('penalty_types');
         Permission::generateFor('jobs');
         Permission::generateFor('employes');
+        Permission::generateFor('food_types');
 
         // Sale
         Permission::firstOrCreate([
@@ -68,6 +69,7 @@ class PermissionsTableSeeder extends Seeder
         $keys = [
             'browse_report-general',
             'browse_report-employes-payments',
+            'browse_report-services',
         ];
 
         foreach ($keys as $key) {

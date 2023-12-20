@@ -21,6 +21,7 @@ use App\Models\ReservationPerson;
 use App\Models\PenaltyType;
 use App\Models\ReservationDetailPenalty;
 use App\Models\ReservationDetailDayPay;
+use App\Models\ReservationDetailFoodType;
 
 class ReservationsController extends Controller
 {
@@ -135,6 +136,16 @@ class ReservationsController extends Controller
                         $total_accessories += $request->price[$i];
                     }
                 }
+
+                // Lista de refrigerio
+                if ($request->food_type_id) {
+                    for ($i=0; $i < count($request->food_type_id); $i++) { 
+                        ReservationDetailFoodType::create([
+                            'reservation_detail_id' => $detail->id,
+                            'food_type_id' => $request->food_type_id[$i]
+                        ]);
+                    }
+                }
     
                 if ($request->status == 'en curso') {
                     // Calendario de ocupación
@@ -170,7 +181,7 @@ class ReservationsController extends Controller
     {
         $this->custom_authorize('read_reservations');
         $room_id = request('room_id');
-        $reservation = Reservation::with(['details.accessories.accessory', 'details.days.payments', 'details.penalties', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
+        $reservation = Reservation::with(['details.accessories.accessory', 'details.food.type', 'details.days.payments', 'details.penalties', 'details.sales.details.product', 'details.room.type', 'aditional_people.person'])
                         ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {
@@ -569,6 +580,23 @@ class ReservationsController extends Controller
             return redirect()->to($redirect)->with(['message' => 'Pagos realizados', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function remove_service(Request $request){
+        try {
+            $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+            switch ($request->type) {
+                case 'food_type':
+                    ReservationDetailFoodType::where('id', $request->id)->delete();
+                    break;
+                case 'accessory':
+                    ReservationDetailAccessory::where('id', $request->id)->delete();
+                    break;
+            }
+            return redirect()->to($redirect)->with(['message' => 'Servicio anulado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }

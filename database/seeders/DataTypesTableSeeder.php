@@ -177,9 +177,9 @@ class DataTypesTableSeeder extends Seeder
                 'description' => NULL,
                 'generate_permissions' => 1,
                 'server_side' => 0,
-                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2023-10-11 15:03:37',
-                'updated_at' => '2023-10-11 15:03:37',
+                'updated_at' => '2023-12-19 22:25:02',
             ),
             9 => 
             array (
@@ -360,6 +360,24 @@ class DataTypesTableSeeder extends Seeder
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2023-12-12 01:56:12',
                 'updated_at' => '2023-12-12 01:58:51',
+            ),
+            19 => 
+            array (
+                'id' => 20,
+                'name' => 'food_types',
+                'slug' => 'food-types',
+                'display_name_singular' => 'Refrigerio',
+                'display_name_plural' => 'Refrigerios',
+                'icon' => 'voyager-bread',
+                'model_name' => 'App\\Models\\FoodType',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
+                'created_at' => '2023-12-19 22:23:19',
+                'updated_at' => '2023-12-19 22:24:55',
             ),
         ));
         

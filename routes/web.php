@@ -61,6 +61,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reservations/add-penalty', [ReservationsController::class, 'add_penalty'])->name('reservations.add.penalty');
     Route::post('reservations/add-payment', [ReservationsController::class, 'add_payment'])->name('reservations.add.payment');
     Route::post('reservations/total-payment', [ReservationsController::class, 'total_payment'])->name('reservations.total.payment');
+    Route::post('reservations/remove-service', [ReservationsController::class, 'remove_service'])->name('reservations.remove.service');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');
@@ -94,6 +95,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');
     Route::get('report-employes-payments', [ReportsController::class, 'employes_payments_index'])->name('report-employes-payments.index');
     Route::post('report-employes-payments/list', [ReportsController::class, 'employes_payments_list'])->name('report-employes-payments.list');
+    Route::get('report-services', [ReportsController::class, 'services_index'])->name('report-services.index');
+    Route::post('report-services/list', [ReportsController::class, 'services_list'])->name('report-services.list');
 
     // Import
     Route::get('import', [ImportController::class, 'index'])->name('import.index');

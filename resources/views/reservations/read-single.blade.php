@@ -68,7 +68,7 @@
                                 @if (Auth::user()->branch_office_id)
                                 <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-sale-modal">Venta de producto</a></li>
                                 @endif
-                                <li><a href="#" title="Agregar accesorio" data-toggle="modal" data-target="#add-accessory-modal">Agregar accesorios</a></li>
+                                <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-service-modal">Agregar servicio</a></li>
                                 <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-people-modal">Agregar huesped</a></li>
                                 <li><a href="#" title="Agregar multa" data-toggle="modal" data-target="#add-penalty-modal">Agregar multa</a></li>
                                 <li class="divider" style="margin: 10px 0px"></li>
@@ -301,7 +301,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th colspan="4"><h4 class="text-center">Accesorios</h4></th>
+                                            <th colspan="4"><h4 class="text-center">Servicios</h4></th>
                                         </tr>
                                         <tr>
                                             <th>N&deg;</th>
@@ -315,22 +315,36 @@
                                             $cont = 1;
                                             $total_accessories = 0;
                                         @endphp
-                                        @forelse ($reservation_detail->accessories as $item)
+                                        @foreach ($reservation_detail->accessories as $item)
                                             <tr>
                                                 <td>{{ $cont }}</td>
                                                 <td>{{ $item->accessory->name }}</td>
                                                 <td class="text-right">{{ floatval($item->price) == intval($item->price) ? intval($item->price):$item->price }}</td>
-                                                <td class="text-center"><input type="checkbox" style="transform: scale(1.5);" title="Habilitado" checked disabled /></td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-link btn-remove-service" data-id="{{ $item->id }}" data-type="accessory"><i class="voyager-trash text-danger"></i></button>
+                                                </td>
                                             </tr>
                                             @php
                                                 $cont++;
                                                 $total_accessories += $item->price;
                                             @endphp
-                                        @empty
+                                        @endforeach
+
+                                        @foreach ($reservation_detail->food as $item)
+                                            <tr>
+                                                <td>{{ $cont }}</td>
+                                                <td>{{ $item->type->name }}</td>
+                                                <td class="text-right"></td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-link btn-remove-service" data-id="{{ $item->id }}" data-type="food_type"><i class="voyager-trash text-danger"></i></button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        @if ($reservation_detail->accessories->count() == 0 && $reservation_detail->food->count() == 0)
                                             <tr>
                                                 <td colspan="4">No hay registros</td>
                                             </tr>
-                                        @endforelse
+                                        @endif
                                     </tbody>
                                     <tfoot>
                                         <tr>
@@ -863,6 +877,27 @@
 
     {{-- Create person modal --}}
     @include('partials.add-person-modal')
+
+    {{-- Total payment modal --}}
+    <form action="{{ route('reservations.remove.service') }}" id="form-remove-service" class="form-submit" method="POST">
+        @csrf
+        <input type="hidden" name="id">
+        <input type="hidden" name="type">
+        <div class="modal modal-danger fade" tabindex="-1" id="remove-service-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-trash"></i> Anular el siguiente servicio</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger btn-submit">Sí, anular <i class="fa fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 @stop
 
 @section('css')
@@ -1018,6 +1053,15 @@
                 }
 
                 $('#label-total-payment').text(totalPayment);
+            });
+
+            $('.btn-remove-service').click(function(e){
+                e.preventDefault();
+                let id = $(this).data('id');
+                let type = $(this).data('type');
+                $('#remove-service-modal').modal('show');
+                $('#form-remove-service input[name="id"]').val(id);
+                $('#form-remove-service input[name="type"]').val(type);
             });
         });
 

@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label">Accesorios</label>
+                                        <label class="control-label">Servicios</label>
                                         <table class="table table-bordered table-hover">
                                             <thead>
                                                 <tr>
@@ -98,7 +98,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse (App\Models\RoomAccessory::where('status', 1)->get() as $item)
+                                                @foreach (App\Models\RoomAccessory::where('status', 1)->get() as $item)
                                                     <tr id="tr-{{ $item->id }}" class="tr-accessories">
                                                         <td style="width: 50px" class="text-center">
                                                             <input type="checkbox" name="accessory_id[]" class="check-accessory" value="{{ $item->id }}" data-id="{{ $item->id }}" data-price="{{ intval($item->price) == floatval($item->price) ? intval($item->price) : $item->price }}" style="transform: scale(1.5);">
@@ -111,13 +111,20 @@
                                                                 <input type="number" name="price[]" onchange="getSubtotal()" onkeyup="getSubtotal()" class="form-control" step="0.1" disabled>
                                                                 <span class="input-group-addon">Bs.</span>
                                                             </div>
-                                                        </th>
+                                                        </td>
                                                     </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="3"><h4 class="text-center">No hay accesorios disponibles</h4></td>
+                                                @endforeach
+                                                @foreach (App\Models\FoodType::where('status', 1)->get() as $item)
+                                                    <tr id="tr-food-type-{{ $item->id }}" class="tr-food-type">
+                                                        <td style="width: 50px" class="text-center">
+                                                            <input type="checkbox" name="food_type_id[]" class="check-food_type_id" value="{{ $item->id }}" style="transform: scale(1.5);" checked>
+                                                        </td>
+                                                        <td>
+                                                            {{ $item->name }}
+                                                        </td>
+                                                        <td></td>
                                                     </tr>
-                                                @endforelse
+                                                @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr style="height: 50px">
@@ -139,7 +146,7 @@
                                             </tfoot>
                                         </table>
                                         @if (!$room)
-                                            <small>Si selecciona un accesorio se le asignará a cada habitación</small>
+                                            <small>Si selecciona un servicio se le asignará a cada habitación</small>
                                         @endif
                                     </div>
                                 </div>
