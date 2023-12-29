@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 // Models
 use App\Models\Employe;
 use App\Models\Room;
+use App\Models\EmployeActivity;
 
 class ReportsController extends Controller
 {
@@ -63,5 +64,23 @@ class ReportsController extends Controller
                 }, 'reservation_detail.reservation.aditional_people'])
                 ->where('status', 'ocupada')->orderBy('floor_number')->orderBy('code')->get();
         return view('reports.services-list', compact('rooms', 'info_type'));
+    }
+
+    public function employes_cleaning_index(){
+        $this->custom_authorize('browse_report-cleaning');
+        return view('reports.cleaning-browse');
+    }
+
+    public function employes_cleaning_list(Request $request){
+        $group_by = $request->group_by;
+        $activities = EmployeActivity::with(['employe'])
+                        ->whereRaw($request->employe_id ? "employe_id = ".$request->employe_id : 1)
+                        ->whereRaw($request->month ? "DATE_FORMAT(created_at, '%Y-%m') = '".$request->month."'" : 1)->get();
+        return view('reports.cleaning-list', compact('activities', 'group_by'));
+    }
+
+    public function employes_debts_index(){
+        $this->custom_authorize('browse_report-debts');
+        return view('reports.debts-browse');
     }
 }

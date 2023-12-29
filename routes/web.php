@@ -91,6 +91,7 @@ Route::group(['prefix' => 'admin'], function () {
     // Employes
     Route::get('employes/{id}/payments', [EmployesController::class, 'payments_index'])->name('employes.payments');
     Route::post('employes/{id}/payments/store', [EmployesController::class, 'payments_store'])->name('employes.payments.store');
+    Route::post('employes/{id}/payoff/store', [EmployesController::class, 'payoff_store'])->name('employes.payoff.store');
 
     // Reports
     Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');
@@ -98,6 +99,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('report-employes-payments/list', [ReportsController::class, 'employes_payments_list'])->name('report-employes-payments.list');
     Route::get('report-services', [ReportsController::class, 'services_index'])->name('report-services.index');
     Route::post('report-services/list', [ReportsController::class, 'services_list'])->name('report-services.list');
+    Route::get('report-employes-cleaning', [ReportsController::class, 'employes_cleaning_index'])->name('report-employes-cleaning.index');
+    Route::post('report-employes-cleaning/list', [ReportsController::class, 'employes_cleaning_list'])->name('report-employes-cleaning.list');
+    Route::get('report-employes-debts', [ReportsController::class, 'employes_debts_index'])->name('report-employes-debts.index');
 
     // Import
     Route::get('import', [ImportController::class, 'index'])->name('import.index');

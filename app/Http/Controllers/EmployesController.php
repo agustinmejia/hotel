@@ -32,4 +32,21 @@ class EmployesController extends Controller
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
+
+    public function payoff_store($id, Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+            for ($i=0; $i < count($request->payment_id); $i++) { 
+                EmployePayment::where('id', $request->payment_id[$i])->update([
+                    'status' => 'saldado'
+                ]);
+            }
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Adelanto registrado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
 }

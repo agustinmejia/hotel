@@ -70,6 +70,8 @@ class PermissionsTableSeeder extends Seeder
             'browse_report-general',
             'browse_report-employes-payments',
             'browse_report-services',
+            'browse_report-cleaning',
+            'browse_report-debts',
         ];
 
         foreach ($keys as $key) {

@@ -675,6 +675,22 @@ class MenuItemsTableSeeder extends Seeder
                 'route' => 'report-employes-payments.index',
                 'parameters' => NULL,
             ),
+            41 => 
+            array (
+                'id' => 42,
+                'menu_id' => 1,
+                'title' => 'Limpieza',
+                'url' => '',
+                'target' => '_self',
+                'icon_class' => 'voyager-brush',
+                'color' => '#000000',
+                'parent_id' => 33,
+                'order' => 4,
+                'created_at' => '2023-12-29 10:41:37',
+                'updated_at' => '2023-12-29 10:41:42',
+                'route' => 'report-employes-cleaning.index',
+                'parameters' => NULL,
+            ),
         ));
         
         

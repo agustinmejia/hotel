@@ -43,7 +43,7 @@ class PeopleController extends Controller
                             ->OrwhereHas('city.state.country', function($q) use($search){
                                 $q->whereRaw("name like '%$search%'");
                             })
-                            ->whereRaw("(full_name like '%$search%' or dni like '%$search%' or phone like '%$search%')");
+                            ->OrWhereRaw("(full_name like '%$search%' or dni like '%$search%' or phone like '%$search%')");
                         }
                     })
                     ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);

@@ -13,4 +13,8 @@ class EmployeActivity extends Model
     protected $fillable = [
         'employe_id', 'user_id', 'room_id', 'description'
     ];
+
+    public function employe(){
+        return $this->belongsTo(Employe::class, 'employe_id');
+    }
 }
