@@ -73,7 +73,8 @@ class ReservationsController extends Controller
         $this->custom_authorize('add_reservations');
         $room_id = request('room_id');
         $room = $room_id ? Room::find($room_id) : null;
-        return view('reservations.edit-add', compact('room'));
+        $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
+        return view('reservations.edit-add', compact('room', 'cashier'));
     }
 
     /**

@@ -38,9 +38,15 @@
         </div>
         <br>
         <br>
+        {{-- @php
+            dd($cashier);
+        @endphp --}}
         <div class="details">
             <table width="100%" border="1" cellpadding="5">
                 <thead>
+                    <tr>
+                        <th colspan="4">Movimientos</th>
+                    </tr>
                     <tr>
                         <th>N&deg;</th>
                         <th>Tipo</th>
@@ -108,6 +114,100 @@
                     </tr>
                 </tfoot>
             </table>
+            <br>
+            <table width="100%" border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th colspan="4">Ingresos</th>
+                    </tr>
+                    <tr>
+                        <th>N&deg;</th>
+                        <th>Habitaciones</th>
+                        <th>Días de hospedaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $cont = 1;
+                        $arrivals = App\Models\Reservation::with(['details.room', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                    @endphp
+                    @forelse ($arrivals as $item)
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>
+                                @foreach ($item->details as $detail)
+                                    {{ $detail->room->code }} &nbsp;
+                                @endforeach
+                            </td>
+                            <td>
+                                @if ($item->start && $item->finish)
+                                    @php
+                                        $start = new \DateTime($item->start);
+                                        $finish = new \DateTime($item->finish);
+                                    @endphp
+                                    {{ $start->diff($finish)->format('%d') +1 }}
+                                @else
+                                    No definido
+                                @endif
+                            </td>
+                        </tr>
+                        @php
+                            $cont++;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="4"><h5>No hay datos registrado</h5></td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{-- <table width="100%" border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th colspan="4">Ingresos</th>
+                    </tr>
+                    <tr>
+                        <th>N&deg;</th>
+                        <th>Habitaciones</th>
+                        <th>Días de hospedaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $cont = 1;
+                        $departures = App\Models\Reservation::with(['details.room', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                        dd($departures);
+                    @endphp
+                    @forelse ($arrivals as $item)
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>
+                                @foreach ($item->details as $detail)
+                                    {{ $detail->room->code }} &nbsp;
+                                @endforeach
+                            </td>
+                            <td>
+                                @if ($item->start && $item->finish)
+                                    @php
+                                        $start = new \DateTime($item->start);
+                                        $finish = new \DateTime($item->finish);
+                                    @endphp
+                                    {{ $start->diff($finish)->format('%d') +1 }}
+                                @else
+                                    No definido
+                                @endif
+                            </td>
+                        </tr>
+                        @php
+                            $cont++;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="4"><h5>No hay datos registrado</h5></td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table> --}}
         </div>
     </div>
 @endsection

@@ -13,6 +13,9 @@
     <div class="page-content edit-add container-fluid">
         <form role="form" class="form-submit" action="{{ route('reservations.store') }}" method="POST">
             @if($room)
+                
+                @include('partials.check-cashier', ['cashier' => $cashier])
+
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12 div-details">
@@ -154,7 +157,7 @@
                         </div>
                         <div class="panel-footer text-right">
                             <a href="{{ route('reception.index') }}" class="btn btn-default">Cancelar</a>
-                            <button type="submit" class="btn btn-primary save btn-submit">Guardar <i class="voyager-check"></i> </button>
+                            <button type="submit" class="btn btn-primary save btn-submit" @if(!$cashier) disabled title="Debe aperturar caja" @endif>Guardar <i class="voyager-check"></i> </button>
                         </div>
                     </div>
                 </div>
@@ -164,6 +167,9 @@
 
     {{-- Create person modal --}}
     @include('partials.add-person-modal')
+
+    {{-- Create cashier modal --}}
+    @include('partials.add-cashier-modal', ['redirect' => 'admin/reservations/create?room_id='.$room->id])
 @stop
 
 @section('css')

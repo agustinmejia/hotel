@@ -1,13 +1,13 @@
 @extends('voyager::master')
 
-@section('page_title', 'Reporte de Adelantos')
+@section('page_title', 'Reporte de Servicios')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8">
                 <h1 class="page-title">
-                    <i class="voyager-dollar"></i> Reporte de Adelantos
+                    <i class="voyager-tag"></i> Reporte de Servicios
                 </h1>
             </div>
             <div class="col-md-4" style="padding-top: 20px">
