@@ -137,7 +137,51 @@ class SettingsTableSeeder extends Seeder
                 'value' => '1',
                 'details' => NULL,
                 'type' => 'checkbox',
+                'order' => 10,
+                'group' => 'System',
+            ),
+            11 => 
+            array (
+                'id' => 12,
+                'key' => 'system.update_hosting',
+                'display_name' => 'Actualización de hospedajes',
+                'value' => '13:00',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 9,
+                'group' => 'System',
+            ),
+            12 => 
+            array (
+                'id' => 13,
+                'key' => 'system.whatsapp-server',
+                'display_name' => 'Servidor de Whatsapp',
+                'value' => 'https://wa1.desarrollocreativo.dev',
+                'details' => NULL,
+                'type' => 'text',
                 'order' => 6,
+                'group' => 'System',
+            ),
+            13 => 
+            array (
+                'id' => 14,
+                'key' => 'system.whatsapp-session',
+                'display_name' => 'Sesión de Whatsapp',
+                'value' => 'desarrollo-creativo',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 7,
+                'group' => 'System',
+            ),
+            14 => 
+            array (
+                'id' => 16,
+                'key' => 'system.phone-admin',
+                'display_name' => 'Celular del administrador',
+                'value' => '75199157',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 8,
                 'group' => 'System',
             ),
         ));

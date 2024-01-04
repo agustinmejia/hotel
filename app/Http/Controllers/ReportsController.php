@@ -73,7 +73,7 @@ class ReportsController extends Controller
 
     public function employes_cleaning_list(Request $request){
         $group_by = $request->group_by;
-        $activities = EmployeActivity::with(['employe'])
+        $activities = EmployeActivity::with(['employe', 'room'])
                         ->whereRaw($request->employe_id ? "employe_id = ".$request->employe_id : 1)
                         ->whereRaw($request->month ? "DATE_FORMAT(created_at, '%Y-%m') = '".$request->month."'" : 1)->get();
         return view('reports.cleaning-list', compact('activities', 'group_by'));

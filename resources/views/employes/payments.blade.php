@@ -1,13 +1,13 @@
 @extends('voyager::master')
 
-@section('page_title', 'Viendo Adelandos')
+@section('page_title', 'Viendo Adelantos')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
                 <h1 class="page-title">
-                    <i class="voyager-dollar"></i> Adelandos
+                    <i class="voyager-dollar"></i> Adelantos
                 </h1>
             </div>
             <div class="col-md-8 text-right" style="padding-top: 20px">
@@ -72,7 +72,7 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
-                                                <h4 class="modal-title"><i class="voyager-dollar"></i> Saldar adelanto</h4>
+                                                <h4 class="modal-title"><i class="voyager-dollar"></i> Desea saldar los adelantos?</h4>
                                             </div>
                                             <div class="modal-footer text-right">
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

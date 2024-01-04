@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 // Models
 use App\Models\Room;
@@ -22,6 +23,7 @@ use App\Models\PenaltyType;
 use App\Models\ReservationDetailPenalty;
 use App\Models\ReservationDetailDayPay;
 use App\Models\ReservationDetailFoodType;
+use App\Models\Person;
 
 class ReservationsController extends Controller
 {
@@ -146,6 +148,9 @@ class ReservationsController extends Controller
                         ]);
                     }
                 }
+
+                // Detalle del mensaje que se le va a enviar al huesped
+                $message_detail = '';
     
                 if ($request->status == 'en curso') {
                     // Calendario de ocupación
@@ -160,7 +165,32 @@ class ReservationsController extends Controller
                         ]);
                         $start = date('Y-m-d', strtotime($start.' +1 days'));
                     }
+
+                    $message_detail = 'piso '.$room->floor_number.' con el número *'.$room->code.'* y un precio diario de '.($room_price + $total_accessories).' bs.';
                 }
+            }
+
+            try {
+                if($message_detail){
+                    $person = Person::find($request->person_id[0]);
+                    // Enviar notificación al nuevo huesped
+                    if (setting('system.whatsapp-server') && setting('system.whatsapp-session') && $person->phone) {
+                        Http::post(setting('system.whatsapp-server').'/send?id='.setting('system.whatsapp-session'), [
+                            'phone' => '591'.$person->phone,
+                            'text' => "Bienvenido al *Hotel Tarope*, su habitación se encuentra en el $message_detail, Gracias por su preferencia!"
+                        ]);
+                    }
+
+                    // Notificar al administrador
+                    if (setting('system.phone-admin')) {
+                        Http::post(setting('system.whatsapp-server').'/send?id='.setting('system.whatsapp-session'), [
+                            'phone' => '591'.setting('system.phone-admin'),
+                            'text' => "Nuevo alquiler de habitación en el $message_detail, cantidad de huespedes *".count($request->person_id).'*. Registrado por '.Auth::user()->name
+                        ]);
+                    }
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
             }
 
             DB::commit();

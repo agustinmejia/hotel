@@ -46,6 +46,7 @@
                             <tr>
                                 <th>N&deg;</th>
                                 <th>Nombre completo</th>
+                                <th>Habitación</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
@@ -57,6 +58,7 @@
                                 <tr>
                                     <td>{{ $cont }}</td>
                                     <td>{{ $item->employe->full_name }}</td>
+                                    <td>{{ $item->room->code }} piso {{ $item->room->floor_number }}</td>
                                     <td class="text-right">{{ date('d/m/Y', strtotime($item->created_at)) }}</td>
                                 </tr>
                                 @php
@@ -64,7 +66,7 @@
                                 @endphp
                             @empty
                                 <tr>
-                                    <td class="3">No hay datos</td>
+                                    <td class="4">No hay datos</td>
                                 </tr>
                             @endforelse
                         </tbody>

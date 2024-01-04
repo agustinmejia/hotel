@@ -17,4 +17,8 @@ class EmployeActivity extends Model
     public function employe(){
         return $this->belongsTo(Employe::class, 'employe_id');
     }
+
+    public function room(){
+        return $this->belongsTo(Room::class, 'room_id');
+    }
 }

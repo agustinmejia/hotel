@@ -1,5 +1,4 @@
-Ejecutar migraciones
-Ejecutar updates y FoodTypesTableSeeder
+
 
 ** Mejoras **
 - pago a taxistas
@@ -8,3 +7,10 @@ Ejecutar updates y FoodTypesTableSeeder
 - En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es menor/mayor
 - Editar costo de hospedaje en la lista de días
 - Agregar servicio y refirgerio
+- Reporte de ingresos agrupados por ventas y por alquiler
+- Reporte de habitaciones con deudas (separar la deuda de alquiler y de  ventas)
+- al cerrar el hospedaje que permita tiquear si pagaron (sino pagaron poner al cliente en una lista negra)
+- Registro de gastos (desayuno, insumos, etc.)
+- Exportar a pdf y a excel todos los reportes y mostrar la fecha y hora de la impresión
+- Reporte de egresos
+- Ingreso y egreso de insumos de limpieza (hacer un inventario)

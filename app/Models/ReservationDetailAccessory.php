@@ -15,6 +15,6 @@ class ReservationDetailAccessory extends Model
     ];
 
     public function accessory() {
-        return $this->belongsTo(RoomAccessory::class, 'room_accessory_id');
+        return $this->belongsTo(RoomAccessory::class, 'room_accessory_id')->withTrashed();
     }
 }
