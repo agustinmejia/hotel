@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('observations')->nullable();
             $table->string('status')->nullable()->default('ocupada');
             $table->timestamps();
+            $table->timestamp('unoccupied_at')->nullable();
             $table->softDeletes();
         });
     }

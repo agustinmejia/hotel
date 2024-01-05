@@ -2,7 +2,7 @@
 
 @php
     $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    $days = ['', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado'];
+    $days = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 @endphp
 
 @section('header')
@@ -38,9 +38,6 @@
         </div>
         <br>
         <br>
-        {{-- @php
-            dd($cashier);
-        @endphp --}}
         <div class="details">
             <table width="100%" border="1" cellpadding="5">
                 <thead>
@@ -48,10 +45,11 @@
                         <th colspan="4">Movimientos</th>
                     </tr>
                     <tr>
-                        <th>N&deg;</th>
+                        <th width="30px">N&deg;</th>
+                        <th width="50px">Horas</th>
                         <th>Tipo</th>
                         <th>Detalle</th>
-                        <th>Monto</th>
+                        <th width="100px">Monto (Bs.)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,10 +57,13 @@
                         $cont = 1;
                         $total = 0;
                         $total_qr = 0;
+                        $total_sales = 0;
+                        $total_hosting = 0;
                     @endphp
                     @forelse ($cashier->details as $item)
                         <tr>
                             <td>{{ $cont }}</td>
+                            <td>{{ date('H:i', strtotime($item->created_at)) }}</td>
                             <td>{{ $item->type }}</td>
                             <td>
                                 @if ($item->sale_detail)
@@ -90,27 +91,40 @@
                                 } else {
                                     $total_qr -= $item->amount;
                                 }
-                                
                             }
+                            if ($item->sale_detail_id ) {
+                                $total_sales += $item->amount;
+                            } else {
+                                $total_hosting += $item->amount;
+                            }
+                            
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="4">No hay datos registardos</td>
+                            <td colspan="5">No hay datos registardos</td>
                         </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" class="text-right"><b>TOTAL</b></td>
-                        <td class="text-right"><h4 style="margin: 0px"><small>Bs.</small>{{ $total }}</h4></td>
+                        <td colspan="4" class="text-right"><b>PAGO EN EFECTIVO</b></td>
+                        <td class="text-right"><h4 style="margin: 0px">{{ $total }}</h4></td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-right"><b>PAGO TOTAL CON QR</b></td>
-                        <td class="text-right"><h4 style="margin: 0px"><small>Bs.</small>{{ $total_qr }}</h4></td>
+                        <td colspan="4" class="text-right"><b>PAGO CON QR</b></td>
+                        <td class="text-right"><h4 style="margin: 0px">{{ $total_qr }}</h4></td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-right"><b>TOTAL EN CAJA</b></td>
-                        <td class="text-right"><h4 style="margin: 0px"><small>Bs.</small>{{ $total - $total_qr }}</h4></td>
+                        <td colspan="4" class="text-right"><b>TOTAL VENTAS</b></td>
+                        <td class="text-right"><h4 style="margin: 0px">{{ $total_sales }}</h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><b>TOTAL HOSPEDAJES</b></td>
+                        <td class="text-right"><h4 style="margin: 0px">{{ $total_hosting }}</h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><b>TOTAL EN CAJA</b></td>
+                        <td class="text-right"><h4 style="margin: 0px">{{ $total - $total_qr }}</h4></td>
                     </tr>
                 </tfoot>
             </table>
@@ -121,22 +135,28 @@
                         <th colspan="4">Ingresos</th>
                     </tr>
                     <tr>
-                        <th>N&deg;</th>
+                        <th width="30px">N&deg;</th>
+                        <th width="50px">Hora</th>
                         <th>Habitaciones</th>
-                        <th>Días de hospedaje</th>
+                        <th width="100px">Días de<br>hospedaje</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
                         $cont = 1;
-                        $arrivals = App\Models\Reservation::with(['details.room', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                        $arrivals = App\Models\Reservation::with(['details.room', 'details.accessories.accessory', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
                     @endphp
                     @forelse ($arrivals as $item)
                         <tr>
                             <td>{{ $cont }}</td>
+                            <td>{{ date('H:i', strtotime($item->created_at)) }}</td>
                             <td>
                                 @foreach ($item->details as $detail)
-                                    {{ $detail->room->code }} &nbsp;
+                                    {{ $detail->room->code }} | 
+                                    @foreach ($detail->accessories as $accessory_item)
+                                        {{ $accessory_item->accessory->name }} &nbsp;
+                                    @endforeach
+                                    <br>
                                 @endforeach
                             </td>
                             <td>
@@ -156,41 +176,42 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="4"><h5>No hay datos registrado</h5></td>
+                            <td colspan="5"><h5>No hay datos registrado</h5></td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            {{-- <table width="100%" border="1" cellpadding="5">
+            <br>
+            <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Ingresos</th>
+                        <th colspan="4">Salidas</th>
                     </tr>
                     <tr>
-                        <th>N&deg;</th>
+                        <th width="30px">N&deg;</th>
+                        <th width="50px">Hora</th>
                         <th>Habitaciones</th>
-                        <th>Días de hospedaje</th>
+                        <th width="100px">Días de<br>hospedaje</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
                         $cont = 1;
-                        $departures = App\Models\Reservation::with(['details.room', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
-                        dd($departures);
+                        // TODO: Filtrar por la sucursal del usuario cuando trabaje con varias sucursales 
+                        $departures = App\Models\ReservationDetail::with(['room', 'days'])->where('unoccupied_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'unoccupied_at <= "'.$cashier->closed_at.'"' : 1)->get();
                     @endphp
-                    @forelse ($arrivals as $item)
+                    @forelse ($departures as $item)
                         <tr>
                             <td>{{ $cont }}</td>
+                            <td>{{ date('H:i', strtotime($item->unoccupied_at)) }}</td>
                             <td>
-                                @foreach ($item->details as $detail)
-                                    {{ $detail->room->code }} &nbsp;
-                                @endforeach
+                                {{ $item->room->code }}
                             </td>
                             <td>
-                                @if ($item->start && $item->finish)
+                                @if ($item->days->first()->date && $item->days->sortByDesc('date')->first()->date)
                                     @php
-                                        $start = new \DateTime($item->start);
-                                        $finish = new \DateTime($item->finish);
+                                        $start = new \DateTime($item->days->first()->date);
+                                        $finish = new \DateTime($item->days->sortByDesc('date')->first()->date);
                                     @endphp
                                     {{ $start->diff($finish)->format('%d') +1 }}
                                 @else
@@ -203,11 +224,57 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="4"><h5>No hay datos registrado</h5></td>
+                            <td colspan="5"><h5>No hay datos registrado</h5></td>
                         </tr>
                     @endforelse
                 </tbody>
-            </table> --}}
+            </table>
+            @if (request('report') == 'accesories')
+            <br>
+            <table width="100%" border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th colspan="4">Accesorios</th>
+                    </tr>
+                    <tr>
+                        <th width="30px">N&deg;</th>
+                        <th>Accesorios</th>
+                        <th>Habitaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $cont = 1;
+                        $services = App\Models\RoomAccessory::with(['reservation_accessories.reservation_detail.room'])
+                                        ->whereHas('reservation_accessories.reservation_detail.room', function($q){
+                                            $q->where('status', 'ocupada');
+                                        })->get();
+                    @endphp
+                    @forelse ($services as $item)
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>
+                                @foreach ($item->reservation_accessories->groupBy('reservation_detail.room.floor_number') as $key => $reservation_accessories)
+                                    <b>Piso {{ $key }}</b> <br>
+                                    @foreach ($reservation_accessories as $reservation_accessory)
+                                        {{ $reservation_accessory->reservation_detail->room->code }} &nbsp;
+                                    @endforeach
+                                    <br>
+                                @endforeach
+                            </td>
+                        </tr>
+                        @php
+                            $cont++;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="3"><h5>No hay datos registrado</h5></td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            @endif
         </div>
     </div>
 @endsection

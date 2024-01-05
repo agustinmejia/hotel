@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 // Models
 use App\Models\Room;
@@ -641,6 +642,7 @@ class ReservationsController extends Controller
                 // Actualizar estado de reserva de habitación
                 $reservation_detail = ReservationDetail::with(['reservation', 'room', 'days.payments', 'sales.details'])->where('id', $reservation_details[$i])->first();
                 $reservation_detail->status = 'finalizada';
+                $reservation_detail->unoccupied_at = Carbon::now();
 
                 // Cambiar datos de habitación
                 $reservation_detail->room->status = 'limpieza';

@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label">Servicios</label>
+                                        <label class="control-label">Accesorios</label>
                                         <table class="table table-bordered table-hover">
                                             <thead>
                                                 <tr>
@@ -149,7 +149,7 @@
                                             </tfoot>
                                         </table>
                                         @if (!$room)
-                                            <small>Si selecciona un servicio se le asignará a cada habitación</small>
+                                            <small>Si selecciona un accesorio se le asignará a cada habitación</small>
                                         @endif
                                     </div>
                                 </div>

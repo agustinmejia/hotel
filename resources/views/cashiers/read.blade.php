@@ -9,17 +9,22 @@
             <span class="glyphicon glyphicon-list"></span>&nbsp;
             Volver a la lista
         </a>
-        &nbsp;
+        {{-- &nbsp; --}}
         @if ($cashier->status == 'abierta')
             <a href="{{ route('cashiers.close.index', $cashier->id) }}" class="btn btn-danger">
                 <span class="voyager-lock"></span>&nbsp;
                 Cerrar
             </a>
         @else
-            <a href="{{ route('cashiers.print', $cashier->id) }}" class="btn btn-default" target="_blank">
-                <span class="fa fa-print"></span>&nbsp;
-                Imprimir
-            </a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    Imprimir <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ route('cashiers.print', $cashier->id) }}" title="Cierre" target="_blank">Cierre</a></li>
+                    <li><a href="{{ route('cashiers.print', $cashier->id) }}?report=accesories" title="Cierre" target="_blank">Cierre + Estado de servicios</a></li>
+                </ul>
+            </div>
         @endif
     </h1>
 @stop

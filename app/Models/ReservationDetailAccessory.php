@@ -14,6 +14,10 @@ class ReservationDetailAccessory extends Model
         'reservation_detail_id', 'room_accessory_id', 'price', 'observations', 'status'
     ];
 
+    public function reservation_detail() {
+        return $this->belongsTo(ReservationDetail::class, 'reservation_detail_id');
+    }
+
     public function accessory() {
         return $this->belongsTo(RoomAccessory::class, 'room_accessory_id')->withTrashed();
     }

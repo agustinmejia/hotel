@@ -68,7 +68,7 @@
                                 @if (Auth::user()->branch_office_id)
                                 <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-sale-modal">Venta de producto</a></li>
                                 @endif
-                                <li><a href="#" title="Agregar servicio" data-toggle="modal" data-target="#add-service-modal">Agregar servicio</a></li>
+                                <li><a href="#" title="Agregar accesorio" data-toggle="modal" data-target="#add-service-modal">Agregar accesorio</a></li>
                                 <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-people-modal">Agregar huesped</a></li>
                                 <li><a href="#" title="Agregar multa" data-toggle="modal" data-target="#add-penalty-modal">Agregar multa</a></li>
                                 <li class="divider" style="margin: 10px 0px"></li>
@@ -301,7 +301,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th colspan="4"><h4 class="text-center">Servicios</h4></th>
+                                            <th colspan="4"><h4 class="text-center">Accesorios</h4></th>
                                         </tr>
                                         <tr>
                                             <th>N&deg;</th>

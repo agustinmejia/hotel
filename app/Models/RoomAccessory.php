@@ -10,4 +10,8 @@ class RoomAccessory extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    public function reservation_accessories(){
+        return $this->hasMany(ReservationDetailAccessory::class);
+    }
 }
