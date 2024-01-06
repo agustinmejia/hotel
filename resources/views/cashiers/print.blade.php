@@ -23,7 +23,7 @@
                     <td><b>{{ $cashier->user->name }}</b></td>
                     <td>Sucursal</td>
                     <td><b>{{ $cashier->branch_office->name }}</b></td>
-                    <td>Fecha</td>
+                    <td>Fecha de cierre</td>
                     <td><b>{{ date('d/m/Y H:i', strtotime($cashier->closed_at)) }}</b></td>
                 </tr>
                 <tr>
@@ -97,7 +97,6 @@
                             } else {
                                 $total_hosting += $item->amount;
                             }
-                            
                         @endphp
                     @empty
                         <tr>
@@ -115,14 +114,6 @@
                         <td class="text-right"><h4 style="margin: 0px">{{ $total_qr }}</h4></td>
                     </tr>
                     <tr>
-                        <td colspan="4" class="text-right"><b>TOTAL VENTAS</b></td>
-                        <td class="text-right"><h4 style="margin: 0px">{{ $total_sales }}</h4></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" class="text-right"><b>TOTAL HOSPEDAJES</b></td>
-                        <td class="text-right"><h4 style="margin: 0px">{{ $total_hosting }}</h4></td>
-                    </tr>
-                    <tr>
                         <td colspan="4" class="text-right"><b>TOTAL EN CAJA</b></td>
                         <td class="text-right"><h4 style="margin: 0px">{{ $total - $total_qr }}</h4></td>
                     </tr>
@@ -133,6 +124,31 @@
                 <thead>
                     <tr>
                         <th colspan="4">Ingresos</th>
+                    </tr>
+                    <tr>
+                        <th>N&deg;</th>
+                        <th>Detalle</th>
+                        <th width="100px">Monto (Bs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Pago de hospedajes</td>
+                        <td class="text-right">{{ $total_hosting }}</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Ventas</td>
+                        <td class="text-right">{{ $total_sales }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table width="100%" border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th colspan="4">Llegada de huespedes</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -185,7 +201,7 @@
             <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Salidas</th>
+                        <th colspan="4">Salida de huespedes</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -229,7 +245,7 @@
                     @endforelse
                 </tbody>
             </table>
-            @if (request('report') == 'accesories')
+            @if (request('detailed') == '1')
             <br>
             <table width="100%" border="1" cellpadding="5">
                 <thead>
@@ -245,8 +261,10 @@
                 <tbody>
                     @php
                         $cont = 1;
-                        $services = App\Models\RoomAccessory::with(['reservation_accessories.reservation_detail.room'])
-                                        ->whereHas('reservation_accessories.reservation_detail.room', function($q){
+                        $services = App\Models\RoomAccessory::with(['reservation_accessories.reservation_detail.room', 'reservation_accessories.reservation_detail' => function($q){
+                                            $q->where('status', 'ocupada');
+                                        }])
+                                        ->whereHas('reservation_accessories.reservation_detail', function($q){
                                             $q->where('status', 'ocupada');
                                         })->get();
                     @endphp
@@ -256,11 +274,13 @@
                             <td>{{ $item->name }}</td>
                             <td>
                                 @foreach ($item->reservation_accessories->groupBy('reservation_detail.room.floor_number') as $key => $reservation_accessories)
-                                    <b>Piso {{ $key }}</b> <br>
-                                    @foreach ($reservation_accessories as $reservation_accessory)
-                                        {{ $reservation_accessory->reservation_detail->room->code }} &nbsp;
-                                    @endforeach
-                                    <br>
+                                    @if ($key)
+                                        <b>Piso {{ $key }}</b> <br>
+                                        @foreach ($reservation_accessories as $reservation_accessory)
+                                            {{ $reservation_accessory->reservation_detail->room->code }} &nbsp;
+                                        @endforeach
+                                        <br>
+                                    @endif
                                 @endforeach
                             </td>
                         </tr>
@@ -273,6 +293,82 @@
                         </tr>
                     @endforelse
                 </tbody>
+            </table>
+            <br>
+            <table width="100%" border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th colspan="4">Deudas</th>
+                    </tr>
+                    <tr>
+                        <th width="30px">N&deg;</th>
+                        <th>Habitaciones</th>
+                        <th width="100px">Hospedaje (Bs.)</th>
+                        <th width="100px">Ventas (Bs.)</th>
+                        <th width="100px">Multas (Bs.)</th>
+                        <th width="100px">Total (Bs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $cont = 1;
+                        $total = 0;
+                        $reservations = App\Models\ReservationDetail::with(['days' => function($q){
+                                                $q->where('status', 'pendiente');
+                                            }, 'days.payments', 'sales.details' => function($q){
+                                                $q->where('status', 'pendiente');
+                                            }, 'penalties' => function($q){
+                                                $q->where('status', 'pendiente');
+                                            }, 'room'])->where('status', 'ocupada')->get();
+                    @endphp
+                    @forelse ($reservations->sortBy('floor_name') as $item)
+                        @php
+                            $current_price = $item->days->sortByDesc('date')->first()->amount;
+                            $debt_hosting_amount = $item->days->sum('amount');
+                            $debt_penalties_amount = $item->penalties->sum('amount');
+                            $debt_sales_amount = 0;
+                            $advance_amount = 0;
+                            foreach($item->days as $day){
+                                $advance_amount += $day->payments->sum('amount');
+                            }
+                            foreach($item->sales as $sale){
+                                foreach($sale->details as $detail){
+                                    $debt_sales_amount += $detail->price * $detail->quantity;
+                                }
+                            }
+                        @endphp
+                        @if ($debt_hosting_amount - $advance_amount + $debt_sales_amount > 0)
+                            <tr>
+                                <td>{{ $cont }}</td>
+                                <td>
+                                    {{ $item->room->code }} piso {{ $item->room->floor_number }} <br>
+                                    <small class="text-muted">{{ $current_price == intval($current_price) ? intval($current_price) : $current_price }} Bs.</small>
+                                </td>
+                                <td style="text-align: right">
+                                    {{ $debt_hosting_amount - $advance_amount }} <br>
+                                    <small class="text-muted">{{ $item->days->count() }} Días</small>
+                                </td>
+                                <td style="text-align: right">{{ $debt_sales_amount }}</td>
+                                <td style="text-align: right">{{ $debt_penalties_amount }}</td>
+                                <td style="text-align: right">{{ $debt_hosting_amount - $advance_amount + $debt_sales_amount + $debt_penalties_amount}}</td>
+                            </tr>
+                        @endif
+                        @php
+                            $total += $debt_hosting_amount - $advance_amount + $debt_sales_amount + $debt_penalties_amount;
+                            $cont++;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="6"><h5>No hay datos registrado</h5></td>
+                        </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align: right"><b>TOTAL</b></td>
+                        <td style="text-align: right"><b>{{ $total }}</b></td>
+                    </tr>
+                </tfoot>
             </table>
             @endif
         </div>
@@ -287,6 +383,9 @@
         }
         .text-right {
             text-align: right
+        }
+        .text-muted{
+            color: #3d3d3d
         }
     </style>
 @endsection

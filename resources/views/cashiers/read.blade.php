@@ -22,7 +22,7 @@
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="{{ route('cashiers.print', $cashier->id) }}" title="Cierre" target="_blank">Cierre</a></li>
-                    <li><a href="{{ route('cashiers.print', $cashier->id) }}?report=accesories" title="Cierre" target="_blank">Cierre + Estado de servicios</a></li>
+                    <li><a href="{{ route('cashiers.print', $cashier->id) }}?detailed=1" title="Cierre" target="_blank">Cierre completo</a></li>
                 </ul>
             </div>
         @endif
@@ -121,22 +121,22 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>INGRESO TOTAL</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_revenue }}</h4></td>
+                                        <td class="text-right"><h4>{{ $total_revenue }}</h4></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>EGRESO TOTAL</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_expenses }}</h4></td>
+                                        <td class="text-right"><h4>{{ $total_expenses }}</h4></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>PAGO TOTAL CON QR</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_qr }}</h4></td>
+                                        <td class="text-right"><h4>{{ $total_qr }}</h4></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>TOTAL EN CAJA</b></td>
-                                        <td class="text-right"><h4><small>Bs.</small>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
+                                        <td class="text-right"><h4>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
                                         <td></td>
                                     </tr>
                                 </tfoot>

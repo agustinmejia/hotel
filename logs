@@ -1,4 +1,5 @@
 ALTER TABLE `reservation_details` ADD `unoccupied_at` TIMESTAMP NULL AFTER `updated_at`;
+ejecutar UpdatePermissionsSeeder
 
 ** Mejoras **
 - pago a taxistas

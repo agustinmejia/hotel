@@ -67,7 +67,7 @@ class ReportsController extends Controller
     }
 
     public function employes_cleaning_index(){
-        $this->custom_authorize('browse_report-cleaning');
+        $this->custom_authorize('browse_report-employes-cleaning');
         return view('reports.cleaning-browse');
     }
 
