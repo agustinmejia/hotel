@@ -19,10 +19,10 @@ class ReservationDetailPenalty extends Model
     }
 
     public function type() {
-        return $this->belongsTo(PenaltyType::class, 'penalty_type_id');
+        return $this->belongsTo(PenaltyType::class, 'penalty_type_id')->withTrashed();
     }
 
     public function user() {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
 }

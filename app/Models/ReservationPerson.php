@@ -15,6 +15,6 @@ class ReservationPerson extends Model
     ];
 
     public function person() {
-        return $this->belongsTo(Person::class, 'person_id');
+        return $this->belongsTo(Person::class, 'person_id')->withTrashed();
     }
 }

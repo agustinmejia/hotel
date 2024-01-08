@@ -15,7 +15,7 @@ class Room extends Model
     ];
 
     public function type() {
-        return $this->belongsTo(RoomType::class, 'room_type_id');
+        return $this->belongsTo(RoomType::class, 'room_type_id')->withTrashed();
     }
 
     public function reservation_detail() {

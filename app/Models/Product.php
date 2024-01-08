@@ -12,7 +12,7 @@ class Product extends Model
     protected $dates = ['deleted_at'];
 
     public function type() {
-        return $this->belongsTo(ProductType::class, 'product_type_id');
+        return $this->belongsTo(ProductType::class, 'product_type_id')->withTrashed();
     }
 
     public function stock(){

@@ -34,7 +34,7 @@ Route::get('/', function () {
     return redirect('admin');
 });
 
-Route::group(['prefix' => 'admin'], function () {
+Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () {
     Voyager::routes();
 
     // People

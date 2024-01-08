@@ -22,10 +22,10 @@
                     <th colspan="4"><h4 class="text-center">Detalle de habitaciones</h4></th>
                 </tr>
                 <tr>
-                    <th>Disponibles</th>
-                    <th>Ocupadas</th>
-                    <th>Reservadas</th>
-                    <th>Sucias</th>
+                    <th style="width: 25%">Disponibles</th>
+                    <th style="width: 25%">Ocupadas</th>
+                    <th style="width: 25%">Reservadas</th>
+                    <th style="width: 25%">Sucias</th>
                 </tr>
             </thead>
             <tbody>

@@ -217,24 +217,26 @@
                         $departures = App\Models\ReservationDetail::with(['room', 'days'])->where('unoccupied_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'unoccupied_at <= "'.$cashier->closed_at.'"' : 1)->get();
                     @endphp
                     @forelse ($departures as $item)
-                        <tr>
-                            <td>{{ $cont }}</td>
-                            <td>{{ date('H:i', strtotime($item->unoccupied_at)) }}</td>
-                            <td>
-                                {{ $item->room->code }}
-                            </td>
-                            <td>
-                                @if ($item->days->first()->date && $item->days->sortByDesc('date')->first()->date)
-                                    @php
-                                        $start = new \DateTime($item->days->first()->date);
-                                        $finish = new \DateTime($item->days->sortByDesc('date')->first()->date);
-                                    @endphp
-                                    {{ $start->diff($finish)->format('%d') +1 }}
-                                @else
-                                    No definido
-                                @endif
-                            </td>
-                        </tr>
+                        @if ($item->days->first())
+                            <tr>
+                                <td>{{ $cont }}</td>
+                                <td>{{ date('H:i', strtotime($item->unoccupied_at)) }}</td>
+                                <td>
+                                    {{ $item->room->code }}
+                                </td>
+                                <td>
+                                    @if ($item->days->first()->date && $item->days->sortByDesc('date')->first()->date)
+                                        @php
+                                            $start = new \DateTime($item->days->first()->date);
+                                            $finish = new \DateTime($item->days->sortByDesc('date')->first()->date);
+                                        @endphp
+                                        {{ $start->diff($finish)->format('%d') +1 }}
+                                    @else
+                                        No definido
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
                         @php
                             $cont++;
                         @endphp
@@ -323,7 +325,8 @@
                     @endphp
                     @forelse ($reservations->sortBy('floor_name') as $item)
                         @php
-                            $current_price = $item->days->sortByDesc('date')->first()->amount;
+                            $last_day = $item->days->sortByDesc('date')->first();
+                            $current_price = $last_day ? $last_day->amount : 0;
                             $debt_hosting_amount = $item->days->sum('amount');
                             $debt_penalties_amount = $item->penalties->sum('amount');
                             $debt_sales_amount = 0;

@@ -78,7 +78,7 @@
                                         <input type="date" name="finish" id="input-finish" class="form-control">
                                     </div>
                                     <div class="form-group col-md-12">
-                                        <label class="control-label" for="reason">Motivo de viaje</label>
+                                        <label class="control-label" for="reason">Motivo de estadía</label>
                                         <select name="reason" class="form-control" id="select-reason">
                                             <option value="trabajo">trabajo</option>
                                             <option value="paseo">paseo</option>

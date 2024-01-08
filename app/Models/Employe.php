@@ -12,7 +12,7 @@ class Employe extends Model
     protected $dates = ['deleted_at'];
 
     public function job(){
-        return $this->belongsTo(Job::class, 'job_id');
+        return $this->belongsTo(Job::class, 'job_id')->withTrashed();
     }
 
     public function activities(){

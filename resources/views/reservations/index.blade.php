@@ -112,7 +112,7 @@
                                                                                 }
                                                                             }
                                                                         @endphp
-                                                                        <b>{{ $room->type->name }} {{ $room_price == intval($room_price) ? intval($room_price) : $room_price }} <small>Bs.</small></b>
+                                                                        <b>{{ $room->type->name }} <br> {{ $room_price == intval($room_price) ? intval($room_price) : $room_price }} <small>Bs.</small></b>
                                                                     </div>
                                                                     <hr style="margin: 0px">
                                                                     <div class="text-center" style="padding-top: 5px">

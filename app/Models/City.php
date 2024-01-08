@@ -16,7 +16,7 @@ class City extends Model
     public $additional_attributes = ['full_name'];
 
     public function state(){
-        return $this->belongsTo(State::class, 'state_id');
+        return $this->belongsTo(State::class, 'state_id')->withTrashed();
     }
 
     public function getFullNameAttribute(){

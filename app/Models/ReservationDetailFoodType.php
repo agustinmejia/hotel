@@ -15,6 +15,6 @@ class ReservationDetailFoodType extends Model
     ];
 
     public function type() {
-        return $this->belongsTo(FoodType::class, 'food_type_id');
+        return $this->belongsTo(FoodType::class, 'food_type_id')->withTrashed();
     }
 }

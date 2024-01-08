@@ -1,4 +1,3 @@
-ALTER TABLE `reservation_details` ADD `unoccupied_at` TIMESTAMP NULL AFTER `updated_at`;
 ejecutar UpdatePermissionsSeeder
 
 ** Mejoras **
@@ -19,3 +18,5 @@ ejecutar UpdatePermissionsSeeder
 - Asignar tareas de limpieza
 - Separar habitaciones por sucursal (ya lo hace en el stock de productos)
 - Registrar compra de productos e insumos
+- Pagar día adelantado (cuando no haya fecha de salida)
+- Al cerrar un hospedaje editar la fecha de salida
