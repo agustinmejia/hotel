@@ -11,6 +11,6 @@ class ProductBranchOfficeStockChange extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'user_id', 'product_branch_office_id', 'type', 'quantity', 'observation'
+        'user_id', 'product_branch_office_id', 'type', 'quantity', 'old_quantity', 'observation'
     ];
 }

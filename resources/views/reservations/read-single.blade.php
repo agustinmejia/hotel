@@ -16,14 +16,13 @@
 
     $total_debts = 0;
 
-    $reservation_detail_days = $reservation_detail->days->sortByDesc('date');
-    $day_payments_amount = $reservation_detail_days->count() ? $reservation_detail_days[0]->amount : 0;
-    $total_payments = $reservation_detail_days->where('status', 'pagado')->sum('amount');
-    $total_days_debts = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
+    $day_payments_amount = $reservation_detail->days->count() ? $reservation_detail->days[$reservation_detail->days->count() -1]->amount : 0;
+    $total_payments = $reservation_detail->days->where('status', 'pagado')->sum('amount');
+    $total_days_debts = $reservation_detail->days->where('status', 'pendiente')->sum('amount');
     $total_penalties_debts = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
 
-    $reservation_detail_days_payment = $reservation_detail_days->where('status', 'pagado')->sortByDesc('date');
-    $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment[0]->date : null;
+    $reservation_detail_days_payment = $reservation_detail->days->where('status', 'pagado');
+    $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment[$reservation_detail_days_payment->count() -1]->date : null;
 
     $total_debts += $total_days_debts;
 
@@ -41,7 +40,7 @@
 
     $total_debts += $total_sales_debts;
     
-    foreach ($reservation_detail_days->where('status', 'pendiente') as $item) {
+    foreach ($reservation_detail->days->where('status', 'pendiente') as $item) {
         $total_debts -= $item->payments->sum('amount');
     }
 
@@ -468,6 +467,7 @@
     <form action="{{ route('reservations.payment.store') }}" class="form-submit" method="POST">
         @csrf
         <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+        <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
         <div class="modal modal-primary fade" tabindex="-1" id="add-payment-host-modal" role="dialog">
             <div class="modal-dialog modal-l">
                 <div class="modal-content">
@@ -477,6 +477,10 @@
                     </div>
                     <div class="modal-body" style="max-height: 500px; overflow-y: auto">
                         <div class="form-group">
+                            <label class="radio-inline"><input type="radio" name="payment_type" class="radio-payment-type" value="1" checked>Normal</label>
+                            <label class="radio-inline"><input type="radio" name="payment_type" class="radio-payment-type" value="2">Pago adelantado</label>
+                        </div>
+                        <div class="form-group" id="div-payment-normal">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
@@ -544,6 +548,21 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+                        <div id="div-payment-prepayment" style="display: none">
+                            <div class="form-group" >
+                                <label for="date_payment">Pagado hasta</label>
+                                <input type="hidden" name="initial_date">
+                                <input type="hidden" name="amount" value="{{ $day_payments_amount }}">
+                                <input type="date" name="date_payment" class="form-control">
+                                <div class="text-right">
+                                    <h3 id="label-prepayment-total">0 Bs.</h3>
+                                    <span id="label-prepayment-days"></span>
+                                </div>
+                            </div>
+                            <div class="form-group text-right">
+                                <label class="checkbox-inline"><input type="checkbox" name="payment_qr_alt" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -775,8 +794,8 @@
                     </div>
                     <div class="modal-body">
                         @php
-                            $total_amount = $reservation_detail_days->where('status', 'pendiente')->sum('amount');
-                            foreach ($reservation_detail_days->where('status', 'pendiente') as $item) {
+                            $total_amount = $reservation_detail->days->where('status', 'pendiente')->sum('amount');
+                            foreach ($reservation_detail->days->where('status', 'pendiente') as $item) {
                                 $total_amount -= $item->payments->sum('amount');
                             }
                         @endphp
@@ -927,6 +946,8 @@
         var productSelected = null;
         var user = @json(Auth::user());
         var cashier = @json($cashier);
+        var dayPaymentsAmount = parseFloat('{{ $day_payments_amount }}');
+        var lastPaymentDay = "{{ $last_payment_day ?? date('Y-m-d', strtotime($reservation_detail->reservation->start.' -1 days')) }}";
 
         // Variable para pago total
         var totalPayment = 0;
@@ -1053,6 +1074,34 @@
                 }
 
                 $('#label-total-payment').text(totalPayment);
+            });
+
+            $('.radio-payment-type').change(function(){
+                let type = $(this).val();
+                if(type == 1){
+                    $('#div-payment-prepayment').fadeOut('fast', function(){
+                        $('#div-payment-normal').fadeIn('fast');
+                        $('#add-payment-host-modal input[name="date_payment"]').prop('required', false);
+                    });
+                }else{
+                    $('#div-payment-normal').fadeOut('fast', function(){
+                        $('#div-payment-prepayment').fadeIn('fast');
+                        $('#add-payment-host-modal input[name="date_payment"]').prop('required', true);
+                    });
+                }
+                $('#add-payment-host-modal input[name="initial_date"]').val(moment(lastPaymentDay).add(1, 'days').format('YYYY-MM-DD'));
+                $('#add-payment-host-modal input[name="date_payment"]').val('');
+                $('#add-payment-host-modal input[name="date_payment"]').prop('min', moment(lastPaymentDay).add(1, 'days').format('YYYY-MM-DD'));
+                $('#label-prepayment-total').text(' 0 Bs.');
+                $('#label-prepayment-days').empty();
+            });
+
+            $('#add-payment-host-modal input[name="date_payment"]').change(function(){
+                let date = moment($(this).val());
+                let lastPayment = moment(lastPaymentDay);
+                $('#label-prepayment-total').text(`${date.diff(lastPayment, 'days') * dayPaymentsAmount} Bs.`);
+                $('#label-prepayment-days').text(`${date.diff(lastPayment, 'days')} ${date.diff(lastPayment, 'days') > 1 ? 'días' : 'día'}`);
+                
             });
 
             $('.btn-remove-service').click(function(e){

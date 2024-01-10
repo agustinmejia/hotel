@@ -150,6 +150,7 @@ class ProductBranchOfficesController extends Controller
         DB::beginTransaction();
         try {
             $product_branch_office = ProductBranchOffice::find($request->product_branch_office_id);
+            $old_quantity = $product_branch_office->quantity;
             $product_branch_office->quantity += $request->quantity;
             $product_branch_office->update();
 
@@ -158,6 +159,7 @@ class ProductBranchOfficesController extends Controller
                 'product_branch_office_id' => $request->product_branch_office_id,
                 'type' => 'ingreso',
                 'quantity' => $request->quantity,
+                'old_quantity' => $old_quantity,
                 'observation' => $request->observation
             ]);
 

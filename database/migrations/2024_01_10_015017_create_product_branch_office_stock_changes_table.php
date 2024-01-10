@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('product_branch_office_id')->nullable()->constrained('product_branch_offices')->index('product_branch_stock_changes_product_branch_id_foreign');
             $table->string('type')->nullable();
             $table->integer('quantity')->nullable();
+            $table->integer('old_quantity')->nullable();
             $table->string('observation')->nullable();
             $table->timestamps();
             $table->softDeletes();

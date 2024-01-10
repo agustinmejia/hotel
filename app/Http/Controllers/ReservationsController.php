@@ -217,6 +217,7 @@ class ReservationsController extends Controller
                         ->where('id', $id)->first();
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {
+            update_hosting();
             return view('reservations.read-single', compact('reservation', 'cashier', 'room_id'));
         } else {
             return view('reservations.read', compact('reservation', 'cashier'));
@@ -313,27 +314,65 @@ class ReservationsController extends Controller
         DB::beginTransaction();
         try {
 
-            if (!$request->reservation_detail_day_id) {
+            if (!$request->reservation_detail_day_id && !$request->date_payment) {
                 return redirect()->to($redirect)->with(['message' => 'No se ha seleccionado ningún día de hospedaje', 'alert-type' => 'error']);
             }
 
-            for ($i=0; $i < count($request->reservation_detail_day_id); $i++) { 
-                $day_reservation = ReservationDetailDay::find($request->reservation_detail_day_id[$i]);
-                $day_reservation->status = 'pagado';
-                $day_reservation->update();
+            // Si el pago se va a realizar seleccionando daudas de la lista
+            if ($request->reservation_detail_day_id) {
+                for ($i=0; $i < count($request->reservation_detail_day_id); $i++) { 
+                    $day_reservation = ReservationDetailDay::find($request->reservation_detail_day_id[$i]);
+                    $day_reservation->status = 'pagado';
+                    $day_reservation->update();
 
-                CashierDetail::create([
-                    'cashier_id' => $request->cashier_id,
-                    'reservation_detail_day_id' => $day_reservation->id,
-                    'type' => 'ingreso',
-                    'amount' => $day_reservation->amount - $day_reservation->payments->sum('amount'),
-                    'cash' => $request->payment_qr ? 0 : 1
-                ]);
+                    CashierDetail::create([
+                        'cashier_id' => $request->cashier_id,
+                        'reservation_detail_day_id' => $day_reservation->id,
+                        'type' => 'ingreso',
+                        'amount' => $day_reservation->amount - $day_reservation->payments->sum('amount'),
+                        'cash' => $request->payment_qr ? 0 : 1
+                    ]);
+                }
             }
+
+            // Si se va a pagar hasta una fecha seleccionada
+            if ($request->initial_date && $request->date_payment) {
+                // dd($request->all());
+                $start = $request->initial_date;
+                $finish = $request->date_payment;
+                while ($start <= $finish) {
+                    $reservation_detail_day = ReservationDetailDay::firstOrNew([
+                        'reservation_detail_id' => $request->reservation_detail_id,
+                        'date' => $start,
+                    ]);
+                    $reservation_detail_day->status = 'pagado';
+                    // Si no existe le agregamos el precio
+                    if (!$reservation_detail_day->exists) {
+                        $reservation_detail_day->amount = $request->amount;
+                        $amount = $request->amount;
+                        $reservation_detail_day->save();
+                    }else{
+                        $amount = $reservation_detail_day->amount - $reservation_detail_day->payments->sum('amount');
+                        $reservation_detail_day->update();
+                    }
+
+                    CashierDetail::create([
+                        'cashier_id' => $request->cashier_id,
+                        'reservation_detail_day_id' => $reservation_detail_day->id,
+                        'type' => 'ingreso',
+                        'amount' => $amount,
+                        'cash' => $request->payment_qr_alt ? 0 : 1
+                    ]);
+
+                    $start = date('Y-m-d', strtotime($start.' +1 days'));
+                }
+            }
+                
             DB::commit();
             return redirect()->to($redirect)->with(['message' => 'Pago registrado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
+            dd($th);
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
