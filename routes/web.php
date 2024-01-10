@@ -76,6 +76,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     // Branch office
     Route::resource('product-branch-offices', ProductBranchOfficesController::class);
     Route::get('product-branch-offices/list/ajax', [ProductBranchOfficesController::class, 'list'])->name('product-branch-offices.list');
+    Route::post('product-branch-offices/change-stock', [ProductBranchOfficesController::class, 'change_stock'])->name('product-branch-offices.change.stock');
 
     // Cashier
     Route::resource('cashiers', CashiersController::class);

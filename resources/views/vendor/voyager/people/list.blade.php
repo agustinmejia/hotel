@@ -31,18 +31,22 @@
                     <tr>
                         <td>{{ $item->id }}</td>
                         <td>
-                            {{ $item->city->name }} <br>
-                            <small>
-                                @if ($item->city->state)
-                                    {{ $item->city->state->name }}
-                                    @if ($item->city->state->country)
-                                        - {{ $item->city->state->country->name }}            
+                            @if ($item->city)
+                                {{ $item->city->name }} <br>
+                                <small>
+                                    @if ($item->city->state)
+                                        {{ $item->city->state->name }}
+                                        @if ($item->city->state->country)
+                                            - {{ $item->city->state->country->name }}            
+                                        @endif
                                     @endif
+                                </small>
+                                @if ($item->reservations->count())
+                                    <br>
+                                    <label class="label label-success">Hospedado</label>
                                 @endif
-                            </small>
-                            @if ($item->reservations->count())
-                                <br>
-                                <label class="label label-success">Hospedado</label>
+                            @else
+                                No definido
                             @endif
                         </td>
                         <td>

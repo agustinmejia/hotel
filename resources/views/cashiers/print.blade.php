@@ -217,7 +217,7 @@
                         $departures = App\Models\ReservationDetail::with(['room', 'days'])->where('unoccupied_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'unoccupied_at <= "'.$cashier->closed_at.'"' : 1)->get();
                     @endphp
                     @forelse ($departures as $item)
-                        @if ($item->days->first())
+                        @if ($item->days->count())
                             <tr>
                                 <td>{{ $cont }}</td>
                                 <td>{{ date('H:i', strtotime($item->unoccupied_at)) }}</td>

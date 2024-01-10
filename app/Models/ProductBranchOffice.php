@@ -21,4 +21,8 @@ class ProductBranchOffice extends Model
     public function branch_office() {
         return $this->belongsTo(BranchOffice::class, 'branch_office_id')->withTrashed();
     }
+
+    public function change_stock(){
+        return $this->hasMany(ProductBranchOfficeStockChange::class, 'product_branch_office_id');
+    }
 }

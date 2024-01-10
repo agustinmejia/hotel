@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 // Models
 use App\Models\ProductBranchOffice;
+use App\Models\ProductBranchOfficeStockChange;
 
 class ProductBranchOfficesController extends Controller
 {
@@ -139,6 +142,30 @@ class ProductBranchOfficesController extends Controller
             $product_branch_office->delete();
             return redirect()->route('product-branch-offices.index')->with(['message' => 'Registro de stock eliminado', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
+            return redirect()->route('product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function change_stock(Request $request){
+        DB::beginTransaction();
+        try {
+            $product_branch_office = ProductBranchOffice::find($request->product_branch_office_id);
+            $product_branch_office->quantity += $request->quantity;
+            $product_branch_office->update();
+
+            ProductBranchOfficeStockChange::create([
+                'user_id' => Auth::user()->id,
+                'product_branch_office_id' => $request->product_branch_office_id,
+                'type' => 'ingreso',
+                'quantity' => $request->quantity,
+                'observation' => $request->observation
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('product-branch-offices.index')->with(['message' => 'Registro de stock exitoso', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
             return redirect()->route('product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
