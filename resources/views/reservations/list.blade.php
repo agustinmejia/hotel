@@ -65,7 +65,7 @@
                             </a>
                         @endif
                         @if (Auth::user()->hasPermission('delete_reservations') && $item->status == 'en curso')
-                            <button title="Borrar" class="btn btn-sm btn-danger" disabled onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal">
+                            <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                             </button>
                         @endif

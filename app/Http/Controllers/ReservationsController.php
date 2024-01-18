@@ -255,7 +255,47 @@ class ReservationsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->custom_authorize('delete_reservations');
+        $reservation = Reservation::with(['details.days.payments', 'details.sales', 'details.penalties', 'details.room'])->where('id', $id)->first();
+        $pending = true;
+        foreach ($reservation->details as $item) {
+            // Si existen días de hospedaje pagados
+            if($item->days->where('status', 'pagado')->count()){
+                $pending = false;
+            }
+
+            // Si se han hecho pagos parciales de hospedaje
+            foreach ($item->days as $day) {
+                if($day->payments->count()){
+                    $pending = false;
+                }
+            }
+
+            // Si hay ventas realizadas
+            if($item->sales->count()){
+                $pending = false;
+            }
+
+            // Si hay multas
+            if($item->penalties->count()){
+                $pending = false;
+            }
+        }
+        if(!$pending){
+            return redirect()->to($_SERVER['HTTP_REFERER'])->with(['message' => 'El Hospedaje no se puede eliminar', 'alert-type' => 'error']);
+        }
+
+        // Eliminar todo el detalle de la reservación
+        $reservation->details->each(function ($detail){
+            $detail->room->status = 'disponible';
+            $detail->room->update();
+            $detail->delete();
+        });
+        // Eliminar la reservación
+        $reservation->delete();
+        
+        return redirect()->to($_SERVER['HTTP_REFERER'])->with(['message' => 'Hospedaje eliminado', 'alert-type' => 'success']);
+        
     }
 
     public function product_store(Request $request){
@@ -442,7 +482,7 @@ class ReservationsController extends Controller
             $reservation_detail = ReservationDetail::create([
                 'reservation_id' => $reservation_detail_old->reservation_id,
                 'room_id' => $room->id,
-                'price' => $room->type->price
+                'price' => $request->price
             ]);
 
             $room->status = 'ocupada';
@@ -453,7 +493,7 @@ class ReservationsController extends Controller
                     ReservationDetailDay::create([
                         'reservation_detail_id' => $reservation_detail->id,
                         'date' => $item->date,
-                        'amount' => $room->type->price,
+                        'amount' => $request->price,
                         'status' => $item->status
                     ]);
                     ReservationDetailDay::where('id', $item->id)->delete();
@@ -647,6 +687,29 @@ class ReservationsController extends Controller
                 }
             }
 
+            DB::commit();
+            return redirect()->to($redirect)->with(['message' => 'Pagos realizados', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function update_amount_day(Request $request){
+        $redirect = $request->redirect ?? $_SERVER['HTTP_REFERER'];
+        DB::beginTransaction();
+        try {
+            $reservation_detail_day = ReservationDetailDay::with(['reservation_detail.room'])->where('id', $request->id)->first();
+            $previus_price = $reservation_detail_day->amount;
+            $reservation_detail_day->amount = $request->amount;
+            $reservation_detail_day->update();
+            // Notificar al administrador
+            if (setting('system.phone-admin')) {
+                Http::post(setting('system.whatsapp-server').'/send?id='.setting('system.whatsapp-session'), [
+                    'phone' => '591'.setting('system.phone-admin'),
+                    'text' => "Cambio de precio de hospedaje de la habitación ".$reservation_detail_day->reservation_detail->room->code." de ".intval($previus_price)." a ".$request->amount." Bs. en el día ".date('d/m/Y', strtotime($reservation_detail_day->date)).". Registrado por ".Auth::user()->name
+                ]);
+            }
             DB::commit();
             return redirect()->to($redirect)->with(['message' => 'Pagos realizados', 'alert-type' => 'success']);
         } catch (\Throwable $th) {

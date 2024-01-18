@@ -62,6 +62,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::post('reservations/add-penalty', [ReservationsController::class, 'add_penalty'])->name('reservations.add.penalty');
     Route::post('reservations/add-payment', [ReservationsController::class, 'add_payment'])->name('reservations.add.payment');
     Route::post('reservations/total-payment', [ReservationsController::class, 'total_payment'])->name('reservations.total.payment');
+    Route::post('reservations/update/amount-day', [ReservationsController::class, 'update_amount_day'])->name('reservations.update.amount_day');
     Route::post('reservations/remove-service', [ReservationsController::class, 'remove_service'])->name('reservations.remove.service');
 
     // City

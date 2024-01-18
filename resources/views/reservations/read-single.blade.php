@@ -492,6 +492,7 @@
                                         <th>Monto</th>
                                         <th>Estado</th>
                                         <th></th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -515,8 +516,13 @@
                                                 {{ floatval($amount) == intval($amount) ? intval($amount) : $amount }}
                                             </td>
                                             <td class="text-center"><label class="label label-{{ $item->status == 'pagado' ? 'success' : 'danger' }}" style="color: white !important">{{ Str::ucfirst($item->status) }}</label></td>
-                                            <td class="text-right">
+                                            <td>
                                                 <input type="checkbox" name="reservation_detail_day_id[]" value="{{ $item->id }}" data-amount="{{ $amount }}" class="checkbox-payment" style="transform: scale(1.5);" title="{{ $item->status == 'pagado' ? 'Pagado' : 'Pagar' }}" @if($item->status == 'pagado') disabled checked @endif /> &nbsp;&nbsp;
+                                            </td>
+                                            <td>
+                                                @if ($item->status == 'pendiente')
+                                                    <a href="#" class="btn-update-price-day" data-toggle="modal" data-target="#edit-day-price-modal" data-item='@json($item)'><i class="voyager-edit"></i></a>
+                                                @endif
                                             </td>
                                         </tr>
                                         @php
@@ -533,18 +539,22 @@
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">SUBTOTAL</td>
                                         <td class="text-right"><h4 style="margin: 0px;">{{ $payment + $debt }}</h4></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">DEUDA</td>
                                         <td class="text-right"><h4 style="margin: 0px;">{{ $debt }}</h4></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">MONTO A PAGAR</td>
                                         <td class="text-right"><h4 style="margin: 0px;" id="label-total-payment-rooms">0</h4></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="text-right" style="vertical-align: middle;">PAGO POR QR</td>
                                         <td class="text-right"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"></td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -726,9 +736,14 @@
                             <select name="room_id" class="form-control select2" id="select-room_id" required>
                                 <option value="" selected disabled>--Seleccione la habitación--</option>
                                 @foreach ($rooms as $item)
-                                    <option value="{{ $item->id }}">{{ $item->code }} - {{ $item->type->name }} (Bs. {{ $item->type->price == floatval($item->type->price) ? intval($item->type->price) : $item->type->price }})</option>
+                                    <option value="{{ $item->id }}" data-item='@json($item)'>{{ $item->code }} - {{ $item->type->name }} (Bs. {{ $item->type->price == floatval($item->type->price) ? intval($item->type->price) : $item->type->price }})</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Precio</label>
+                            <input type="number" name="price" class="form-control" required>
+                            <small>Precio actual de hospedaje {{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }} Bs.</small>
                         </div>
                         <div class="form-group">
                             <label for="start">Fecha</label>
@@ -817,6 +832,32 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-dark btn-submit">Pagar <i class="fa fa-money"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {{-- Edit price day modal --}}
+    <form action="{{ route('reservations.update.amount_day') }}" class="form-submit" id="form-edit-day-price" method="POST">
+        @csrf
+        <input type="hidden" name="id">
+        <div class="modal modal-primary fade" tabindex="-1" id="edit-day-price-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-edit"></i> Editar costo de hospedaje</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="amount">Precio</label>
+                            <input type="number" name="amount" class="form-control" step="1" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark btn-submit">Editar <i class="fa fa-edit"></i></button>
                     </div>
                 </div>
             </div>
@@ -1051,6 +1092,13 @@
                 }
             });
 
+            $('.btn-update-price-day').click(function(){
+                $('#add-payment-host-modal').modal('hide');
+                let item = $(this).data('item');
+                $('#form-edit-day-price input[name="id"]').val(item.id);
+                $('#form-edit-day-price input[name="amount"]').val(parseInt(item.amount));
+            });
+
             $('.checkbox-reservation_detail_penalty_id').click(function(){
                 var amount = 0;
                 $('.checkbox-reservation_detail_penalty_id').each(function(index) {
@@ -1102,6 +1150,11 @@
                 $('#label-prepayment-total').text(`${date.diff(lastPayment, 'days') * dayPaymentsAmount} Bs.`);
                 $('#label-prepayment-days').text(`${date.diff(lastPayment, 'days')} ${date.diff(lastPayment, 'days') > 1 ? 'días' : 'día'}`);
                 
+            });
+
+            $('#select-room_id').change(function(){
+                let item = $('#select-room_id option:selected').data('item');
+                $('#form-change-room input[name="price"]').val(parseInt(item.type.price));
             });
 
             $('.btn-remove-service').click(function(e){
