@@ -97,6 +97,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
 
     // Reports
     Route::get('report-general', [ReportsController::class, 'general_index'])->name('report-general.index');
+    Route::post('report-general/list', [ReportsController::class, 'general_list'])->name('report-general.list');
     Route::get('report-employes-payments', [ReportsController::class, 'employes_payments_index'])->name('report-employes-payments.index');
     Route::post('report-employes-payments/list', [ReportsController::class, 'employes_payments_list'])->name('report-employes-payments.list');
     Route::get('report-services', [ReportsController::class, 'services_index'])->name('report-services.index');

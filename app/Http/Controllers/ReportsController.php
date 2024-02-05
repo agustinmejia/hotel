@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Employe;
 use App\Models\Room;
 use App\Models\EmployeActivity;
+use App\Models\Cashier;
 
 class ReportsController extends Controller
 {
@@ -17,17 +18,16 @@ class ReportsController extends Controller
         $this->middleware('auth');
     }
 
-    public function general_index(Request $requets){
+    public function general_index(){
         $this->custom_authorize('browse_report-general');
-        $type = request('type') ?? null;
-        switch ($type) {
-            case 'print':
-                return view('reports.general-print');
-                break;
-            default:
-                return view('reports.general-browse');
-                break;
-        }
+        return view('reports.general-browse');
+    }
+
+    public function general_list(Request $request){
+        $this->custom_authorize('browse_report-general');
+        $date = $request->date;
+        $cashiers = Cashier::with(['details', 'user', 'branch_office'])->whereDate('created_at', $date)->get();
+        return view('reports.general-list', compact('date', 'cashiers'));
     }
 
     public function employes_payments_index(){
