@@ -40,6 +40,13 @@ class install extends Command
      */
     public function handle()
     {
+        $connection = mysqli_connect(env('DB_HOST'), env('DB_USERNAME'), env('DB_PASSWORD'));
+        $database = $connection->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '".env('DB_DATABASE')."'");
+        if(!$database->num_rows){
+            $connection->query("CREATE DATABASE ".env('DB_DATABASE'));
+            $this->info("Base de datos creada");
+        }
+        
         $empty_database = false;
         try {
             DB::table('users')->first();

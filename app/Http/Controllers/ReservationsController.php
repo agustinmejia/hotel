@@ -501,7 +501,7 @@ class ReservationsController extends Controller
             }
 
             $reservation_detail_old->status = 'finalizada';
-            $reservation_detail_old->room->status = 'disponible';
+            $reservation_detail_old->room->status = 'limpieza';
             $reservation_detail_old->room->update();
             $reservation_detail_old->update();
 

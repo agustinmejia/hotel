@@ -5,20 +5,27 @@
                 <tr>
                     <th>ID</th>
                     <th>Sucursal</th>
-                    <th>Usuario</th>
                     <th>Monto</th>
                     <th>Estado</th>
+                    <th>Registrada</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $meses = ['', 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                @endphp
                 @forelse ($data as $item)
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->branch_office->name }}</td>
-                    <td>{{ $item->user->name }}</td>
                     <td>{{ $item->details->where('cash', 1)->sum('amount') }}</td>
                     <td><label class="label label-{{ $item->status == 'abierta' ? 'success' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
+                    <td>
+                        {{ $item->user ? $item->user->name : '' }} <br>
+                        {{ date('d/', strtotime($item->created_at)).$meses[intval(date('m', strtotime($item->created_at)))].date('/Y H:i', strtotime($item->created_at)) }} <br>
+                        <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small>
+                    </td>
                     <td class="no-sort no-click bread-actions text-right">
                         @if (Auth::user()->hasPermission('read_cashiers'))
                         <a href="{{ route('cashiers.show', $item->id) }}" title="Ver" class="btn btn-sm btn-warning view">
@@ -34,7 +41,7 @@
                 </tr>
                 @empty
                     <tr class="odd">
-                        <td valign="top" colspan="5" class="dataTables_empty">No hay datos disponibles en la tabla</td>
+                        <td valign="top" colspan="6" class="dataTables_empty">No hay datos disponibles en la tabla</td>
                     </tr>
                 @endforelse
             </tbody>

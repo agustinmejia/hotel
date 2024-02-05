@@ -86,6 +86,7 @@ class CashiersController extends Controller
                 'status' => 'abierta'
             ]);
 
+            // Si se registró un monto de apertura
             if ($request->initial_amount) {
                 CashierDetail::create([
                     'cashier_id' => $cashier->id,
@@ -157,6 +158,8 @@ class CashiersController extends Controller
             if($cashier->details->count() > 0){
                 return redirect()->route('cashiers.index')->with(['message' => 'Ya se hizo movimientos de caja, debe cerrarla', 'alert-type' => 'success']);
             }
+            $cashier->status = 'eliminada';
+            $cashier->update();
             $cashier->delete();
             return redirect()->route('cashiers.index')->with(['message' => 'Caja eliminada', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
