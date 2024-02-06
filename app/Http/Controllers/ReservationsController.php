@@ -103,7 +103,8 @@ class ReservationsController extends Controller
                 for ($i=1; $i < count($request->person_id); $i++) { 
                     ReservationPerson::create([
                         'reservation_id' => $reservation->id,
-                        'person_id' => $request->person_id[$i]
+                        'person_id' => $request->person_id[$i],
+                        'room_id' => $request->status == 'en curso' ? $request->room_id[0] : null
                     ]);
                 }
             }
@@ -112,7 +113,7 @@ class ReservationsController extends Controller
             for ($i=0; $i < count($request->room_id); $i++) { 
                 $room = Room::find($request->room_id[$i]);
 
-                // No Se cambia el estado de la habitación ni se hace el registro de días de hospedaje
+                // No se cambia el estado de la habitación ni se hace el registro de días de hospedaje
                 // en caso de que sea una reserva
 
                 if ($request->status == 'en curso') {

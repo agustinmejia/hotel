@@ -10,6 +10,7 @@ use App\Models\Employe;
 use App\Models\Room;
 use App\Models\EmployeActivity;
 use App\Models\Cashier;
+use App\Models\Sale;
 
 class ReportsController extends Controller
 {
@@ -27,7 +28,11 @@ class ReportsController extends Controller
         $this->custom_authorize('browse_report-general');
         $date = $request->date;
         $cashiers = Cashier::with(['details', 'user', 'branch_office'])->whereDate('created_at', $date)->get();
-        return view('reports.general-list', compact('date', 'cashiers'));
+        $sales = Sale::with(['person', 'reservation_detail.reservation.person', 'details.product', 'user'])->whereDate('date', $date)->orderBy('date', 'ASC')->get();
+        if ($request->type == 'print') {
+            return view('reports.general-print', compact('date', 'cashiers', 'sales'));
+        }
+        return view('reports.general-list', compact('date', 'cashiers', 'sales'));
     }
 
     public function employes_payments_index(){

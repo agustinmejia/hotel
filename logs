@@ -18,8 +18,8 @@ ejecutar UpdatePermissionsSeeder
 - Registrar compra de productos e insumos
 - Al cerrar un hospedaje editar la fecha de salida
 - Al traspasar habitación poner en estado sucio*
-- Al registrar la apertura de caja suma el anterior cierre
+- Al registrar la apertura de caja suma el anterior cierre*
 - Dividir los ingresos entre ventas y hospedajes
-- resaltar el pago con qr en el cierre de caja
+- resaltar el pago con qr en el cierre de caja*
 - Poner cantidad de habitaciones y fecha de ingreso en el reporte de caja y en el que se necesite
-- especificar de qué día pagaron las habitaciones en los reportes
+- especificar de qué día pagaron las habitaciones en los reportes*

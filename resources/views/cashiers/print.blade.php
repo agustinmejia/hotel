@@ -71,7 +71,8 @@
                                 @elseif ($item->service)
                                     Uso de <b>{{ $item->service->name }}</b> <br>
                                 @elseif ($item->reservation_detail_day)
-                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> <br>
+                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
+                                    <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
                                 @endif
                                 {!! $item->observations ? $item->observations : '' !!}
                             </td>
@@ -135,12 +136,12 @@
                     <tr>
                         <td>1</td>
                         <td>Pago de hospedajes</td>
-                        <td class="text-right">{{ $total_hosting }}</td>
+                        <td class="text-right"><b>{{ $total_hosting }}</b></td>
                     </tr>
                     <tr>
                         <td>2</td>
                         <td>Ventas</td>
-                        <td class="text-right">{{ $total_sales }}</td>
+                        <td class="text-right"><b>{{ $total_sales }}</b></td>
                     </tr>
                 </tbody>
             </table>
@@ -155,27 +156,36 @@
                         <th width="50px">Hora</th>
                         <th>Habitaciones</th>
                         <th width="100px">Días de<br>hospedaje</th>
+                        <th width="100px">Cantidad de<br>personas</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
                         $cont = 1;
                         $arrivals = App\Models\Reservation::with(['details.room', 'details.accessories.accessory', 'aditional_people'])->where('user_id', $cashier->user_id)->where('created_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'created_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                        $people_quantity_total = 0;
                     @endphp
                     @forelse ($arrivals as $item)
+                        @php
+                            $people_quantity = $item->aditional_people->whereIn('room_id', $item->details->pluck('room_id'))->count() + 1;
+                            $people_quantity_total += $people_quantity;
+                        @endphp
                         <tr>
                             <td>{{ $cont }}</td>
                             <td>{{ date('H:i', strtotime($item->created_at)) }}</td>
                             <td>
                                 @foreach ($item->details as $detail)
-                                    {{ $detail->room->code }} | 
-                                    @foreach ($detail->accessories as $accessory_item)
-                                        {{ $accessory_item->accessory->name }} &nbsp;
-                                    @endforeach
+                                    <b>{{ $detail->room->code }}</b> piso {{ $detail->room->floor_number }} 
+                                    @if ($detail->accessories->count())
+                                        | 
+                                        @foreach ($detail->accessories as $accessory_item)
+                                            {{ $accessory_item->accessory->name }} &nbsp;
+                                        @endforeach
+                                    @endif
                                     <br>
                                 @endforeach
                             </td>
-                            <td>
+                            <td class="text-right">
                                 @if ($item->start && $item->finish)
                                     @php
                                         $start = new \DateTime($item->start);
@@ -186,16 +196,23 @@
                                     No definido
                                 @endif
                             </td>
+                            <td class="text-right">{{ $people_quantity }}</td>
                         </tr>
                         @php
                             $cont++;
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="5"><h5>No hay datos registrado</h5></td>
+                            <td colspan="5">No hay datos registrados</td>
                         </tr>
                     @endforelse
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right"><b>TOTAL</b></td>
+                        <td class="text-right"><b>{{ $people_quantity_total }}</b></td>
+                    </tr>
+                </tfoot>
             </table>
             <br>
             <table width="100%" border="1" cellpadding="5">
@@ -208,23 +225,29 @@
                         <th width="50px">Hora</th>
                         <th>Habitaciones</th>
                         <th width="100px">Días de<br>hospedaje</th>
+                        <th width="100px">Cantidad de<br>personas</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
                         $cont = 1;
                         // TODO: Filtrar por la sucursal del usuario cuando trabaje con varias sucursales 
-                        $departures = App\Models\ReservationDetail::with(['room', 'days'])->where('unoccupied_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'unoccupied_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                        $departures = App\Models\ReservationDetail::with(['reservation.aditional_people', 'room', 'days'])->where('unoccupied_at', '>=', $cashier->created_at)->whereRaw($cashier->closed_at ? 'unoccupied_at <= "'.$cashier->closed_at.'"' : 1)->get();
+                        $people_quantity_total = 0;
                     @endphp
                     @forelse ($departures as $item)
+                        @php
+                            $people_quantity = $item->reservation->aditional_people->whereIn('room_id', $item->room_id)->count() + 1;
+                            $people_quantity_total += $people_quantity;
+                        @endphp
                         @if ($item->days->count())
                             <tr>
                                 <td>{{ $cont }}</td>
                                 <td>{{ date('H:i', strtotime($item->unoccupied_at)) }}</td>
                                 <td>
-                                    {{ $item->room->code }}
+                                    <b>{{ $item->room->code }}</b> piso {{ $item->room->floor_number }}
                                 </td>
-                                <td>
+                                <td class="text-right">
                                     @if ($item->days->first()->date && $item->days->sortByDesc('date')->first()->date)
                                         @php
                                             $start = new \DateTime($item->days->first()->date);
@@ -235,6 +258,7 @@
                                         No definido
                                     @endif
                                 </td>
+                                <td class="text-right">{{ $people_quantity }}</td>
                             </tr>
                         @endif
                         @php
@@ -242,10 +266,16 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="5"><h5>No hay datos registrado</h5></td>
+                            <td colspan="5">No hay datos registrados</td>
                         </tr>
                     @endforelse
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right"><b>TOTAL</b></td>
+                        <td class="text-right"><b>{{ $people_quantity_total }}</b></td>
+                    </tr>
+                </tfoot>
             </table>
             @if (request('detailed') == '1')
             <br>
@@ -291,7 +321,7 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="3"><h5>No hay datos registrado</h5></td>
+                            <td colspan="3">No hay datos registrados</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -362,7 +392,7 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="6"><h5>No hay datos registrado</h5></td>
+                            <td colspan="6">No hay datos registrados</td>
                         </tr>
                     @endforelse
                 </tbody>

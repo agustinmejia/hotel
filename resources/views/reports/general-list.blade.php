@@ -1,10 +1,11 @@
 <div class="col-md-12 text-right">
     @if (true)
-        {{-- <button type="button" onclick="report_export('print')" class="btn btn-danger"><i class="glyphicon glyphicon-print"></i> Imprimir</button> --}}
+        <button type="button" onclick="report_export('print')" class="btn btn-danger"><i class="glyphicon glyphicon-print"></i> Imprimir</button>
         {{-- <button type="button" onclick="report_export('excel')" class="btn btn-success"><i class="glyphicon glyphicon-download"></i> Excel</button> --}}
     @endif
 </div>
 @php
+    $days = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
     $months = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 @endphp
 <div class="col-md-12">
@@ -57,7 +58,7 @@
                             </td>
                             <td>
                                 @php
-                                    $reservation = App\Models\Reservation::with('details.room')->where('status', 'reservacion')->whereDate('start', date('Y-m-d'))->get();
+                                    $reservation = App\Models\Reservation::with('details.room')->where('status', 'reservacion')->whereDate('start', date('Y-m-d', strtotime($date)))->get();
                                     $reservations = 0;
                                     foreach ($reservation as $item) {
                                         $reservations += $item->details->count();
@@ -104,10 +105,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($cashiers as $cashier)
+                    @php
+                        $total_sales = 0;
+                        $total_hosting = 0;
+                    @endphp
+                    @forelse ($cashiers as $cashier)
                         <thead>
                             <tr>
-                                <th colspan="4"><h5>{{ $cashier->user->name }}</h5></th>
+                                <th colspan="4"><h5>{{ $cashier->user->name }} | {{ date('H:i', strtotime($cashier->created_at)) }} - {{ $cashier->closed_at ? date('H:i', strtotime($cashier->closed_at)) : 'Pendiente' }}</h5></th>
                             </tr>
                             <tr>
                                 <th>N&deg;</th>
@@ -121,8 +126,6 @@
                             $total_revenue = 0;
                             $total_expenses = 0;
                             $total_qr = 0;
-                            $total_sales = 0;
-                            $total_hosting = 0;
                         @endphp
                         @forelse ($cashier->details as $item)
                             <tr>
@@ -134,7 +137,8 @@
                                     @elseif ($item->service)
                                         Uso de <b>{{ $item->service->name }}</b>
                                     @elseif ($item->reservation_detail_day)
-                                        Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b>
+                                        Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
+                                        <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
                                     @elseif ($item->penalty)
                                         Pago de multa por <b>{{ $item->penalty->type->name }}</b>
                                         @if ($item->penalty->observations)
@@ -187,10 +191,108 @@
                             <td colspan="3" class="text-right"><b>TOTAL EN CAJA</b></td>
                             <td class="text-right"><h4>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4">No hay datos registrados</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
             <br>
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="6"><h4 class="text-center">Ingresos</h4></th>
+                    </tr>
+                    <tr>
+                        <th>N&deg;</th>
+                        <th>Detalle</th>
+                        <th width="100px">Monto (Bs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Pago de hospedajes</td>
+                        <td class="text-right"><b>{{ $total_hosting }}</b></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Ventas</td>
+                        <td class="text-right"><b>{{ $total_sales }}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="6"><h4 class="text-center">Detalle de ventas</h4></th>
+                    </tr>
+                    <tr>
+                        <th>N&deg;</th>
+                        <th>Usuario</th>
+                        <th>Cliente</th>
+                        <th>Detalle</th>
+                        <th>Estado</th>
+                        <th width="100px">Total (Bs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $cont = 1;
+                        $total = 0;
+                    @endphp
+                    @forelse ($sales as $item)
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>
+                                {{ $item->user->name }} <br>
+                                <small>{{ date('H:i', strtotime($item->created_at)) }}</small>
+                            </td>
+                            <td>
+                                @if ($item->person)
+                                    {{ $item->person->full_name }}
+                                @else
+                                    {{ $item->reservation_detail->reservation->person->full_name }} <br> <b>Habitación {{ $item->reservation_detail->room->code }}</b>
+                                @endif
+                            </td>
+                            <td>
+                                <ul>
+                                    @php
+                                        $subtotal = 0;
+                                    @endphp
+                                    @foreach ($item->details as $item)
+                                    <li>{{ $item->quantity == floatval($item->quantity) ? intval($item->quantity) : $item->quantity }} {{ $item->product->name }}</li>
+                                    @php
+                                        $subtotal += $item->quantity * $item->price;
+                                    @endphp
+                                    @endforeach
+                                </ul>
+                            </td>
+                            <td>{{ ucfirst($item->status) }}</td>
+                            <td class="text-right">{{ $subtotal }}</td>
+                        </tr>
+                        @php
+                            $cont++;
+                            $total += $subtotal;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="6">No hay datos registrados</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-right"><b>TOTAL</b></td>
+                        <td class="text-right"><h4> {{ $total }}</h4></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
         </div>
     </div>
 </div>
