@@ -29,13 +29,18 @@
     </h1>
 @stop
 
+@php
+    $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    $days = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+@endphp
+
 @section('content')
     <div class="page-content read container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered" style="padding-bottom:5px;">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="panel-heading" style="border-bottom:0;">
                                 <h3 class="panel-title">Usuario</h3>
                             </div>
@@ -44,12 +49,21 @@
                             </div>
                             <hr style="margin:0;">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="panel-heading" style="border-bottom:0;">
                                 <h3 class="panel-title">Sucursal</h3>
                             </div>
                             <div class="panel-body" style="padding-top:0;">
                                 <p>{{ $cashier->branch_office->name }}</p>
+                            </div>
+                            <hr style="margin:0;">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel-heading" style="border-bottom:0;">
+                                <h3 class="panel-title">Fecha</h3>
+                            </div>
+                            <div class="panel-body" style="padding-top:0;">
+                                <p>{{ $days[intval(date('N', strtotime($cashier->created_at)))] }}, {{ date('d', strtotime($cashier->created_at)) }} de {{ $months[intval(date('m', strtotime($cashier->created_at)))] }} {{ date('H:i', strtotime($cashier->created_at)) }}</p>
                             </div>
                             <hr style="margin:0;">
                         </div>
@@ -69,7 +83,6 @@
                                         <th>Tipo</th>
                                         <th>Detalle</th>
                                         <th>Monto</th>
-                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,17 +102,19 @@
                                                 @elseif ($item->service)
                                                     Uso de <b>{{ $item->service->name }}</b> <br>
                                                 @elseif ($item->reservation_detail_day)
-                                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> <br>
+                                                Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
+                                                <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
+                                                @elseif ($item->penalty)
+                                                    Multa de <b>{{ $item->penalty->type->name }}</b> {{ $item->penalty->observations ? '('.$item->penalty->observations.')' : '' }} <br>
                                                 @endif
                                                 {!! $item->observations ? $item->observations : '' !!}
                                             </td>
                                             <td class="text-right">
                                                 @if (!$item->cash)
-                                                    <i class="fa fa-qrcode text-primary" title="Pago con QR"></i>
-                                                @endif 
+                                                    <label class="label label-warning">Pago Qr</label>
+                                                @endif
                                                 {{ floatval($item->amount) == intval($item->amount) ? intval($item->amount) : $item->amount }}
                                             </td>
-                                            <td></td>
                                         </tr>
                                         @php
                                             $cont++;
@@ -114,30 +129,26 @@
                                         @endphp
                                     @empty
                                         <tr>
-                                            <td colspan="5">No hay datos registardos</td>
+                                            <td colspan="4">No hay datos registardos</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>INGRESO TOTAL</b></td>
-                                        <td class="text-right"><h4>{{ $total_revenue }}</h4></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" class="text-right"><b>EGRESO TOTAL</b></td>
-                                        <td class="text-right"><h4>{{ $total_expenses }}</h4></td>
-                                        <td></td>
+                                        <td class="text-right td-total"><h4>{{ $total_revenue }}</h4></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>PAGO TOTAL CON QR</b></td>
-                                        <td class="text-right"><h4>{{ $total_qr }}</h4></td>
-                                        <td></td>
+                                        <td class="text-right td-total"><h4>{{ $total_qr }}</h4></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><b>EGRESO TOTAL</b></td>
+                                        <td class="text-right td-total"><h4>{{ $total_expenses }}</h4></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right"><b>TOTAL EN CAJA</b></td>
-                                        <td class="text-right"><h4>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
-                                        <td></td>
+                                        <td class="text-right td-total"><h4>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -148,6 +159,14 @@
         </div>
     </div>
 @stop
+
+@section('css')
+    <style>
+        .td-total{
+            background-color: rgba(27, 38, 49, 0.2)
+        }
+    </style>
+@endsection
 
 @section('javascript')
     <script>

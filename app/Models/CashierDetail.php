@@ -34,7 +34,7 @@ class CashierDetail extends Model
         return $this->belongsTo(ReservationDetailPenalty::class, 'reservation_detail_penalty_id');
     }
 
-    public function reservation_detail_penalty(){
-        return $this->belongsTo(ReservationDetailPenalty::class, 'reservation_detail_penalty_id');
-    }
+    // public function reservation_detail_penalty(){
+    //     return $this->belongsTo(ReservationDetailPenalty::class, 'reservation_detail_penalty_id');
+    // }
 }

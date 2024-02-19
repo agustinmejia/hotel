@@ -248,6 +248,26 @@ class ReservationsController extends Controller
         //
     }
 
+    public function details_update_daily_payment(Request $request){
+        DB::beginTransaction();
+        try {
+            $date = date('H:i') < setting('system.update_hosting') ? date('Y-m-d') : date('Y-m-d', strtotime(date('Y-m-d').' +1 days'));
+            $reservation_detail = ReservationDetail::with(['days' => function($q) use($date){
+                                        $q->where('date', '>=' , $date);
+                                    }])->where('id', $request->reservation_detail_id)->first();
+            $reservation_detail->price = $reservation_detail->price - ($request->old_price - $request->price);
+            $reservation_detail->days->each(function ($day) use($request) {
+                $day->update(['amount' => $request->price]);
+            });
+            $reservation_detail->update();
+            DB::commit();
+            return redirect()->to($_SERVER['HTTP_REFERER'])->with(['message' => 'Precio actualizado', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->to($_SERVER['HTTP_REFERER'])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *

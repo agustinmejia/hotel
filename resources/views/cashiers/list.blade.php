@@ -6,8 +6,8 @@
                     <th>ID</th>
                     <th>Sucursal</th>
                     <th>Monto</th>
-                    <th>Estado</th>
                     <th>Registrada</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -19,14 +19,24 @@
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->branch_office->name }}</td>
-                    <td>{{ $item->details->where('cash', 1)->sum('amount') }}</td>
-                    <td><label class="label label-{{ $item->status == 'abierta' ? 'success' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
+                    <td>{{ $item->details->where('cash', 1)->where('type', 'ingreso')->sum('amount') - $item->details->where('cash', 1)->where('type', 'egreso')->sum('amount') }}</td>
                     <td>
                         {{ $item->user ? $item->user->name : '' }} <br>
                         {{ date('d/', strtotime($item->created_at)).$meses[intval(date('m', strtotime($item->created_at)))].date('/Y H:i', strtotime($item->created_at)) }} <br>
                         <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small>
                     </td>
+                    <td><label class="label label-{{ $item->status == 'abierta' ? 'success' : 'danger' }}">{{ ucfirst($item->status) }}</label></td>
                     <td class="no-sort no-click bread-actions text-right">
+                        @if ($item->status == 'abierta' && $item->user_id == Auth::user()->id)
+                            <div class="btn-group" style="margin-right: 3px">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="hidden-xs hidden-sm">Más</span><span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" style="left: -100px">
+                                    <li><a href="#" class="btn-add-regiter" data-id="{{ $item->id }}" data-toggle="modal" data-target="#add_register-modal">Agregar movimiento</a></li>
+                                </ul>
+                            </div>
+                        @endif
                         @if (Auth::user()->hasPermission('read_cashiers'))
                         <a href="{{ route('cashiers.show', $item->id) }}" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
@@ -72,6 +82,10 @@
                 page = link.split('=')[1];
                 list(page);
             }
+        });
+
+        $('.btn-add-regiter').click(function(){
+            $('#form-add_register input[name="id"]').val($(this).data('id'));
         });
     });
 </script>

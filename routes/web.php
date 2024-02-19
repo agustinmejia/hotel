@@ -64,6 +64,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::post('reservations/total-payment', [ReservationsController::class, 'total_payment'])->name('reservations.total.payment');
     Route::post('reservations/update/amount-day', [ReservationsController::class, 'update_amount_day'])->name('reservations.update.amount_day');
     Route::post('reservations/remove-service', [ReservationsController::class, 'remove_service'])->name('reservations.remove.service');
+    Route::post('reservations/details/update/daily-payment', [ReservationsController::class, 'details_update_daily_payment'])->name('reservations.details.update.daily-payment');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');
@@ -85,6 +86,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::get('cashiers/{id}/close', [CashiersController::class, 'close_index'])->name('cashiers.close.index');
     Route::post('cashiers/{id}/close/store', [CashiersController::class, 'close_store'])->name('cashiers.close.store');
     Route::get('cashiers/{id}/print', [CashiersController::class, 'print'])->name('cashiers.print');
+    Route::post('cashiers/add/register', [CashiersController::class, 'add_register'])->name('cashiers.add.register');
 
     // Sales
     Route::resource('sales', SalesController::class);

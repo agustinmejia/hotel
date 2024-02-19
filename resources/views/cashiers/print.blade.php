@@ -42,7 +42,7 @@
             <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Movimientos</th>
+                        <th colspan="5">Movimientos</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -55,7 +55,8 @@
                 <tbody>
                     @php
                         $cont = 1;
-                        $total = 0;
+                        $total_revenue = 0;
+                        $total_expenses = 0;
                         $total_qr = 0;
                         $total_sales = 0;
                         $total_hosting = 0;
@@ -73,30 +74,33 @@
                                 @elseif ($item->reservation_detail_day)
                                     Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
                                     <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
+                                @elseif ($item->penalty)
+                                    Multa de <b>{{ $item->penalty->type->name }}</b> {{ $item->penalty->observations ? '('.$item->penalty->observations.')' : '' }} <br>
                                 @endif
                                 {!! $item->observations ? $item->observations : '' !!}
                             </td>
                             <td class="text-right">
                                 @if (!$item->cash)
-                                    <i class="fa fa-qrcode text-primary" title="Pago con QR"></i>
+                                    <small><b>(Pago Qr)</b></small>
                                 @endif 
                                 {{ floatval($item->amount) == intval($item->amount) ? intval($item->amount) : $item->amount }}
                             </td>
                         </tr>
                         @php
                             $cont++;
-                            $total += $item->amount;
-                            if(!$item->cash){
-                                if ($item->type == 'ingreso') {
-                                    $total_qr += $item->amount;
+                            if ($item->type == 'ingreso') {
+                                $total_revenue += $item->amount;
+
+                                if ($item->sale_detail_id) {
+                                    $total_sales += $item->amount;
                                 } else {
-                                    $total_qr -= $item->amount;
+                                    $total_hosting += $item->amount;
                                 }
-                            }
-                            if ($item->sale_detail_id ) {
-                                $total_sales += $item->amount;
                             } else {
-                                $total_hosting += $item->amount;
+                                $total_expenses += $item->amount;
+                            }
+                            if(!$item->cash){
+                                $total_qr += $item->amount;
                             }
                         @endphp
                     @empty
@@ -104,21 +108,23 @@
                             <td colspan="5">No hay datos registardos</td>
                         </tr>
                     @endforelse
-                </tbody>
-                <tfoot>
                     <tr>
-                        <td colspan="4" class="text-right"><b>PAGO EN EFECTIVO</b></td>
-                        <td class="text-right"><h4 style="margin: 0px">{{ $total }}</h4></td>
+                        <td colspan="4" class="text-right"><b>INGRESO TOTAL</b></td>
+                        <td class="text-right td-total"><h4>{{ $total_revenue }}</h4></td>
                     </tr>
                     <tr>
-                        <td colspan="4" class="text-right"><b>PAGO CON QR</b></td>
-                        <td class="text-right"><h4 style="margin: 0px">{{ $total_qr }}</h4></td>
+                        <td colspan="4" class="text-right"><b>PAGO TOTAL CON QR</b></td>
+                        <td class="text-right td-total"><h4>{{ $total_qr }}</h4></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><b>EGRESO TOTAL</b></td>
+                        <td class="text-right td-total"><h4>{{ $total_expenses }}</h4></td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-right"><b>TOTAL EN CAJA</b></td>
-                        <td class="text-right"><h4 style="margin: 0px">{{ $total - $total_qr }}</h4></td>
+                        <td class="text-right td-total"><h4>{{ $total_revenue - $total_expenses - $total_qr }}</h4></td>
                     </tr>
-                </tfoot>
+                </tbody>
             </table>
             <br>
             <table width="100%" border="1" cellpadding="5">
@@ -135,13 +141,13 @@
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td>Pago de hospedajes</td>
-                        <td class="text-right"><b>{{ $total_hosting }}</b></td>
+                        <td>Pago de hospedajes/multas</td>
+                        <td class="text-right td-total"><b>{{ $total_hosting }}</b></td>
                     </tr>
                     <tr>
                         <td>2</td>
                         <td>Ventas</td>
-                        <td class="text-right"><b>{{ $total_sales }}</b></td>
+                        <td class="text-right td-total"><b>{{ $total_sales }}</b></td>
                     </tr>
                 </tbody>
             </table>
@@ -149,7 +155,7 @@
             <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Llegada de huespedes</th>
+                        <th colspan="5">Llegada de huespedes</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -210,7 +216,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="4" class="text-right"><b>TOTAL</b></td>
-                        <td class="text-right"><b>{{ $people_quantity_total }}</b></td>
+                        <td class="text-right td-total"><b>{{ $people_quantity_total }}</b></td>
                     </tr>
                 </tfoot>
             </table>
@@ -218,7 +224,7 @@
             <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Salida de huespedes</th>
+                        <th colspan="5">Salida de huespedes</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -273,7 +279,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="4" class="text-right"><b>TOTAL</b></td>
-                        <td class="text-right"><b>{{ $people_quantity_total }}</b></td>
+                        <td class="text-right td-total"><b>{{ $people_quantity_total }}</b></td>
                     </tr>
                 </tfoot>
             </table>
@@ -330,7 +336,7 @@
             <table width="100%" border="1" cellpadding="5">
                 <thead>
                     <tr>
-                        <th colspan="4">Deudas</th>
+                        <th colspan="6">Deudas</th>
                     </tr>
                     <tr>
                         <th width="30px">N&deg;</th>
@@ -398,8 +404,8 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="5" style="text-align: right"><b>TOTAL</b></td>
-                        <td style="text-align: right"><b>{{ $total }}</b></td>
+                        <td colspan="5" class="text-right"><b>TOTAL</b></td>
+                        <td class="text-right td-total"><b>{{ $total }}</b></td>
                     </tr>
                 </tfoot>
             </table>
@@ -410,6 +416,9 @@
 
 @section('css')
     <style>
+        thead th {
+            background-color: #ECF0F1
+        }
         .details table {
             border-collapse: collapse;
             font-size: 11px
@@ -419,6 +428,12 @@
         }
         .text-muted{
             color: #3d3d3d
+        }
+        .td-total{
+            background-color: rgba(27, 38, 49, 0.2)
+        }
+        .td-total h4{
+            margin: 0px
         }
     </style>
 @endsection

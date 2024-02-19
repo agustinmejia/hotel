@@ -16,7 +16,8 @@
 
     $total_debts = 0;
 
-    $day_payments_amount = $reservation_detail->days->count() ? $reservation_detail->days[$reservation_detail->days->count() -1]->amount : 0;
+    $day_payments_amount = $reservation_detail->days->count() ? $reservation_detail->days->sortByDesc('date')->first()->amount : 0;
+    $last_day_payments = $reservation_detail->days->count() ? $reservation_detail->days->sortByDesc('date')->first()->date : null;
     $total_payments = $reservation_detail->days->where('status', 'pagado')->sum('amount');
     $total_days_debts = $reservation_detail->days->where('status', 'pendiente')->sum('amount');
     $total_penalties_debts = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
@@ -144,7 +145,7 @@
                                         <td><b>Tipo:</b></td>
                                         <td>{{ $room->type->name }}</td>
                                         <td><b>Precio:</b></td>
-                                        <td>{{ $room->type->price == intval($room->type->price) ? intval($room->type->price) : $room->type->price }}</td>
+                                        <td>{{ $reservation_detail->price == intval($reservation_detail->price) ? intval($reservation_detail->price) : $reservation_detail->price }}</td>
                                     </tr>
                                     <tr style="height: 30px">
                                         <td><b>Llegada:</b></td>
@@ -175,7 +176,7 @@
                                         <th class="text-center" style="width: 20%"><b>Deuda</b></th>
                                     </tr>
                                     <tr style="height: 60px">
-                                        <td class="text-center"><h4>{{ $day_payments_amount == intval($day_payments_amount) ? intval($day_payments_amount) : $day_payments_amount }}</h4></td>
+                                        <td class="text-center"><h4><span style="cursor:default" title="Pago calculado hasta {{ $last_day_payments ? date('d/m/Y', strtotime($last_day_payments)) : '' }}">{{ $day_payments_amount == intval($day_payments_amount) ? intval($day_payments_amount) : $day_payments_amount }}</span> <a href="#" id="btn-edit-daily-payment" data-toggle="modal" data-target="#edit_daily_payment-modal" data-price="{{ $day_payments_amount }}"><i class="voyager-edit"></i></a></h4></td>
                                         <td class="text-center"><h4>{{ $total_penalties_debts == intval($total_penalties_debts) ? intval($total_penalties_debts) : $total_penalties_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments + $total_debts + $total_penalties_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments }}</h4></td>
@@ -958,6 +959,33 @@
             </div>
         </div>
     </form>
+
+    {{-- Edita daily payment modal --}}
+    <form action="{{ route('reservations.details.update.daily-payment') }}" class="form-submit" id="form-edit_daily_payment" method="POST">
+        @csrf
+        <input type="hidden" name="reservation_detail_id" value="{{ $reservation_detail->id }}">
+        <div class="modal fade" tabindex="-1" id="edit_daily_payment-modal" role="dialog">
+            <div class="modal-dialog modal-primary">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-edit"></i> Editar precio diario</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="price">Precio diario</label>
+                            <input type="number" name="price" class="form-control" step="1" min="0" required>
+                            <input type="hidden" name="old_price" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" class="btn btn-primary btn-submit" value="Sí, editar">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 @stop
 
 @section('css')
@@ -1097,6 +1125,11 @@
                 let item = $(this).data('item');
                 $('#form-edit-day-price input[name="id"]').val(item.id);
                 $('#form-edit-day-price input[name="amount"]').val(parseInt(item.amount));
+            });
+
+            $('#btn-edit-daily-payment').click(function(){
+                $('#form-edit_daily_payment input[name="price"]').val(parseInt($(this).data('price')));
+                $('#form-edit_daily_payment input[name="old_price"]').val(parseInt($(this).data('price')));
             });
 
             $('.checkbox-reservation_detail_penalty_id').click(function(){

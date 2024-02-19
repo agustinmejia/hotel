@@ -41,8 +41,8 @@
 
 @section('css')
     <style>
-        tfoot {
-            background-color: #f7f7f7
+        .td-total{
+            background-color: rgba(27, 38, 49, 0.2)
         }
     </style>
 @stop

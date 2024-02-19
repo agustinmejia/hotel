@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 // Models
@@ -36,6 +37,7 @@ class CashiersController extends Controller
         $this->custom_authorize('browse_cashiers');
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
+        $status = request('status') ?? null;
         $data = Cashier::with(['user', 'branch_office', 'details'])
                     ->where(function($query) use ($search){
                         if($search){
@@ -47,6 +49,8 @@ class CashiersController extends Controller
                             });
                         }
                     })
+                    ->whereRaw($status ? "status = '$status'" : 1)
+                    ->whereRaw(Auth::user()->role_id == 3 ? "user_id = ".Auth::user()->id : 1)
                     ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
         return view('cashiers.list', compact('data'));
     }
@@ -209,5 +213,31 @@ class CashiersController extends Controller
     public function print($id){
         $cashier = Cashier::with(['details', 'user', 'branch_office'])->where('id', $id)->first();
         return view('cashiers.print', compact('cashier'));
+    }
+
+    public function add_register(Request $request){
+        DB::beginTransaction();
+
+        if($request->type == 'egreso'){
+            $cashier = Cashier::find($request->id);
+            $total_amount = $cashier->details->where('cash', 1)->where('type', 'ingreso')->sum('amount') - $cashier->details->where('cash', 1)->where('type', 'egreso')->sum('amount');
+            if($request->amount > $total_amount){
+                return redirect()->route('cashiers.index')->with(['message' => 'El monto de egreso sobrepasa el efectivo en caja', 'alert-type' => 'warning']);
+            }
+        }
+
+        try {
+            CashierDetail::create([
+                'cashier_id' => $request->id,
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'observations' => $request->observations
+            ]);
+            DB::commit();
+            return redirect()->route('cashiers.index')->with(['message' => Str::ucfirst($request->type).' registrado correctamente', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('cashiers.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
     }
 }
