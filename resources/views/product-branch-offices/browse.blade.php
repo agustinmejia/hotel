@@ -78,6 +78,24 @@
             </div>
         </div>
     </form>
+
+    {{-- Ver historial de ventas --}}
+    <div class="modal fade" tabindex="-1" id="sales-history-modal" role="dialog">
+        <div class="modal-dialog modal-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="voyager-list"></i> Historial de ventas</h4>
+                </div>
+                <div class="modal-body" style="max-height: calc(100vh - 212px);overflow-y: auto;">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -114,6 +132,14 @@
                 $("#div-results").html(result);
                 $('#div-results').loading('toggle');
             }});
+        }
+
+        function salesHistory(product_id){
+            $('#sales-history-modal .modal-body').loading({message: 'Cargando...'});
+            $.get("{{ url('admin/product-branch-offices/product') }}/"+product_id+"/sales-history", function(res){
+                $('#sales-history-modal .modal-body').html(res);
+                $('#sales-history-modal .modal-body').loading('toggle');
+            });
         }
 
         function deleteItem(id){

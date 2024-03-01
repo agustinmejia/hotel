@@ -137,23 +137,12 @@ class SettingsTableSeeder extends Seeder
                 'value' => '1',
                 'details' => NULL,
                 'type' => 'checkbox',
-                'order' => 10,
+                'order' => 12,
                 'group' => 'System',
             ),
             11 => 
             array (
                 'id' => 12,
-                'key' => 'system.update_hosting',
-                'display_name' => 'Actualización de hospedajes',
-                'value' => '13:00',
-                'details' => NULL,
-                'type' => 'text',
-                'order' => 9,
-                'group' => 'System',
-            ),
-            12 => 
-            array (
-                'id' => 13,
                 'key' => 'system.whatsapp-server',
                 'display_name' => 'Servidor de Whatsapp',
                 'value' => 'https://wa1.desarrollocreativo.dev',
@@ -162,27 +151,111 @@ class SettingsTableSeeder extends Seeder
                 'order' => 6,
                 'group' => 'System',
             ),
-            13 => 
+            12 => 
             array (
-                'id' => 14,
+                'id' => 13,
                 'key' => 'system.whatsapp-session',
                 'display_name' => 'Sesión de Whatsapp',
-                'value' => 'desarrollo-creativo',
+                'value' => 'hotel-tarope',
                 'details' => NULL,
                 'type' => 'text',
                 'order' => 7,
                 'group' => 'System',
             ),
+            13 => 
+            array (
+                'id' => 14,
+                'key' => 'system.update_hosting',
+                'display_name' => 'Actualización de hospedajes',
+                'value' => '11:00',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 9,
+                'group' => 'System',
+            ),
             14 => 
             array (
-                'id' => 16,
+                'id' => 15,
                 'key' => 'system.phone-admin',
                 'display_name' => 'Celular del administrador',
-                'value' => '75199157',
+                'value' => '69373572',
                 'details' => NULL,
                 'type' => 'text',
                 'order' => 8,
                 'group' => 'System',
+            ),
+            15 => 
+            array (
+                'id' => 16,
+                'key' => 'system.required_guest',
+                'display_name' => 'Nombre de huesped requerido',
+                'value' => '0',
+                'details' => NULL,
+                'type' => 'checkbox',
+                'order' => 10,
+                'group' => 'System',
+            ),
+            16 => 
+            array (
+                'id' => 17,
+                'key' => 'system.group_by',
+                'display_name' => 'Dashboard agrupado por',
+                'value' => 'type.name',
+                'details' => '{
+"options": {
+"floor_number": "Número de piso",
+"type.name" : "Tipo de habitación",
+"status": "Estado",
+"": "Otro"
+}
+}',
+                'type' => 'select_dropdown',
+                'order' => 11,
+                'group' => 'System',
+            ),
+            17 => 
+            array (
+                'id' => 18,
+                'key' => 'services.pool_price_adults',
+                'display_name' => 'Precio de piscina adultos',
+                'value' => '10',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 14,
+                'group' => 'Services',
+            ),
+            18 => 
+            array (
+                'id' => 19,
+                'key' => 'services.pool_price_children',
+                'display_name' => 'Precio de piscina niños',
+                'value' => '5',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 15,
+                'group' => 'Services',
+            ),
+            19 => 
+            array (
+                'id' => 20,
+                'key' => 'services.sauna_price',
+                'display_name' => 'Precio de sauna',
+                'value' => '20',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 16,
+                'group' => 'Services',
+            ),
+            20 => 
+            array (
+                'id' => 21,
+                'key' => 'services.status',
+                'display_name' => 'Estado',
+                'value' => '',
+                'details' => NULL,
+                'type' => 'checkbox',
+                'order' => 13,
+                'group' => 'Services',
             ),
         ));
         

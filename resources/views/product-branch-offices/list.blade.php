@@ -18,11 +18,17 @@
                     <td>{{ $item->product->name }}</td>
                     <td>{{ intval($item->quantity) == floatval($item->quantity) ? intval($item->quantity) : $item->quantity }}</td>
                     <td class="no-sort no-click bread-actions text-right">
-                        @if (Auth::user()->hasPermission('add_product_branch_offices'))
-                            <button title="Agregar" class="btn btn-sm btn-default btn-add-stock" data-toggle="modal" data-target="#add-stock-modal" data-item='@json($item)'>
-                                <i class="voyager-list-add"></i> <span class="hidden-xs hidden-sm">Agregar</span>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
+                                Más <span class="caret"></span>
                             </button>
-                        @endif
+                            <ul class="dropdown-menu" role="menu" style="left: -90px !important">
+                                @if (Auth::user()->hasPermission('add_product_branch_offices'))
+                                <li><a href="#" title="Agregar" class="btn-add-stock" data-toggle="modal" data-target="#add-stock-modal" data-item='@json($item)'>Inventariar</a></li>
+                                @endif
+                                <li><a href="#" data-toggle="modal" data-target="#sales-history-modal" onclick="salesHistory({{ $item->product_id }})">Historial de ventas</a></li>
+                            </ul>
+                        </div>
                         @if (Auth::user()->hasPermission('delete_product_branch_offices'))
                             <button title="Borrar" class="btn btn-sm btn-danger" onclick="deleteItem({{ $item->id }})" data-toggle="modal" data-target="#delete_custom_modal">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
@@ -68,7 +74,6 @@
         $('.btn-add-stock').click(function(){
             let item = $(this).data('item');
             $('#add-stock-form input[name="product_branch_office_id"]').val(item.id);
-            console.log(item)
         });
     });
 </script>

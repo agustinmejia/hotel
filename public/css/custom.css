@@ -28,3 +28,9 @@
 .modal-body .row .form-group {
     margin-bottom: 15px !important;
 }
+
+@media only screen and (max-width: 480px) {
+    .page-content{
+        padding: 0px;
+    }
+}

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 // Models
 use App\Models\ProductBranchOffice;
 use App\Models\ProductBranchOfficeStockChange;
+use App\Models\SaleDetail;
 
 class ProductBranchOfficesController extends Controller
 {
@@ -170,5 +171,10 @@ class ProductBranchOfficesController extends Controller
             DB::rollback();
             return redirect()->route('product-branch-offices.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
+    }
+
+    public function product_sales_history($id){
+        $sales = SaleDetail::with(['sale.user'])->where('product_id', $id)->orderBy('created_at', 'DESC')->get();
+        return view('product-branch-offices.partials.sales-history', compact('sales'));
     }
 }

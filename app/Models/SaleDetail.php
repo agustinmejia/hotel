@@ -14,7 +14,11 @@ class SaleDetail extends Model
         'sale_id', 'product_id', 'price', 'quantity', 'status'
     ];
 
+    public function sale() {
+        return $this->belongsTo(Sale::class);
+    }
+
     public function product() {
-        return $this->belongsTo(Product::class, 'product_id')->withTrashed();
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 }

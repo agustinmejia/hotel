@@ -267,7 +267,7 @@ class DataRowsTableSeeder extends Seeder
                 'type' => 'number',
                 'display_name' => 'ID',
                 'required' => 1,
-                'browse' => 0,
+                'browse' => 1,
                 'read' => 0,
                 'edit' => 0,
                 'add' => 0,
@@ -1552,7 +1552,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","reservada":"Reservada","fuera de servicio":"Fuera de servicio"}}',
+                'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","reservada":"Reservada","fuera de servicio":"Fuera de servicio","limpieza":"Limpieza"}}',
                 'order' => 8,
             ),
             96 => 

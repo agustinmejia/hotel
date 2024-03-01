@@ -11,6 +11,7 @@ use App\Models\Room;
 use App\Models\EmployeActivity;
 use App\Models\Cashier;
 use App\Models\Sale;
+use App\Models\CashierDetail;
 
 class ReportsController extends Controller
 {
@@ -40,11 +41,11 @@ class ReportsController extends Controller
         return view('reports.employes-payments-browse');
     }
 
-    public function employes_payments_list(Request $requet){
-        $employes = Employe::with(['payments' => function($q) use($requet){
-                        $q->whereRaw($requet->status ? "status = '".$requet->status."'" : 1)
-                        ->whereRaw($requet->start ? "date >= '".$requet->start."'" : 1)
-                        ->whereRaw($requet->finish ? "date <= '".$requet->finish."'" : 1);
+    public function employes_payments_list(Request $request){
+        $employes = Employe::with(['payments' => function($q) use($request){
+                        $q->whereRaw($request->status ? "status = '".$request->status."'" : 1)
+                        ->whereRaw($request->start ? "date >= '".$request->start."'" : 1)
+                        ->whereRaw($request->finish ? "date <= '".$request->finish."'" : 1);
                     }])->get();
         return view('reports.employes-payments-list', compact('employes'));
     }
@@ -87,5 +88,19 @@ class ReportsController extends Controller
     public function employes_debts_index(){
         $this->custom_authorize('browse_report-debts');
         return view('reports.debts-browse');
+    }
+
+    public function cashiers_registers_index(){
+        $this->custom_authorize('browse_report-cashiers-registers');
+        return view('reports.cashiers-registers-browse');
+    }
+
+    public function cashiers_registers_list(Request $request){
+        $cashier_details = CashierDetail::with(['cashier.user'])
+                            ->whereRaw($request->start ? "created_at >= '".$request->start."'" : 1)
+                            ->whereRaw($request->finish ? "created_at <= '".$request->finish."'" : 1)
+                            ->where('type', $request->type)
+                            ->get();
+        return view('reports.cashiers-registers-list', compact('cashier_details'));
     }
 }

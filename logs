@@ -1,4 +1,18 @@
 ejecutar UpdatePermissionsSeeder
+Nombre de huesped requerido setting('system.required_guest') checkbox
+Dashboard agrupado por setting('system.group_by')
+{
+    "options": {
+        "floor_number": "Número de piso",
+        "type.name" : "Tipo de habitación",
+        "status": "Estado",
+        "": "Otro"
+    }
+}
+Estado setting('services.status') checkbox
+Precio de piscina adultos setting('services.pool_price_adults')
+Precio de piscina niños setting('services.pool_price_children')
+Precio de sauna setting('services.sauna_price')
 
 ** Mejoras **
 - pago a taxistas
@@ -20,3 +34,4 @@ ejecutar UpdatePermissionsSeeder
 - Dividir los ingresos entre ventas y hospedajes
 - Poner cantidad de habitaciones y fecha de ingreso en el reporte de caja y en el que se necesite
 - Quitar personas de hospedaje (almacenar el número de personas en la tabla reservation_detail_days)
+- Agregar variable a registro de caja para ver si es el monto de apertura

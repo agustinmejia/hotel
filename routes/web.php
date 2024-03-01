@@ -79,6 +79,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::resource('product-branch-offices', ProductBranchOfficesController::class);
     Route::get('product-branch-offices/list/ajax', [ProductBranchOfficesController::class, 'list'])->name('product-branch-offices.list');
     Route::post('product-branch-offices/change-stock', [ProductBranchOfficesController::class, 'change_stock'])->name('product-branch-offices.change.stock');
+    Route::get('product-branch-offices/product/{id}/sales-history', [ProductBranchOfficesController::class, 'product_sales_history']);
 
     // Cashier
     Route::resource('cashiers', CashiersController::class);
@@ -107,6 +108,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::get('report-employes-cleaning', [ReportsController::class, 'employes_cleaning_index'])->name('report-employes-cleaning.index');
     Route::post('report-employes-cleaning/list', [ReportsController::class, 'employes_cleaning_list'])->name('report-employes-cleaning.list');
     Route::get('report-employes-debts', [ReportsController::class, 'employes_debts_index'])->name('report-employes-debts.index');
+    Route::get('report-cashiers-registers', [ReportsController::class, 'cashiers_registers_index'])->name('report-cashiers.registers.index');
+    Route::post('report-cashiers-registers/list', [ReportsController::class, 'cashiers_registers_list'])->name('report-cashiers.registers.list');
 
     // Import
     Route::get('import', [ImportController::class, 'index'])->name('import.index');

@@ -14,30 +14,44 @@
                                 $rooms = App\Models\Room::with(['type', 'reservation_detail' => function($q){
                                     $q->whereRaw('(status = "ocupada" or status = "reservada")')->orderBy('status');
                                 }, 'reservation_detail.days', 'reservation_detail.reservation.aditional_people'])->get();
-                                $floors = $rooms->groupBy('floor_number');
+                                $groups = $rooms->groupBy(setting('system.group_by'));
+
+                                switch (setting('system.group_by')) {
+                                    case 'floor_number':
+                                        $label_group_by = 'Piso N&deg;';
+                                        break;
+                                    default:
+                                        $label_group_by = '';
+                                        break;
+                                }
                             @endphp
-                            @if ($floors->count())
+                            @if ($groups->count())
                                 <div class="panel" style="margin: 0px">
                                     <div class="page-content settings container-fluid">
                                         <ul class="nav nav-tabs">
                                             @php
                                                 $active = 'active';
                                             @endphp
-                                            @foreach($floors as $floor => $item)
+                                            @foreach($groups as $group => $item)
                                                 <li class="{{ $active }}">
-                                                    <a data-toggle="tab" href="#tab-{{ $floor }}">Piso N&deg; {{ $floor }}</a>
+                                                    <a data-toggle="tab" href="#tab-{{ $group }}">{!! $label_group_by !!} {{ Str::ucfirst($group) }}</a>
                                                 </li>
                                                 @php
                                                     $active = '';
                                                 @endphp
                                             @endforeach
+                                            @if (setting('services.status'))
+                                            <li>
+                                                <a data-toggle="tab" href="#tab-services">Servicios</a>
+                                            </li>
+                                            @endif
                                         </ul>
                                         <div class="tab-content">
                                             @php
                                                 $active = 'active';
                                             @endphp
-                                            @foreach($floors as $floor => $rooms)
-                                                <div id="tab-{{ $floor }}" class="tab-pane fade in {{ $active }}">
+                                            @foreach($groups as $group => $rooms)
+                                                <div id="tab-{{ $group }}" class="tab-pane fade in {{ $active }}">
                                                     @foreach ($rooms as $room)
                                                         @php
                                                             $finish_date = null;
@@ -143,6 +157,73 @@
                                                     $active = '';
                                                 @endphp
                                             @endforeach
+                                            @if (setting('services.status'))
+                                                <div id="tab-services" class="tab-pane fade in">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Servicio</th>
+                                                                        <th>Precio</th>
+                                                                        <th>Cantidad</th>
+                                                                        <th>Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td><h4>Entrada a priscina adultos</h4></td>
+                                                                        <td><h4>{{ setting('services.pool_price_adults') }}</h4></td>
+                                                                        <td style="padding: 0px">
+                                                                            {{-- <input type="number" name="pool_price_adults" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
+                                                                            <div class="number-input">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
+                                                                                <input class="quantity" name="pool_price_adults" min="0" name="quantity" value="0" type="number">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h4>Entrada a priscina niños</h4></td>
+                                                                        <td><h4>{{ setting('services.pool_price_children') }}</h4></td>
+                                                                        <td style="padding: 0px">
+                                                                            {{-- <input type="number" name="pool_price_children" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
+                                                                            <div class="number-input">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
+                                                                                <input class="quantity" name="pool_price_children" min="0" name="quantity" value="0" type="number">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h4>Sauna</h4></td>
+                                                                        <td><h4>{{ setting('services.sauna_price') }}</h4></td>
+                                                                        <td style="padding: 0px">
+                                                                            {{-- <input type="number" name="sauna_price" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
+                                                                            <div class="number-input">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
+                                                                                <input class="quantity" name="sauna_price" min="0" name="quantity" value="0" type="number">
+                                                                                <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                    </tr>
+                                                                    <tr style="background-color: #ebebeb">
+                                                                        <td colspan="3"><h4>TOTAL</h4></td>
+                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <div class="text-right">
+                                                                <button type="reset" class="btn btn-default">Limpiar</button>
+                                                                <button type="submit" class="btn btn-primary btn-submit"><i class="voyager-edit"></i> Registrar</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -286,6 +367,64 @@
         }
         .panel-checkbox input{
             display: none;
+        }
+
+        input[type="number"] {
+            -webkit-appearance: textfield;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .number-input {
+            border: 2px solid #ddd;
+            display: inline-flex;
+        }
+
+        .number-input,
+        .number-input * {
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .number-input input {
+            width: 50px;
+            font-size: 20px;
+            font-weight: 500
+        }
+
+        .number-input button {
+            outline:none;
+            -webkit-appearance: none;
+            background-color: transparent;
+            border: none;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            cursor: pointer;
+            margin: 0;
+            position: relative;
+        }
+
+        .number-input button {
+            font-weight: 900;
+            font-size: 20px;
+            background-color: rgba(28,200,138, 1);
+            color: white
+        }
+        .number-input button:hover {
+            background: rgb(25, 179, 122)
+        }
+        .number-input button:active {
+            background-color: rgba(28,200,138, 0.9)
+        }
+        table th {
+            font-size: 12px
         }
     </style>
 @stop
