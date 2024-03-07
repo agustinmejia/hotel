@@ -140,7 +140,7 @@
                                         Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
                                         <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
                                     @elseif ($item->penalty)
-                                        Pago de multa por <b>{{ $item->penalty->type->name }}</b>
+                                        Pago de multa por <b>{{ $item->penalty->type->name }}</b> habitación <b>{{ $item->penalty->reservation_detail->room->code }}</b>
                                         @if ($item->penalty->observations)
                                             <br> <small>{{ $item->penalty->observations }}</small>
                                         @endif

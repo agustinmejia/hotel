@@ -23,7 +23,7 @@
     $total_penalties_debts = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
 
     $reservation_detail_days_payment = $reservation_detail->days->where('status', 'pagado');
-    $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment[$reservation_detail_days_payment->count() -1]->date : null;
+    $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment->sortByDesc('date')->first()->date : null;
 
     $total_debts += $total_days_debts;
 

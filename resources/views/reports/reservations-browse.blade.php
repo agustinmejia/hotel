@@ -1,33 +1,22 @@
 @extends('voyager::master')
 
-@section('page_title', 'Reporte de Registros de Caja')
+@section('page_title', 'Reporte de Hospedajes')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8">
                 <h1 class="page-title">
-                    <i class="voyager-logbook"></i> Reporte de Registros de Caja
+                    <i class="voyager-logbook"></i> Reporte de Hospedajes
                 </h1>
             </div>
             <div class="col-md-4" style="padding-top: 20px">
-                <form id="form-report" name="form_report" action="{{ route('report-cashiers-registers.list') }}" method="post">
+                <form id="form-report" name="form_report" action="{{ route('report-reservations.list') }}" method="post">
                     @csrf
                     <input type="hidden" name="type">
                     <div class="form-group">
-                        <small>Tipo</small>
-                        <select name="type" class="form-control select2">
-                            <option value="ingreso" disabled>Ingreso</option>
-                            <option value="egreso">Egreso</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <small>Desde</small>
-                        <input type="date" name="start" class="form-control" value="{{ date('Y-m-') }}01">
-                    </div>
-                    <div class="form-group">
-                        <small>Hasta</small>
-                        <input type="date" name="finish" class="form-control" value="{{ date('Y-m-t') }}">
+                        <small>Fecha</small>
+                        <input type="date" name="date" class="form-control" value="{{ date('Y-m-t') }}">
                     </div>
                     <div class="form-group text-right">
                         <button type="submit" class="btn btn-primary">Generar <i class="voyager-settings"></i></button>

@@ -12,6 +12,7 @@ use App\Models\EmployeActivity;
 use App\Models\Cashier;
 use App\Models\Sale;
 use App\Models\CashierDetail;
+use App\Models\Reservation;
 
 class ReportsController extends Controller
 {
@@ -28,7 +29,7 @@ class ReportsController extends Controller
     public function general_list(Request $request){
         $this->custom_authorize('browse_report-general');
         $date = $request->date;
-        $cashiers = Cashier::with(['details', 'user', 'branch_office'])->whereDate('created_at', $date)->get();
+        $cashiers = Cashier::with(['details.penalty.reservation_detail.room', 'user', 'branch_office'])->whereDate('created_at', $date)->get();
         $sales = Sale::with(['person', 'reservation_detail.reservation.person', 'details.product', 'user'])->whereDate('date', $date)->orderBy('date', 'ASC')->get();
         if ($request->type == 'print') {
             return view('reports.general-print', compact('date', 'cashiers', 'sales'));
@@ -102,5 +103,24 @@ class ReportsController extends Controller
                             ->where('type', $request->type)
                             ->get();
         return view('reports.cashiers-registers-list', compact('cashier_details'));
+    }
+
+    public function reservations_index(){
+        $this->custom_authorize('browse_report-reservations');
+        return view('reports.reservations-browse');
+    }
+
+    public function reservations_list(Request $request){
+        $date = $request->date;
+        $reservations = Reservation::with(['person', 'aditional_people.person', 'user', 'details.accessories.accessory', 'details.days' => function($q) use($date){
+                                $q->where('date', $date);
+                            }, 'details.room'])
+                            ->where('status', '<>', 'reservacion')
+                            ->where('start', $date)
+                            ->get();
+        if ($request->type == 'print') {
+            return view('reports.reservations-print', compact('reservations', 'date'));
+        }
+        return view('reports.reservations-list', compact('reservations'));
     }
 }
