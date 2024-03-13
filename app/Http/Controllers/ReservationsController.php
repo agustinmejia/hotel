@@ -25,6 +25,7 @@ use App\Models\ReservationDetailPenalty;
 use App\Models\ReservationDetailDayPay;
 use App\Models\ReservationDetailFoodType;
 use App\Models\Person;
+use App\Models\ResortRegister;
 
 class ReservationsController extends Controller
 {
@@ -833,6 +834,85 @@ class ReservationsController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->to($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    public function services_list(){
+        $resort_registers = ResortRegister::whereDate('created_at', date('Y-m-d'))->get();
+        $pool_total_adults = $resort_registers->where('type', 'piscina para adultos')->sum('quantity');
+        $pool_total_children = $resort_registers->where('type', 'piscina para menor')->sum('quantity');
+        $total_sauna = $resort_registers->where('type', 'sauna')->sum('quantity');
+        return response()->json(['pool_total_adults' => $pool_total_adults, 'pool_total_children' => $pool_total_children, 'total_sauna' => $total_sauna]);
+    }
+
+    public function services_store(Request $request){
+        DB::beginTransaction();
+        try {
+
+            // Evitar que se guarde si no se ha abierto caja
+            if(!$request->cashier_id){
+                return response()->json(['error' => 1]);
+            }
+
+            // Registro de entradas a piscina para adultos
+            if($request->pool_price_adults && $request->pool_quantity_adults){
+                $resort_register = ResortRegister::create([
+                    'user_id' => Auth::user()->id,
+                    'type' => 'piscina para adultos',
+                    'quantity' => $request->pool_quantity_adults,
+                    'price' => $request->pool_price_adults
+                ]);
+    
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'resort_register_id' => $resort_register->id,
+                    'type' => 'ingreso',
+                    'amount' => $request->pool_quantity_adults * $request->pool_price_adults,
+                    // 'cash' => $request->payment_qr ? 0 : 1
+                ]);
+            }
+
+            // Registro de entradas a piscina para menores
+            if($request->pool_price_children && $request->pool_quantity_children){
+                $resort_register = ResortRegister::create([
+                    'user_id' => Auth::user()->id,
+                    'type' => 'piscina para menor',
+                    'quantity' => $request->pool_quantity_children,
+                    'price' => $request->pool_price_children
+                ]);
+    
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'resort_register_id' => $resort_register->id,
+                    'type' => 'ingreso',
+                    'amount' => $request->pool_quantity_children * $request->pool_price_children,
+                    // 'cash' => $request->payment_qr ? 0 : 1
+                ]);
+            }
+
+            // Registro de entradas a sauna
+            if($request->sauna_price && $request->sauna_quantity){
+                $resort_register = ResortRegister::create([
+                    'user_id' => Auth::user()->id,
+                    'type' => 'sauna',
+                    'quantity' => $request->sauna_quantity,
+                    'price' => $request->sauna_price
+                ]);
+    
+                CashierDetail::create([
+                    'cashier_id' => $request->cashier_id,
+                    'resort_register_id' => $resort_register->id,
+                    'type' => 'ingreso',
+                    'amount' => $request->sauna_quantity * $request->sauna_price,
+                    // 'cash' => $request->payment_qr ? 0 : 1
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['success' => 1]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['error' => 1]);
         }
     }
 }

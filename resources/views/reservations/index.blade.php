@@ -5,9 +5,13 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">
+                    @php
+                        $cashier = App\Models\Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
+                    @endphp
                     <form id="form-reservation" class="form-submit" action="{{ route('reservations.store') }}" method="post">
                         @csrf
                         <input type="hidden" name="status" value="reservacion">
+                        <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
                         <div class="panel-body">
                             @php
                                 $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -42,7 +46,7 @@
                                             @endforeach
                                             @if (setting('services.status'))
                                             <li>
-                                                <a data-toggle="tab" href="#tab-services">Servicios</a>
+                                                <a data-toggle="tab" href="#tab-services" id="nav-tab-services"><b>Servicios</b></a>
                                             </li>
                                             @endif
                                         </ul>
@@ -172,54 +176,66 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td><h4>Entrada a priscina adultos</h4></td>
-                                                                        <td><h4>{{ setting('services.pool_price_adults') }}</h4></td>
+                                                                        <td><span>Entrada a priscina adultos</span></td>
+                                                                        <td>
+                                                                            <h4>{{ setting('services.pool_price_adults') }}</h4>
+                                                                            <input type="hidden" name="pool_price_adults" value="{{ setting('services.pool_price_adults') }}">
+                                                                        </td>
                                                                         <td style="padding: 0px">
                                                                             {{-- <input type="number" name="pool_price_adults" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
-                                                                                <input class="quantity" name="pool_price_adults" min="0" name="quantity" value="0" type="number">
+                                                                                <input class="quantity" name="pool_quantity_adults" min="0" value="0" type="number">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                        <td class="text-right"><h4 id="label-pool_total_adults">0</h4></td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><h4>Entrada a priscina niños</h4></td>
-                                                                        <td><h4>{{ setting('services.pool_price_children') }}</h4></td>
+                                                                        <td><span>Entrada a priscina niños</span></td>
+                                                                        <td>
+                                                                            <h4>{{ setting('services.pool_price_children') }}</h4>
+                                                                            <input type="hidden" name="pool_price_children" value="{{ setting('services.pool_price_children') }}">
+                                                                        </td>
                                                                         <td style="padding: 0px">
                                                                             {{-- <input type="number" name="pool_price_children" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
-                                                                                <input class="quantity" name="pool_price_children" min="0" name="quantity" value="0" type="number">
+                                                                                <input class="quantity" name="pool_quantity_children" min="0" value="0" type="number">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                        <td class="text-right"><h4 id="label-pool_total_children">0</h4></td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><h4>Sauna</h4></td>
-                                                                        <td><h4>{{ setting('services.sauna_price') }}</h4></td>
+                                                                        <td><span>Sauna</span></td>
+                                                                        <td>
+                                                                            <h4>{{ setting('services.sauna_price') }}</h4>
+                                                                            <input type="hidden" name="sauna_price" value="{{ setting('services.sauna_price') }}">
+                                                                        </td>
                                                                         <td style="padding: 0px">
                                                                             {{-- <input type="number" name="sauna_price" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
-                                                                                <input class="quantity" name="sauna_price" min="0" name="quantity" value="0" type="number">
+                                                                                <input class="quantity" name="sauna_quantity" min="0" value="0" type="number">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                        <td class="text-right"><h4 id="label-sauna_total">0</h4></td>
                                                                     </tr>
                                                                     <tr style="background-color: #ebebeb">
                                                                         <td colspan="3"><h4>TOTAL</h4></td>
-                                                                        <td class="text-right"><h4>0</h4></td>
+                                                                        <td class="text-right"><h4 id="label-total_sservices">0</h4></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
                                                             <div class="text-right">
-                                                                <button type="reset" class="btn btn-default">Limpiar</button>
-                                                                <button type="submit" class="btn btn-primary btn-submit"><i class="voyager-edit"></i> Registrar</button>
+                                                                {{-- <button type="reset" class="btn btn-default">Limpiar</button> --}}
+                                                                <button type="button" class="btn btn-primary btn-submit-alt" @if(!$cashier) disabled title="No ha aperturado caja" @endif><i class="voyager-edit"></i> Registrar</button>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <canvas id="myChart"></canvas>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -426,12 +442,19 @@
         table th {
             font-size: 12px
         }
+        table td span{
+            font-size: 1.2rem
+        }
     </style>
 @stop
 
 @section('javascript')
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        var pool_price_adults = "{{ setting('services.pool_price_adults') }}";
+        var pool_price_children = "{{ setting('services.pool_price_children') }}";
+        var sauna_price = "{{ setting('services.sauna_price') }}";
         var EnableClick = false;
         $(document).ready(function(){
 
@@ -463,6 +486,41 @@
             $('#form-reservation').on('reset', function(){
                 $('.label-check').fadeOut('fast');
                 $('.div-actions').fadeOut('fast');
+            });
+
+            $('.quantity').keyup(function(){
+                calculateService();
+            });
+
+            $('.minus').click(function(){
+                calculateService();
+            });
+
+            $('.plus').click(function(){
+                calculateService();
+            });
+
+            $('.btn-submit-alt').click(() => {
+                $(this).attr('disabled', 'disabled');
+                $.post("{{ route('services.store') }}", $('#form-reservation').serialize(), res => {
+                    $('.btn-submit-alt').removeAttr('disabled');
+                    $('input[name="pool_quantity_adults"]').val(0);
+                    $('input[name="pool_quantity_children"]').val(0);
+                    $('input[name="sauna_quantity"]').val(0);
+                    calculateService();
+                    renderChart();
+                    if(res.success){
+                        toastr.success('Entradas registradas', 'Bien hecho!');
+                    }else{
+                        toastr.error('Entradas no registradas', 'Error');
+                    }
+                });
+            })
+
+            $('#nav-tab-services').click(function(){
+                setTimeout(() => {
+                    renderChart();
+                }, 250);
             });
         });
 
@@ -501,6 +559,85 @@
             $('#select-city_id').fadeOut('fast', function(){
                 $('#input-city_name').fadeIn('fast');
                 $('#input-city_name').prop('required', true);
+            });
+        }
+
+        function calculateService(){
+            let pool_quantity_adults = $('input[name="pool_quantity_adults"]').val();
+            let pool_quantity_children = $('input[name="pool_quantity_children"]').val();
+            let sauna_quantity = $('input[name="sauna_quantity"]').val();
+            $('#label-pool_total_adults').text(pool_price_adults * pool_quantity_adults);
+            $('#label-pool_total_children').text(pool_price_children * pool_quantity_children);
+            $('#label-sauna_total').text(sauna_price * sauna_quantity);
+            $('#label-total_sservices').text((pool_price_adults * pool_quantity_adults) + (pool_price_children * pool_quantity_children) + (sauna_price * sauna_quantity));
+        }
+    </script>
+
+    <script>
+        var myChart;
+        var pool_total_adults = 0;
+        var pool_total_children = 0;
+        var total_sauna = 0;
+        var backgroundColor = [
+            'rgba(255, 159, 64, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(201, 203, 207, 0.5)'
+        ];
+        var borderColor = [
+            'rgb(255, 159, 64)',
+            'rgb(75, 192, 192)',
+            'rgb(54, 162, 235)',
+            'rgb(153, 102, 255)',
+            'rgb(201, 203, 207)'
+        ]
+        const ctx = document.getElementById('myChart');
+    
+        function renderChart(){
+            $.get("{{ route('services.list') }}", (res) => {
+                pool_total_adults = res.pool_total_adults;
+                pool_total_children = res.pool_total_children;
+                total_sauna = res.total_sauna;
+                if (myChart) {
+                    // Actualiza los datos del gráfico con animación
+                    myChart.data = {
+                        labels: ['Piscina menores', 'Piscina adultos', 'Sauna'],
+                        datasets: [{
+                            label: 'Cant. personas',
+                            data: [pool_total_adults, pool_total_children, total_sauna],
+                            backgroundColor,
+                            borderColor,
+                            borderWidth: 1
+                        }]
+                    };
+                    myChart.update({
+                        duration: 500,
+                        easing: 'easeInOutQuart',
+                    });
+                }else{
+                    myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Piscina menores', 'Piscina adultos', 'Sauna'],
+                            datasets: [{
+                                label: 'Cant. personas',
+                                data: [pool_total_adults, pool_total_children, total_sauna],
+                                backgroundColor,
+                                borderColor,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            // animation : false
+                        }
+                    });
+                }
             });
         }
     </script>

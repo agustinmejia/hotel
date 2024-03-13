@@ -65,6 +65,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::post('reservations/update/amount-day', [ReservationsController::class, 'update_amount_day'])->name('reservations.update.amount_day');
     Route::post('reservations/remove-service', [ReservationsController::class, 'remove_service'])->name('reservations.remove.service');
     Route::post('reservations/details/update/daily-payment', [ReservationsController::class, 'details_update_daily_payment'])->name('reservations.details.update.daily-payment');
+    Route::get('reservations/services/list', [ReservationsController::class, 'services_list'])->name('services.list');
+    Route::post('reservations/services/store', [ReservationsController::class, 'services_store'])->name('services.store');
 
     // City
     Route::get('cities/search/ajax', [CitiesController::class, 'search'])->name('cities.search');

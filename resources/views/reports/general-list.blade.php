@@ -144,6 +144,8 @@
                                         @if ($item->penalty->observations)
                                             <br> <small>{{ $item->penalty->observations }}</small>
                                         @endif
+                                    @elseif ($item->resort_register)
+                                        {{ $item->resort_register->quantity }} entradas <b>{{ $item->resort_register->type }}</b>
                                     @endif
                                     {!! $item->observations ? '<br>'.$item->observations : '' !!}
                                 </td>

@@ -11,7 +11,7 @@ class CashierDetail extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'cashier_id', 'sale_detail_id', 'service_id', 'reservation_detail_day_id', 'reservation_detail_penalty_id', 'type', 'amount', 'cash', 'observations'
+        'cashier_id', 'sale_detail_id', 'service_id', 'reservation_detail_day_id', 'reservation_detail_penalty_id', 'resort_register_id', 'type', 'amount', 'cash', 'observations'
     ];
 
     public function cashier(){
@@ -34,7 +34,7 @@ class CashierDetail extends Model
         return $this->belongsTo(ReservationDetailPenalty::class, 'reservation_detail_penalty_id');
     }
 
-    // public function reservation_detail_penalty(){
-    //     return $this->belongsTo(ReservationDetailPenalty::class, 'reservation_detail_penalty_id');
-    // }
+    public function resort_register(){
+        return $this->belongsTo(ResortRegister::class, 'resort_register_id');
+    }
 }

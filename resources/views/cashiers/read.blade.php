@@ -102,10 +102,12 @@
                                                 @elseif ($item->service)
                                                     Uso de <b>{{ $item->service->name }}</b> <br>
                                                 @elseif ($item->reservation_detail_day)
-                                                Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
+                                                    Pago de hospedaje habitación <b>{{ $item->reservation_detail_day->reservation_detail->room->code }}</b> | {{ $item->reservation_detail_day->reservation_detail->reservation->person->full_name }}<br>
                                                 <small class="text-muted">del {{ $days[intval(date('N', strtotime($item->reservation_detail_day->date)))] }}, {{ date('d', strtotime($item->reservation_detail_day->date)) }} de {{ $months[intval(date('m', strtotime($item->reservation_detail_day->date)))] }}</small>
                                                 @elseif ($item->penalty)
                                                     Multa de <b>{{ $item->penalty->type->name }}</b> {{ $item->penalty->observations ? '('.$item->penalty->observations.')' : '' }} <br>
+                                                @elseif ($item->resort_register)
+                                                    {{ $item->resort_register->quantity }} entradas <b>{{ $item->resort_register->type }}</b>
                                                 @endif
                                                 {!! $item->observations ? $item->observations : '' !!}
                                             </td>

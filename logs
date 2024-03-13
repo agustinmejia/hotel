@@ -1,18 +1,5 @@
-ejecutar UpdatePermissionsSeeder
-Nombre de huesped requerido setting('system.required_guest') checkbox
-Dashboard agrupado por setting('system.group_by')
-{
-    "options": {
-        "floor_number": "Número de piso",
-        "type.name" : "Tipo de habitación",
-        "status": "Estado",
-        "": "Otro"
-    }
-}
-Estado setting('services.status') checkbox
-Precio de piscina adultos setting('services.pool_price_adults')
-Precio de piscina niños setting('services.pool_price_children')
-Precio de sauna setting('services.sauna_price')
+composer install
+php artisan migrate
 
 ** Mejoras **
 - pago a taxistas
