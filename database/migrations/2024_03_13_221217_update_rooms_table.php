@@ -14,8 +14,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('cashier_details', function(Blueprint $table){
-            $table->foreignId('resort_register_id')->nullable()->constrained('resort_registers');
+        Schema::table('rooms', function(Blueprint $table){
+            $table->foreignId('branch_office_id')->nullable()->constrained('branch_offices');
 		});
     }
 
@@ -26,8 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('cashier_details', function (Blueprint $table) {
-            $table->dropColumn(['resort_register_id']);
+        Schema::table('rooms', function (Blueprint $table) {
+            $table->dropColumn(['branch_office_id']);
         });
     }
 };

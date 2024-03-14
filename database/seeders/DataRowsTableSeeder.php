@@ -993,7 +993,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{}',
-                'order' => 5,
+                'order' => 4,
             ),
             61 => 
             array (
@@ -1041,7 +1041,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
-                'order' => 4,
+                'order' => 5,
             ),
             64 => 
             array (
@@ -1056,7 +1056,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"on":"Habilitado","off":"Deshabilitado","checked":true}',
+                'details' => '{"on":"Habilitada","off":"Deshabilitada","checked":true,"display":{"width":6}}',
                 'order' => 7,
             ),
             65 => 
@@ -1073,7 +1073,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 8,
+                'order' => 12,
             ),
             66 => 
             array (
@@ -1089,7 +1089,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 13,
             ),
             67 => 
             array (
@@ -1105,7 +1105,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 10,
+                'order' => 14,
             ),
             68 => 
             array (
@@ -1505,7 +1505,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
-                'order' => 5,
+                'order' => 7,
             ),
             93 => 
             array (
@@ -1521,7 +1521,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{}',
-                'order' => 6,
+                'order' => 8,
             ),
             94 => 
             array (
@@ -1537,7 +1537,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6},"resize":{"width":"1000","height":null},"quality":"90%","upsize":true,"thumbnails":[{"name":"medium","scale":"50%"},{"name":"small","scale":"25%"},{"name":"cropped","crop":{"width":"256","height":"256"}}]}',
-                'order' => 7,
+                'order' => 9,
             ),
             95 => 
             array (
@@ -1549,11 +1549,11 @@ class DataRowsTableSeeder extends Seeder
                 'required' => 0,
                 'browse' => 1,
                 'read' => 1,
-                'edit' => 1,
+                'edit' => 0,
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6},"options":{"disponible":"Disponible","ocupada":"Ocupada","reservada":"Reservada","fuera de servicio":"Fuera de servicio","limpieza":"Limpieza"}}',
-                'order' => 8,
+                'order' => 10,
             ),
             96 => 
             array (
@@ -1569,7 +1569,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 11,
             ),
             97 => 
             array (
@@ -1585,7 +1585,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 10,
+                'order' => 12,
             ),
             98 => 
             array (
@@ -1601,7 +1601,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 11,
+                'order' => 13,
             ),
             99 => 
             array (
@@ -1617,7 +1617,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"model":"App\\\\Models\\\\RoomType","table":"room_types","type":"belongsTo","column":"room_type_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
-                'order' => 3,
+                'order' => 4,
             ),
             100 => 
             array (
@@ -1793,7 +1793,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6},"default":1}',
-                'order' => 4,
+                'order' => 6,
             ),
             111 => 
             array (
@@ -2722,6 +2722,102 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 0,
                 'details' => '{}',
                 'order' => 7,
+            ),
+            169 => 
+            array (
+                'id' => 171,
+                'data_type_id' => 12,
+                'field' => 'room_belongsto_branch_office_relationship',
+                'type' => 'relationship',
+                'display_name' => 'Sucursal',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"model":"App\\\\Models\\\\BranchOffice","table":"branch_offices","type":"belongsTo","column":"branch_office_id","key":"id","label":"name","pivot_table":"branch_offices","pivot":"0","taggable":"0"}',
+                'order' => 3,
+            ),
+            170 => 
+            array (
+                'id' => 172,
+                'data_type_id' => 12,
+                'field' => 'branch_office_id',
+                'type' => 'text',
+                'display_name' => 'Branch Office Id',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 5,
+            ),
+            171 => 
+            array (
+                'id' => 173,
+                'data_type_id' => 9,
+                'field' => 'resort',
+                'type' => 'checkbox',
+                'display_name' => 'Balneario',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"on":"Habilitado","off":"Deshabilitado","checked":true,"display":{"width":6}}',
+                'order' => 8,
+            ),
+            172 => 
+            array (
+                'id' => 174,
+                'data_type_id' => 9,
+                'field' => 'pool_adults_price',
+                'type' => 'number',
+                'display_name' => 'Precio de piscina adultos',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":4},"min":0}',
+                'order' => 9,
+            ),
+            173 => 
+            array (
+                'id' => 175,
+                'data_type_id' => 9,
+                'field' => 'pool_children_price',
+                'type' => 'number',
+                'display_name' => 'Precio de piscina menores',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":4},"min":0}',
+                'order' => 10,
+            ),
+            174 => 
+            array (
+                'id' => 176,
+                'data_type_id' => 9,
+                'field' => 'sauna_price',
+                'type' => 'number',
+                'display_name' => 'Precio sauna',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":4},"min":0}',
+                'order' => 11,
             ),
         ));
         

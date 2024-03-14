@@ -11,7 +11,7 @@ class Room extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'room_type_id', 'floor_number', 'code', 'details', 'images', 'status'
+        'room_type_id', 'branch_office_id', 'floor_number', 'code', 'details', 'images', 'status'
     ];
 
     public function type() {

@@ -29,7 +29,6 @@ use App\Models\ResortRegister;
 
 class ReservationsController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -87,11 +86,16 @@ class ReservationsController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar que la habitación no esté ocupada (en otro detalle de hospedaje)
+        $reservations = ReservationDetail::whereIn('room_id', $request->room_id)->where('status', 'ocupada')->get();
+        if($reservations->count() && $request->status == 'en curso'){
+            return redirect()->route('reception.index')->with(['message' => 'La habitación seleccionada está ocupada', 'alert-type' => 'warning']);
+        }
         DB::beginTransaction();
         try {
             $reservation = Reservation::create([
                 'user_id' => Auth::user()->id,
-                'person_id' => $request->person_id[0],
+                'person_id' => count($request->person_id) ? $request->person_id[0] : 1,
                 'start' => $request->start,
                 'finish' => $request->finish,
                 'reason'  => $request->reason,
@@ -220,6 +224,9 @@ class ReservationsController extends Controller
         $cashier = Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
         if ($room_id) {
             update_hosting();
+            if(Room::find($room_id)->branch_office_id != Auth::user()->branch_office_id ){
+                return redirect()->route('reception.index')->with(['message' => 'Este hospedaje no pertenece a ésta sucursal', 'alert-type' => 'warning']);
+            }
             return view('reservations.read-single', compact('reservation', 'cashier', 'room_id'));
         } else {
             return view('reservations.read', compact('reservation', 'cashier'));
@@ -838,7 +845,7 @@ class ReservationsController extends Controller
     }
 
     public function services_list(){
-        $resort_registers = ResortRegister::whereDate('created_at', date('Y-m-d'))->get();
+        $resort_registers = ResortRegister::whereDate('created_at', date('Y-m-d'))->where('branch_office_id', Auth::user()->branch_office_id)->get();
         $pool_total_adults = $resort_registers->where('type', 'piscina para adultos')->sum('quantity');
         $pool_total_children = $resort_registers->where('type', 'piscina para menor')->sum('quantity');
         $total_sauna = $resort_registers->where('type', 'sauna')->sum('quantity');
@@ -855,37 +862,39 @@ class ReservationsController extends Controller
             }
 
             // Registro de entradas a piscina para adultos
-            if($request->pool_price_adults && $request->pool_quantity_adults){
+            if($request->pool_adults_price && $request->pool_adults_quantity){
                 $resort_register = ResortRegister::create([
                     'user_id' => Auth::user()->id,
+                    'branch_office_id' => Auth::user()->branch_office_id,
                     'type' => 'piscina para adultos',
-                    'quantity' => $request->pool_quantity_adults,
-                    'price' => $request->pool_price_adults
+                    'quantity' => $request->pool_adults_quantity,
+                    'price' => $request->pool_adults_price
                 ]);
     
                 CashierDetail::create([
                     'cashier_id' => $request->cashier_id,
                     'resort_register_id' => $resort_register->id,
                     'type' => 'ingreso',
-                    'amount' => $request->pool_quantity_adults * $request->pool_price_adults,
+                    'amount' => $request->pool_adults_quantity * $request->pool_adults_price,
                     // 'cash' => $request->payment_qr ? 0 : 1
                 ]);
             }
 
             // Registro de entradas a piscina para menores
-            if($request->pool_price_children && $request->pool_quantity_children){
+            if($request->pool_children_price && $request->pool_children_quantity){
                 $resort_register = ResortRegister::create([
                     'user_id' => Auth::user()->id,
+                    'branch_office_id' => Auth::user()->branch_office_id,
                     'type' => 'piscina para menor',
-                    'quantity' => $request->pool_quantity_children,
-                    'price' => $request->pool_price_children
+                    'quantity' => $request->pool_children_quantity,
+                    'price' => $request->pool_children_price
                 ]);
     
                 CashierDetail::create([
                     'cashier_id' => $request->cashier_id,
                     'resort_register_id' => $resort_register->id,
                     'type' => 'ingreso',
-                    'amount' => $request->pool_quantity_children * $request->pool_price_children,
+                    'amount' => $request->pool_children_quantity * $request->pool_children_price,
                     // 'cash' => $request->payment_qr ? 0 : 1
                 ]);
             }
@@ -894,6 +903,7 @@ class ReservationsController extends Controller
             if($request->sauna_price && $request->sauna_quantity){
                 $resort_register = ResortRegister::create([
                     'user_id' => Auth::user()->id,
+                    'branch_office_id' => Auth::user()->branch_office_id,
                     'type' => 'sauna',
                     'quantity' => $request->sauna_quantity,
                     'price' => $request->sauna_price

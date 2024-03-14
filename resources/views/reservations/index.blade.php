@@ -6,18 +6,31 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     @php
-                        $cashier = App\Models\Cashier::where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
+                        $cashier = App\Models\Cashier::with(['branch_office'])->where('user_id', Auth::user()->id)->where('status', 'abierta')->first();
+                        $cashier_id = null;
+                        $resort_branch_office_active = false;
+                        $pool_adults_price = 0;
+                        $pool_children_price = 0;
+                        $sauna_price = 0;
+                        if($cashier){
+                            $cashier_id = $cashier->id;
+                            $pool_adults_price = $cashier->branch_office->pool_adults_price;
+                            $pool_children_price = $cashier->branch_office->pool_children_price;
+                            $sauna_price = $cashier->branch_office->sauna_price;
+                            $resort_branch_office_active = $cashier->branch_office->resort ? true : false;
+                        }
                     @endphp
                     <form id="form-reservation" class="form-submit" action="{{ route('reservations.store') }}" method="post">
                         @csrf
                         <input type="hidden" name="status" value="reservacion">
-                        <input type="hidden" name="cashier_id" value="{{ $cashier ? $cashier->id : null }}">
+                        <input type="hidden" name="cashier_id" value="{{ $cashier_id }}">
                         <div class="panel-body">
                             @php
                                 $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                                 $rooms = App\Models\Room::with(['type', 'reservation_detail' => function($q){
                                     $q->whereRaw('(status = "ocupada" or status = "reservada")')->orderBy('status');
-                                }, 'reservation_detail.days', 'reservation_detail.reservation.aditional_people'])->get();
+                                }, 'reservation_detail.days', 'reservation_detail.reservation.aditional_people'])
+                                ->where('branch_office_id', Auth::user()->branch_office_id)->get();
                                 $groups = $rooms->groupBy(setting('system.group_by'));
 
                                 switch (setting('system.group_by')) {
@@ -44,7 +57,7 @@
                                                     $active = '';
                                                 @endphp
                                             @endforeach
-                                            @if (setting('services.status'))
+                                            @if ($resort_branch_office_active)
                                             <li>
                                                 <a data-toggle="tab" href="#tab-services" id="nav-tab-services"><b>Servicios</b></a>
                                             </li>
@@ -161,7 +174,7 @@
                                                     $active = '';
                                                 @endphp
                                             @endforeach
-                                            @if (setting('services.status'))
+                                            @if ($resort_branch_office_active)
                                                 <div id="tab-services" class="tab-pane fade in">
                                                     <div class="row">
                                                         <div class="col-md-6">
@@ -178,14 +191,13 @@
                                                                     <tr>
                                                                         <td><span>Entrada a priscina adultos</span></td>
                                                                         <td>
-                                                                            <h4>{{ setting('services.pool_price_adults') }}</h4>
-                                                                            <input type="hidden" name="pool_price_adults" value="{{ setting('services.pool_price_adults') }}">
+                                                                            <h4>{{ $pool_adults_price == intval($pool_adults_price) ? intval($pool_adults_price) : $pool_adults_price }}</h4>
+                                                                            <input type="hidden" name="pool_adults_price" value="{{ $pool_adults_price }}">
                                                                         </td>
                                                                         <td style="padding: 0px">
-                                                                            {{-- <input type="number" name="pool_price_adults" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
-                                                                                <input class="quantity" name="pool_quantity_adults" min="0" value="0" type="number">
+                                                                                <input class="quantity" name="pool_adults_quantity" min="0" value="0" type="number">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
                                                                             </div>
                                                                         </td>
@@ -194,14 +206,13 @@
                                                                     <tr>
                                                                         <td><span>Entrada a priscina niños</span></td>
                                                                         <td>
-                                                                            <h4>{{ setting('services.pool_price_children') }}</h4>
-                                                                            <input type="hidden" name="pool_price_children" value="{{ setting('services.pool_price_children') }}">
+                                                                            <h4>{{ $pool_children_price == intval($pool_children_price) ? intval($pool_children_price) : $pool_children_price }}</h4>
+                                                                            <input type="hidden" name="pool_children_price" value="{{ $pool_children_price }}">
                                                                         </td>
                                                                         <td style="padding: 0px">
-                                                                            {{-- <input type="number" name="pool_price_children" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
-                                                                                <input class="quantity" name="pool_quantity_children" min="0" value="0" type="number">
+                                                                                <input class="quantity" name="pool_children_quantity" min="0" value="0" type="number">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus">+</button>
                                                                             </div>
                                                                         </td>
@@ -210,11 +221,10 @@
                                                                     <tr>
                                                                         <td><span>Sauna</span></td>
                                                                         <td>
-                                                                            <h4>{{ setting('services.sauna_price') }}</h4>
-                                                                            <input type="hidden" name="sauna_price" value="{{ setting('services.sauna_price') }}">
+                                                                            <h4>{{ $sauna_price == intval($sauna_price) ? intval($sauna_price) : $sauna_price }}</h4>
+                                                                            <input type="hidden" name="sauna_price" value="{{ $sauna_price }}">
                                                                         </td>
                                                                         <td style="padding: 0px">
-                                                                            {{-- <input type="number" name="sauna_price" class="form-control" step="1" min="0" style="width: 100px; font-size: 15px"> --}}
                                                                             <div class="number-input">
                                                                                 <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus">-</button>
                                                                                 <input class="quantity" name="sauna_quantity" min="0" value="0" type="number">
@@ -244,7 +254,10 @@
                                     </div>
                                 </div>
                             @else
-                                <h1 class="text-center">No hay habitaciones registradas</h1>
+                                <div class="col-md-12" style="padding: 20px">
+                                    <h1 class="text-center"><i class="fa fa-ban"></i> No hay habitaciones registradas</h1>
+                                </div>
+
                             @endif
                             <div class="col-md-12 text-right div-actions" style="display: none">
                                 <button type="reset" class="btn btn-default">Cancelar</button>
@@ -452,9 +465,9 @@
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var pool_price_adults = "{{ setting('services.pool_price_adults') }}";
-        var pool_price_children = "{{ setting('services.pool_price_children') }}";
-        var sauna_price = "{{ setting('services.sauna_price') }}";
+        var pool_adults_price = "{{ $pool_adults_price }}";
+        var pool_children_price = "{{ $pool_children_price }}";
+        var sauna_price = "{{ $sauna_price }}";
         var EnableClick = false;
         $(document).ready(function(){
 
@@ -504,8 +517,8 @@
                 $(this).attr('disabled', 'disabled');
                 $.post("{{ route('services.store') }}", $('#form-reservation').serialize(), res => {
                     $('.btn-submit-alt').removeAttr('disabled');
-                    $('input[name="pool_quantity_adults"]').val(0);
-                    $('input[name="pool_quantity_children"]').val(0);
+                    $('input[name="pool_adults_quantity"]').val(0);
+                    $('input[name="pool_children_quantity"]').val(0);
                     $('input[name="sauna_quantity"]').val(0);
                     calculateService();
                     renderChart();
@@ -563,13 +576,13 @@
         }
 
         function calculateService(){
-            let pool_quantity_adults = $('input[name="pool_quantity_adults"]').val();
-            let pool_quantity_children = $('input[name="pool_quantity_children"]').val();
+            let pool_adults_quantity = $('input[name="pool_adults_quantity"]').val();
+            let pool_children_quantity = $('input[name="pool_children_quantity"]').val();
             let sauna_quantity = $('input[name="sauna_quantity"]').val();
-            $('#label-pool_total_adults').text(pool_price_adults * pool_quantity_adults);
-            $('#label-pool_total_children').text(pool_price_children * pool_quantity_children);
+            $('#label-pool_total_adults').text(pool_adults_price * pool_adults_quantity);
+            $('#label-pool_total_children').text(pool_children_price * pool_children_quantity);
             $('#label-sauna_total').text(sauna_price * sauna_quantity);
-            $('#label-total_sservices').text((pool_price_adults * pool_quantity_adults) + (pool_price_children * pool_quantity_children) + (sauna_price * sauna_quantity));
+            $('#label-total_sservices').text((pool_adults_price * pool_adults_quantity) + (pool_children_price * pool_children_quantity) + (sauna_price * sauna_quantity));
         }
     </script>
 

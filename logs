@@ -1,21 +1,17 @@
 composer install
 php artisan migrate
+A todas las habitaciones asignar la sucursal por defecto
+Eliminar toda la parte de servicios de los ssettings
 
 ** Mejoras **
 - pago a taxistas
 - No permitir que se pague un día si se tiene una deuda previa
 - En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es menor/mayor
-- Agregar servicio y refrigerio
-- Reporte de ingresos agrupados por ventas y por alquiler
-- Reporte de habitaciones con deudas (separar la deuda de alquiler y de  ventas)
 - Permitir pagar el día al momento de regitrar el hospedaje
-- Al cerrar el hospedaje que permita tiquear si pagaron (sino pagaron poner al cliente en una lista negra)
-- Registro de gastos (desayuno, insumos, etc.)
+- Al cerrar el hospedaje que permita tickear si pagaron (sino pagaron poner al cliente en una lista negra)
 - Exportar a pdf y a excel todos los reportes y mostrar la fecha y hora de la impresión
-- Reporte de egresos
 - Ingreso y egreso de insumos de limpieza (hacer un inventario)
 - Asignar tareas de limpieza
-- Separar habitaciones por sucursal (ya lo hace en el stock de productos)
 - Registrar compra de productos e insumos
 - Al cerrar un hospedaje editar la fecha de salida
 - Dividir los ingresos entre ventas y hospedajes

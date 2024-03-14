@@ -213,50 +213,6 @@ class SettingsTableSeeder extends Seeder
                 'order' => 11,
                 'group' => 'System',
             ),
-            17 => 
-            array (
-                'id' => 18,
-                'key' => 'services.pool_price_adults',
-                'display_name' => 'Precio de piscina adultos',
-                'value' => '10',
-                'details' => NULL,
-                'type' => 'text',
-                'order' => 14,
-                'group' => 'Services',
-            ),
-            18 => 
-            array (
-                'id' => 19,
-                'key' => 'services.pool_price_children',
-                'display_name' => 'Precio de piscina niños',
-                'value' => '5',
-                'details' => NULL,
-                'type' => 'text',
-                'order' => 15,
-                'group' => 'Services',
-            ),
-            19 => 
-            array (
-                'id' => 20,
-                'key' => 'services.sauna_price',
-                'display_name' => 'Precio de sauna',
-                'value' => '20',
-                'details' => NULL,
-                'type' => 'text',
-                'order' => 16,
-                'group' => 'Services',
-            ),
-            20 => 
-            array (
-                'id' => 21,
-                'key' => 'services.status',
-                'display_name' => 'Estado',
-                'value' => '',
-                'details' => NULL,
-                'type' => 'checkbox',
-                'order' => 13,
-                'group' => 'Services',
-            ),
         ));
         
         

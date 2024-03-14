@@ -55,15 +55,15 @@
                 <a href="{{ route('reception.index') }}" class="btn btn-warning"><i class="fa fa-arrow-circle-left"></i> Volver</a>
             </div>
             <div class="col-md-6 text-right" style="padding-right: 15px">
-                @if ($cashier && $reservation_detail->status == 'ocupada')
+                @if ($reservation_detail->status == 'ocupada')
                     <div class="btn-group">
                         <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
                             Opciones <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" style="left: -90px !important">
-                            @if($cashier)
-                                <li><a href="#" title="Realizar pago de hospedaje" data-toggle="modal" data-target="#add-payment-host-modal">Pagar hospedaje</a></li>
-                            @endif
+                            {{-- @if($casshier) --}}
+                            <li><a href="#" title="Realizar pago de hospedaje" data-toggle="modal" data-target="#add-payment-host-modal">Pagar hospedaje</a></li>
+                            {{-- @endif --}}
                             @if ($reservation_detail->status == 'ocupada')
                                 @if (Auth::user()->branch_office_id)
                                 <li><a href="#" title="Venta de producto" data-toggle="modal" data-target="#add-product-sale-modal">Venta de producto</a></li>
@@ -71,8 +71,8 @@
                                 <li><a href="#" title="Agregar accesorio" data-toggle="modal" data-target="#add-service-modal">Agregar accesorio</a></li>
                                 <li><a href="#" title="Agregar huesped a la habitación" data-toggle="modal" data-target="#add-people-modal">Agregar huesped</a></li>
                                 <li><a href="#" title="Agregar multa" data-toggle="modal" data-target="#add-penalty-modal">Agregar multa</a></li>
-                                <li class="divider" style="margin: 10px 0px"></li>
                                 @if($cashier)
+                                <li class="divider" style="margin: 10px 0px"></li>
                                 <li><a href="#" title="Pago parcial" data-toggle="modal" data-target="#add-partial-payment-modal">Pago parcial</a></li>
                                 <li><a href="#" title="Pago total" data-toggle="modal" data-target="#add-total-payment-modal">Pago total</a></li>
                                 @endif
@@ -578,7 +578,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark btn-submit">Pagar <i class="fa fa-money"></i></button>
+                        <button type="submit" class="btn btn-dark btn-submit" @if(!$cashier) disabled title="Debe aperturar caja" @endif>Pagar <i class="fa fa-money"></i></button>
                     </div>
                 </div>
             </div>

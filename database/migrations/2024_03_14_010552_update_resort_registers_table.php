@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-// ! eliminar
 
 return new class extends Migration
 {
@@ -14,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('cashier_details', function(Blueprint $table){
-            $table->foreignId('resort_register_id')->nullable()->constrained('resort_registers');
+        Schema::table('resort_registers', function(Blueprint $table){
+            $table->foreignId('branch_office_id')->nullable()->constrained('branch_offices');
 		});
     }
 
@@ -26,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('cashier_details', function (Blueprint $table) {
-            $table->dropColumn(['resort_register_id']);
+        Schema::table('resort_registers', function (Blueprint $table) {
+            $table->dropColumn(['branch_office_id']);
         });
     }
 };

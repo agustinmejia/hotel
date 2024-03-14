@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('location')->nullable();
             $table->text('images')->nullable();
+            $table->smallInteger('resort')->nullable()->default(0);
+            $table->decimal('pool_adults_price', 10, 2)->nullable();
+            $table->decimal('pool_children_price', 10, 2)->nullable();
+            $table->decimal('sauna_price', 10, 2)->nullable();
             $table->smallInteger('status')->nullable()->default(1);
             $table->timestamps();
             $table->softDeletes();

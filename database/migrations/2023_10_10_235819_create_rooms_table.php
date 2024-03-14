@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_type_id')->nullable()->constrained('room_types');
+            $table->foreignId('branch_office_id')->nullable()->constrained('branch_offices');
             $table->smallInteger('floor_number')->nullable()->default(1);
             $table->string('code')->nullable();
             $table->text('details')->nullable();

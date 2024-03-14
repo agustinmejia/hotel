@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('resort_registers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->foreignId('branch_office_id')->nullable()->constrained('branch_offices');
             $table->string('type')->nullable();
             $table->smallInteger('quantity')->nullable();
             $table->decimal('price', 10, 2)->nullable();
