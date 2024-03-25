@@ -169,7 +169,7 @@
     @include('partials.add-person-modal')
 
     {{-- Create cashier modal --}}
-    @include('partials.add-cashier-modal', ['redirect' => 'admin/reservations/create?room_id='.$room->id])
+    @include('partials.add-cashier-modal', ['redirect' => $room ? 'admin/reservations/create?room_id='.$room->id : null])
 @stop
 
 @section('css')

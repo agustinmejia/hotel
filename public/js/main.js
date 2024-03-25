@@ -85,7 +85,7 @@ function formatResultPeople(data) {
                 </div>
                 <div>
                     <h5>
-                        ${data.full_name} <br>
+                        ${data.full_name} ${data.defaulters.length ? '<label class="label label-danger" >Deudor</label>' : ''}<br>
                         <p style="font-size: 13px; margin-top: 5px">
                             CI: ${data.dni ? data.dni : 'No definido'}
                         </p>

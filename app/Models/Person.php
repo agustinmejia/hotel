@@ -25,4 +25,8 @@ class Person extends Model
     public function reservations() {
         return $this->hasMany(Reservation::class, 'person_id');
     }
+
+    public function defaulters() {
+        return $this->hasMany(PersonDefaulter::class, 'person_id');
+    }
 }

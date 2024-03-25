@@ -26,6 +26,7 @@ use App\Models\ReservationDetailDayPay;
 use App\Models\ReservationDetailFoodType;
 use App\Models\Person;
 use App\Models\ResortRegister;
+use App\Models\PersonDefaulter;
 
 class ReservationsController extends Controller
 {
@@ -769,6 +770,7 @@ class ReservationsController extends Controller
         DB::beginTransaction();
         try {
             $reservation_details = $request->reservation_detail_id;
+            $amount_debt_total = 0;
             for ($i=0; $i < count($reservation_details); $i++) { 
                 // Actualizar estado de reserva de habitación
                 $reservation_detail = ReservationDetail::with(['reservation', 'room', 'days.payments', 'sales.details'])->where('id', $reservation_details[$i])->first();
@@ -786,54 +788,75 @@ class ReservationsController extends Controller
                 }
 
                 // Pago de ventas pendientes
-                $reservation_detail->sales->each(function ($sale) use($request) {
-                    $sale->update(['status' => 'pagada']);
+                $reservation_detail->sales->each(function ($sale) use($request, &$amount_debt_total) {
+                    $sale->update(['status' => $request->not_payment ? 'deuda' : 'pagada']);
 
-                    $sale->details->each(function ($detail) use($request) {
+                    $sale->details->each(function ($detail) use($request, &$amount_debt_total) {
                         if ($detail->status == 'pendiente') {
-                            $detail->update(['status' => 'pagado']);
-                            CashierDetail::create([
-                                'cashier_id' => $request->cashier_id,
-                                'sale_detail_id' => $detail->id,
-                                'type' => 'ingreso',
-                                'amount' => $detail->price * $detail->quantity,
-                                'cash' => $request->payment_qr ? 0 : 1
-                            ]);
+                            $detail->update(['status' => $request->not_payment ? 'deuda' : 'pagado']);
+                            if(!$request->not_payment){
+                                CashierDetail::create([
+                                    'cashier_id' => $request->cashier_id,
+                                    'sale_detail_id' => $detail->id,
+                                    'type' => 'ingreso',
+                                    'amount' => $detail->price * $detail->quantity,
+                                    'cash' => $request->payment_qr ? 0 : 1
+                                ]);
+                            }
+                            $amount_debt_total += $detail->price * $detail->quantity;
                         }
                     });
                 });
 
                 // Pago de registros de hospedaje
-                $reservation_detail->days->each(function ($day) use($request) {
+                $reservation_detail->days->each(function ($day) use($request, &$amount_debt_total) {
                     if ($day->status == 'pendiente') {
-                        $day->update(['status' => 'pagado']);
-                        CashierDetail::create([
-                            'cashier_id' => $request->cashier_id,
-                            'reservation_detail_day_id' => $day->id,
-                            'type' => 'ingreso',
-                            'amount' => $day->amount - $day->payments->sum('amount'),
-                            'cash' => $request->payment_qr ? 0 : 1
-                        ]);
+                        $day->update(['status' => $request->not_payment ? 'deuda' : 'pagado']);
+                        if(!$request->not_payment){
+                            CashierDetail::create([
+                                'cashier_id' => $request->cashier_id,
+                                'reservation_detail_day_id' => $day->id,
+                                'type' => 'ingreso',
+                                'amount' => $day->amount - $day->payments->sum('amount'),
+                                'cash' => $request->payment_qr ? 0 : 1
+                            ]);
+                        }
+                        $amount_debt_total += $day->amount - $day->payments->sum('amount');
                     }
                 });
 
                 // Pago de multas
-                $reservation_detail->penalties->each(function ($penalty) use($request) {
+                $reservation_detail->penalties->each(function ($penalty) use($request, &$amount_debt_total) {
                     if ($penalty->status == 'pendiente') {
-                        $penalty->update(['status' => 'pagada']);
-                        CashierDetail::create([
-                            'cashier_id' => $request->cashier_id,
-                            'reservation_detail_penalty_id' => $penalty->id,
-                            'type' => 'ingreso',
-                            'amount' => $penalty->amount,
-                            'cash' => $request->payment_qr ? 0 : 1
-                        ]);
+                        $penalty->update(['status' => $request->not_payment ? 'deuda' : 'pagada']);
+                        if(!$request->not_payment){
+                            CashierDetail::create([
+                                'cashier_id' => $request->cashier_id,
+                                'reservation_detail_penalty_id' => $penalty->id,
+                                'type' => 'ingreso',
+                                'amount' => $penalty->amount,
+                                'cash' => $request->payment_qr ? 0 : 1
+                            ]);
+                        }
+                        $amount_debt_total += $penalty->amount;
                     }
                 });
 
                 $reservation_detail->room->update();
                 $reservation_detail->reservation->update();
                 $reservation_detail->update();
+
+                // Si no se pagó
+                if($request->not_payment){
+                    PersonDefaulter::create([
+                        'cashier_id' => $request->cashier_id,
+                        'person_id' => $reservation_detail->reservation->person_id,
+                        'reservation_detail_id' => $reservation_details[$i],
+                        'amount' => $amount_debt_total,
+                        'type' => $request->type,
+                        'observations' => $request->observations
+                    ]);
+                }
             }
 
             DB::commit();

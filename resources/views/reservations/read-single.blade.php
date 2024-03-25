@@ -19,8 +19,8 @@
     $day_payments_amount = $reservation_detail->days->count() ? $reservation_detail->days->sortByDesc('date')->first()->amount : 0;
     $last_day_payments = $reservation_detail->days->count() ? $reservation_detail->days->sortByDesc('date')->first()->date : null;
     $total_payments = $reservation_detail->days->where('status', 'pagado')->sum('amount');
-    $total_days_debts = $reservation_detail->days->where('status', 'pendiente')->sum('amount');
-    $total_penalties_debts = $reservation_detail->penalties->where('status', 'pendiente')->sum('amount');
+    $total_days_debts = $reservation_detail->days->whereIn('status', ['pendiente', 'deuda'])->sum('amount');
+    $total_penalties_debts = $reservation_detail->penalties->whereIn('status', ['pendiente', 'deuda'])->sum('amount');
 
     $reservation_detail_days_payment = $reservation_detail->days->where('status', 'pagado');
     $last_payment_day = $reservation_detail_days_payment->count() ? $reservation_detail_days_payment->sortByDesc('date')->first()->date : null;
@@ -176,7 +176,14 @@
                                         <th class="text-center" style="width: 20%"><b>Deuda</b></th>
                                     </tr>
                                     <tr style="height: 60px">
-                                        <td class="text-center"><h4><span style="cursor:default" title="Pago calculado hasta {{ $last_day_payments ? date('d/m/Y', strtotime($last_day_payments)) : '' }}">{{ $day_payments_amount == intval($day_payments_amount) ? intval($day_payments_amount) : $day_payments_amount }}</span> <a href="#" id="btn-edit-daily-payment" data-toggle="modal" data-target="#edit_daily_payment-modal" data-price="{{ $day_payments_amount }}"><i class="voyager-edit"></i></a></h4></td>
+                                        <td class="text-center">
+                                            <h4>
+                                                <span style="cursor:default" title="Pago calculado hasta {{ $last_day_payments ? date('d/m/Y', strtotime($last_day_payments)) : '' }}">{{ $day_payments_amount == intval($day_payments_amount) ? intval($day_payments_amount) : $day_payments_amount }}</span>
+                                                @if ($reservation_detail->status == 'ocupada')
+                                                    <a href="#" id="btn-edit-daily-payment" data-toggle="modal" data-target="#edit_daily_payment-modal" data-price="{{ $day_payments_amount }}"><i class="voyager-edit"></i></a>
+                                                @endif
+                                            </h4>
+                                        </td>
                                         <td class="text-center"><h4>{{ $total_penalties_debts == intval($total_penalties_debts) ? intval($total_penalties_debts) : $total_penalties_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments + $total_debts + $total_penalties_debts }}</h4></td>
                                         <td class="text-center"><h4>{{ $total_payments }}</h4></td>
@@ -321,7 +328,9 @@
                                                 <td>{{ $item->accessory->name }}</td>
                                                 <td class="text-right">{{ floatval($item->price) == intval($item->price) ? intval($item->price):$item->price }}</td>
                                                 <td class="text-center">
+                                                    @if ($reservation_detail->status == 'ocupada')
                                                     <button type="button" class="btn btn-link btn-remove-service" data-id="{{ $item->id }}" data-type="accessory"><i class="voyager-trash text-danger"></i></button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                             @php
@@ -336,7 +345,9 @@
                                                 <td>{{ $item->type->name }}</td>
                                                 <td class="text-right"></td>
                                                 <td class="text-center">
-                                                    <button type="button" class="btn btn-link btn-remove-service" data-id="{{ $item->id }}" data-type="food_type"><i class="voyager-trash text-danger"></i></button>
+                                                    @if ($reservation_detail->status == 'ocupada')
+                                                        <button type="button" class="btn btn-link btn-remove-service" data-id="{{ $item->id }}" data-type="food_type"><i class="voyager-trash text-danger"></i></button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -734,7 +745,7 @@
                         @endphp
                         <div class="form-group">
                             <label class="control-label" for="room_id">Habitaciones</label>
-                            <select name="room_id" class="form-control select2" id="select-room_id" required>
+                            <select name="room_id" class="form-control" id="select-room_id" required>
                                 <option value="" selected disabled>--Seleccione la habitación--</option>
                                 @foreach ($rooms as $item)
                                     <option value="{{ $item->id }}" data-item='@json($item)'>{{ $item->code }} - {{ $item->type->name }} (Bs. {{ $item->type->price == floatval($item->type->price) ? intval($item->type->price) : $item->type->price }})</option>
@@ -779,7 +790,20 @@
                             <h3 class="text-danger text-right"><span style="font-size: 12px">Deuda Bs. </span>{{ number_format($total_debts + $total_penalties_debts, 2, ',', '.') }}</h3>
                         </div>
                         <div class="form-group">
-                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="payment_qr" id="checkbox-payment_qr" value="1" title="En caso de que el pago no sea en efectivo" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Pago con QR/Transferencia</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-inline"><input type="checkbox" name="not_payment" id="checkbox-not_payment" value="1" title="En caso de que el huesped se haya ido sin pagar" style="transform: scale(1.5); accent-color: #e74c3c;"> &nbsp; Retiro sin pagar <i class="voyager-warning text-danger"></i></label>
+                        </div>
+                        <div class="form-group div-not_payment">
+                            <select name="type" id="select-type" class="form-control form-control-not_payment">
+                                <option value="">Seleccione tipo de deuda</option>
+                                <option value="1">Abandonó sin pagar</option>
+                                <option value="2">Paga luego</option>
+                            </select>
+                        </div>
+                        <div class="form-group div-not_payment">
+                            <textarea name="observations" class="form-control form-control-not_payment" rows="3" placeholder="Deuda pendiente"></textarea>
                         </div>
                         @else
                         <div class="form-group">
@@ -1006,6 +1030,9 @@
             padding: 0px 5px !important;
             height: 25px;
         }
+        .div-not_payment{
+            display: none
+        }
     </style>
 @stop
 
@@ -1025,6 +1052,7 @@
             customSelect('#select-person_id', '{{ route("people.search") }}', formatResultPeople, data => data.full_name, '#add-people-modal', 'createPerson()');
             customSelect('#select-city_id', '{{ route("cities.search") }}', formatResultCities, data => data.name, "#person-modal", 'createCity()');
             $('#select-branch_office_id').select2({dropdownParent: '#create-cashier-modal'});
+            $('#select-room_id').select2({dropdownParent: $('#change-room-modal')});
             $('#select-penalty_type_id').select2({
                 tags: true,
                 dropdownParent: '#add-penalty-modal',
@@ -1058,6 +1086,7 @@
                     $('#form-add-penalty input[name="amount"]').val('')
                 }
             });
+            $('#select-type').select2({dropdownParent: $('#close-reservation-modal')})
 
             if (user.branch_office_id) {
                 $('#select-branch_office_id').val(user.branch_office_id).trigger('change');
@@ -1197,6 +1226,19 @@
                 $('#remove-service-modal').modal('show');
                 $('#form-remove-service input[name="id"]').val(id);
                 $('#form-remove-service input[name="type"]').val(type);
+            });
+
+            $('#checkbox-not_payment').click(function(){
+                if($(this).is(':checked')){
+                    $('#checkbox-payment_qr').prop('checked', false);
+                    $('#checkbox-payment_qr').prop('disabled', true);
+                    $('.div-not_payment').fadeIn('fast');
+                    $('.form-control-not_payment').prop('required', true);
+                }else{
+                    $('#checkbox-payment_qr').prop('disabled', false);
+                    $('.div-not_payment').fadeOut('fast');
+                    $('.form-control-not_payment').prop('required', false);
+                }
             });
         });
 

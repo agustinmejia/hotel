@@ -14,6 +14,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\EmployesController;
+use App\Http\Controllers\PersonDefaultersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'requests.log'], function () 
     Route::get('people/search/ajax', [PeopleController::class, 'search'])->name('people.search');
     Route::post('people/store/ajax', [PeopleController::class, 'store'])->name('people.store');
     Route::delete('people/{id}', [PeopleController::class, 'destroy']);
+    Route::post('people/defaulters/payment/store', [PeopleController::class, 'defaulters_payment_store'])->name('people.defaulters.payment.store');
+
+    Route::resource('person-defaulters', PersonDefaultersController::class);
+    Route::get('person-defaulters/list/ajax', [PersonDefaultersController::class, 'list'])->name('person-defaulters.list');
 
     // Recepción
     Route::get('reception', function () {

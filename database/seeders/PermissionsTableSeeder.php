@@ -52,6 +52,7 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('jobs');
         Permission::generateFor('employes');
         Permission::generateFor('food_types');
+        Permission::generateFor('person_defaulters');
 
         // Sale
         Permission::firstOrCreate([

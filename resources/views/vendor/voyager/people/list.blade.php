@@ -41,9 +41,12 @@
                                         @endif
                                     @endif
                                 </small>
+                                <br>
                                 @if ($item->reservations->count())
-                                    <br>
                                     <label class="label label-success">Hospedado</label>
+                                @endif
+                                @if ($item->defaulters->where('status', 'pendiente')->count())
+                                    <label class="label label-danger btn-defaulters" data-toggle="modal" data-target="#defaulters-modal" data-defaulters='@json($item->defaulters->where('status', 'pendiente'))' title="{{ $item->defaulters->where('status', 'pendiente')->first()->type == 1 ? 'Abandonó sin pagar' : 'Paga luego' }} | {{ $item->defaulters->where('status', 'pendiente')->first()->observations }}">Deuda</label>
                                 @endif
                             @else
                                 No definido
@@ -108,6 +111,12 @@
     </div>
 </div>
 
+<style>
+    .btn-defaulters{
+        cursor: pointer
+    }
+</style>
+
 <script>
     var page = "{{ request('page') }}";
     $(document).ready(function(){
@@ -118,6 +127,24 @@
                 page = link.split('=')[1];
                 list(page);
             }
+        });
+
+        $('.btn-defaulters').click(function(){
+            let defaulters = $(this).data('defaulters');
+            $('#defaulters-modal .modal-body .table tbody').empty();
+            defaulters.map((defaulter, index) => {
+                $('#defaulters-modal .modal-body .table tbody').append(`
+                    <tr>
+                        <td>${index +1}</td>
+                        <td>
+                            ${defaulter.type == 1 ? 'Abandonó sin pagar' : 'Paga luego'} <br>
+                            <small>${moment(defaulter.created_at).format('dddd[,] DD [de] MMMM [de] YYYY')}</small>
+                        </td>
+                        <td>${defaulter.observations}</td>
+                        <td class="text-right">${defaulter.amount}</td>
+                    </tr>
+                `);
+            });
         });
     });
 </script>

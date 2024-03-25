@@ -55,8 +55,6 @@
         @endif
 
         @yield('head')
-
-        @livewireStyles
     </head>
 
     <body class="voyager @if(isset($dataType) && isset($dataType->slug)){{ $dataType->slug }}@endif">
@@ -197,7 +195,5 @@
                 });
             });
         </script>
-
-    @livewireScripts
     </body>
 </html>

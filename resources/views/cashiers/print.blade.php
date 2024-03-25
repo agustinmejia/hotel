@@ -343,17 +343,18 @@
                     <tr>
                         <th width="30px">N&deg;</th>
                         <th>Habitaciones</th>
-                        <th width="100px">Hospedaje (Bs.)</th>
-                        <th width="100px">Ventas (Bs.)</th>
-                        <th width="100px">Multas (Bs.)</th>
-                        <th width="100px">Total (Bs.)</th>
+                        <th>Detalles</th>
+                        <th width="80px">Hospedaje (Bs.)</th>
+                        <th width="80px">Ventas (Bs.)</th>
+                        <th width="80px">Multas (Bs.)</th>
+                        <th width="80px">Total (Bs.)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
                         $cont = 1;
                         $total = 0;
-                        $reservations = App\Models\ReservationDetail::with(['days' => function($q){
+                        $reservations = App\Models\ReservationDetail::with(['reservation.person', 'reservation.aditional_people', 'days' => function($q){
                                                 $q->where('status', 'pendiente');
                                             }, 'days.payments', 'sales.details' => function($q){
                                                 $q->where('status', 'pendiente');
@@ -385,6 +386,15 @@
                                     {{ $item->room->code }} piso {{ $item->room->floor_number }} <br>
                                     <small class="text-muted">{{ $current_price == intval($current_price) ? intval($current_price) : $current_price }} Bs.</small>
                                 </td>
+                                <td>
+                                    {{ $item->reservation->person->full_name }} @if($item->reservation->aditional_people->count()) (+{{ $item->reservation->aditional_people->count() }}) @endif <br>
+                                    <small>
+                                        Huesped desde el {{ date('d', strtotime($item->reservation->start)) }}/{{ $months[intval(date('m', strtotime($item->reservation->start)))] }}
+                                        @if($item->reservation->finish)
+                                        hasta {{ date('d', strtotime($item->reservation->finish)) }}/{{ $months[intval(date('m', strtotime($item->reservation->finish)))] }}
+                                        @endif
+                                    </small>
+                                </td>
                                 <td style="text-align: right">
                                     {{ $debt_hosting_amount - $advance_amount }} <br>
                                     <small class="text-muted">{{ $item->days->count() }} Días</small>
@@ -400,13 +410,13 @@
                         @endphp
                     @empty
                         <tr>
-                            <td colspan="6">No hay datos registrados</td>
+                            <td colspan="7">No hay datos registrados</td>
                         </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="5" class="text-right"><b>TOTAL</b></td>
+                        <td colspan="6" class="text-right"><b>TOTAL</b></td>
                         <td class="text-right td-total"><b>{{ $total }}</b></td>
                     </tr>
                 </tfoot>
@@ -419,7 +429,8 @@
 @section('css')
     <style>
         thead th {
-            background-color: #ECF0F1
+            background-color: #ECF0F1;
+            font-size: 9px
         }
         .details table {
             border-collapse: collapse;

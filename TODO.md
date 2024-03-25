@@ -1,20 +1,18 @@
-composer install
-php artisan migrate
-A todas las habitaciones asignar la sucursal por defecto
-Eliminar toda la parte de servicios de los ssettings
+## Urgente
+- Compra de productos
+- Cupón para los taxista
 
-** Mejoras **
-- pago a taxistas
+## Bugs
 - No permitir que se pague un día si se tiene una deuda previa
-- En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es menor/mayor
+- En caso de cambiar de habitación y que ya haya pagado el hospedaje ajustar el monto de pago si es menor/mayor 
+
+## Mejoras
 - Permitir pagar el día al momento de regitrar el hospedaje
-- Al cerrar el hospedaje que permita tickear si pagaron (sino pagaron poner al cliente en una lista negra)
 - Exportar a pdf y a excel todos los reportes y mostrar la fecha y hora de la impresión
 - Ingreso y egreso de insumos de limpieza (hacer un inventario)
 - Asignar tareas de limpieza
 - Registrar compra de productos e insumos
 - Al cerrar un hospedaje editar la fecha de salida
-- Dividir los ingresos entre ventas y hospedajes
 - Poner cantidad de habitaciones y fecha de ingreso en el reporte de caja y en el que se necesite
 - Quitar personas de hospedaje (almacenar el número de personas en la tabla reservation_detail_days)
 - Agregar variable a registro de caja para ver si es el monto de apertura

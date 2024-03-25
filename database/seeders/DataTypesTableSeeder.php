@@ -186,8 +186,8 @@ class DataTypesTableSeeder extends Seeder
                 'id' => 10,
                 'name' => 'people',
                 'slug' => 'people',
-                'display_name_singular' => 'Persona',
-                'display_name_plural' => 'Personas',
+                'display_name_singular' => 'Huesped',
+                'display_name_plural' => 'Huespedes',
                 'icon' => 'voyager-people',
                 'model_name' => 'App\\Models\\Person',
                 'policy_name' => NULL,
@@ -197,7 +197,7 @@ class DataTypesTableSeeder extends Seeder
                 'server_side' => 0,
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2023-10-11 11:27:50',
-                'updated_at' => '2023-12-20 06:38:55',
+                'updated_at' => '2024-03-23 22:40:42',
             ),
             10 => 
             array (

@@ -22,32 +22,62 @@
 @stop
 
 @section('content')
-<div class="page-content browse container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-bordered">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-10">
-                            <div class="dataTables_length" id="dataTable_length">
-                                <label>Mostrar <select id="select-paginate" class="form-control input-sm">
-                                    <option value="10">10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select> registros</label>
+    <div class="page-content browse container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-bordered">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <div class="dataTables_length" id="dataTable_length">
+                                    <label>Mostrar <select id="select-paginate" class="form-control input-sm">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select> registros</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" id="input-search" class="form-control">
                             </div>
                         </div>
-                        <div class="col-sm-2">
-                            <input type="text" id="input-search" class="form-control">
-                        </div>
+                        <div class="row" id="div-results" style="min-height: 120px; padding-bottom: 120px"></div>
                     </div>
-                    <div class="row" id="div-results" style="min-height: 120px; padding-bottom: 120px"></div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    {{-- Modal defaulters list --}}
+    <div class="modal modal-primary fade" tabindex="-1" id="defaulters-modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="voyager-list"></i> Deudas pendintes</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>N&deg;</th>
+                                <th>Tipo</th>
+                                <th>Detalle</th>
+                                <th class="text-right">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
